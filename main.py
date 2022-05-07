@@ -30,11 +30,11 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
 
         if str(self.event.peer_id)[0] == "2":
             chat = models.Chat(self.event.peer_id)
-            chat_vk = await bot.api.messages.get_conversations_by_id(self.event.peer_id)
-            owner_id = chat_vk.items[0].chat_settings.owner_id
             if chat.check():
                 chat.add_message()
             else:
+                chat_vk = await bot.api.messages.get_conversations_by_id(self.event.peer_id)
+                owner_id = chat_vk.items[0].chat_settings.owner_id
                 chat.register(owner_id)
 
 

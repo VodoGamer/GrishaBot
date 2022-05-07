@@ -1,13 +1,13 @@
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import VBMLRule, RegexRule, ReplyMessageRule
+from vkbottle.dispatch.rules.base import RegexRule, ReplyMessageRule
 import modules.models as models
 
 bp = Blueprint("Rp commands")
 
 
-@bp.on.chat_message(ReplyMessageRule(), (VBMLRule("ударить <item>") | RegexRule("ударить")))
-async def kick(message: Message, item: str = None):
-    await Rp(message, "ударил", item, "accs").send_message()
+@bp.on.chat_message(ReplyMessageRule(), RegexRule("(ударить) (.*)|ударить"))
+async def kick(message: Message, match):
+    await Rp(message, "ударил", match[1], "accs").send_message()
 
 
 class Rp():

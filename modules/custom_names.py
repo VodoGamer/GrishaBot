@@ -16,7 +16,7 @@ async def change_name(message: Message, match):
 
 
 
-@bp.on.chat_message(RegexRule("(моё имя|мой ник|как меня зовут)"))
+@bp.on.chat_message(RegexRule("(моё имя|мой ник|как меня зовут|ник)"))
 async def get_my_name(message: Message):
     user = models.User(message.peer_id, message.from_id)
     await message.reply(f"Ваше имя на данный момент: {await user.get_name()}")

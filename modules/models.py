@@ -66,6 +66,11 @@ class User():
         else:
             return await self.group.get_name()
 
+    def set_custom_name(self, name):
+        if self.group == False:  # Проверка на группу
+            self.cursor.execute(f'''UPDATE users SET custom_name="{name}" WHERE chat_id={self.chat_id} AND user_id={self.user_id}''')
+            self.connection.commit()
+
     async def get_mention(self, case: str = "nomn") -> str:
         '''
         Возращает упоминания юзера в необходимом падеже

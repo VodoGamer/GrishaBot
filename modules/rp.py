@@ -6,8 +6,8 @@ bp = Blueprint("Rp commands")
 
 
 @bp.on.chat_message(ReplyMessageRule(), (VBMLRule("ударить <item>") | RegexRule("ударить")))
-async def kick(message: Message, item: str):
-    await Rp(message, "ударил", item, "gent").send_message()
+async def kick(message: Message, item: str = None):
+    await Rp(message, "ударил", item, "accs").send_message()
 
 
 class Rp():

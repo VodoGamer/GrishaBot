@@ -1,3 +1,3 @@
-from . import rp, models
+from . import rp, models, custom_names
 
-modules_list = [rp.bp, models.bp]
+modules_list = [rp.bp, models.bp, custom_names.bp]

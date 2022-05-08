@@ -139,5 +139,5 @@ class Chat():
         '''
         Обновляет дату последнего использования человека дня
         '''
-        self.cursor.execute(f'''UPDATE users SET last_person_send={date} WHERE chat_id={self.chat_id} AND user_id={self.user_id}''')
+        self.cursor.execute(f'''UPDATE chats SET last_person_send={date} WHERE chat_id={self.chat_id}''')
         self.connection.commit()

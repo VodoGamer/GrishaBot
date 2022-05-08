@@ -2,7 +2,7 @@ from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import RegexRule, ReplyMessageRule
 import modules.models as models
 
-bp = Blueprint("Rp commands")
+bp = Blueprint("Custom names")
 
 
 @bp.on.chat_message(RegexRule("(поменять|изменить|сменить) (ник|имя) (.*)"))

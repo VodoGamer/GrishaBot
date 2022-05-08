@@ -152,7 +152,7 @@ async def fuck(message: Message, match):
 
 @bp.on.chat_message(ReplyMessageRule(), RegexRule("(напасть) (.*)|напасть"))
 async def fuck(message: Message, match):
-    await Rp(message, "напал на", match[1]).send_message()
+    await Rp(message, "напал на", match[1], "photo-194020282_457239116").send_message()
 
 
 class Rp():

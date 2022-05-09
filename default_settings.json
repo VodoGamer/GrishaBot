@@ -1,14 +1,19 @@
 {
     "settings":[
         {
-            "setting": "Закреп сообщений",
+            "setting": "закреп сообщений",
             "alias": "pin",
             "value": "False"
         },
         {
-            "setting": "Картинки к сообщениям бота",
+            "setting": "картинки к сообщениям бота",
             "alias": "pictures",
-            "value": "False"
+            "value": "True"
+        },
+        {
+            "setting": "кастомные имена",
+            "alias": "custom_names",
+            "value": "True"
         }
     ]
 }

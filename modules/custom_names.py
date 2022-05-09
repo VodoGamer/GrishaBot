@@ -7,12 +7,16 @@ bp = Blueprint("Custom names")
 
 @bp.on.chat_message(RegexRule("(поменять|изменить|сменить) (ник|имя) (.*)"))
 async def change_name(message: Message, match):
-    user = models.User(message.peer_id, message.from_id)
-    if len(match[2].split()) == 1:
-        user.set_custom_name(match[2])
-        await message.reply("Новое имя успешно установлено!")
+    settings = models.Settings(message.peer_id)
+    if settings.get("value", "custom_names")[0] == "True":
+        user = models.User(message.peer_id, message.from_id)
+        if len(match[2].split()) == 1:
+            user.set_custom_name(match[2])
+            await message.reply("Новое имя успешно установлено!")
+        else:
+            await message.reply("Можно устанавливать ник только из одного слова!")
     else:
-        await message.reply("Можно устанавливать ник только из одного слова!")
+        await message.reply("Кастомные имена выключены в настройках этого чата!")
 
 
 

@@ -174,6 +174,8 @@ class Settings():
         return self.cursor.fetchone()
 
     def add(self, setting, alias, value):
+        setting = setting.lower()
+        alias = alias.lower()
         '''
         Добавляет новую настройку
         '''
@@ -181,6 +183,8 @@ class Settings():
         self.connection.commit()
 
     def get(self, field, alias):
+        field = field.lower()
+        alias = alias.lower()
         '''
         Возвращает поле определённой настройки
         '''
@@ -195,17 +199,22 @@ class Settings():
         return self.cursor.fetchall()
 
     def change_value(self, alias):
+        alias = alias.lower()
         '''
         Меняет значение value передаваемой настройки на противоположное
         '''
         res = self.get("value", alias)[0]
         if res == "True":
             value = "False"
+            value_return = "❌"
         else:
             value = "True"
+            value_return = "✅"
         self.cursor.execute(f'''UPDATE settings SET value="{value}" WHERE chat_id={self.chat_id} AND alias="{alias}"''')
         self.connection.commit()
+        return value_return
 
     def get_alias_by_setting(self, setting):
+        setting = setting.lower()
         self.cursor.execute(f'''SELECT "alias" FROM settings WHERE chat_id={self.chat_id} AND setting="{setting}"''')
         return self.cursor.fetchone()

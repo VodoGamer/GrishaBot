@@ -30,6 +30,8 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
 
         if str(self.event.peer_id)[0] == "2":
             chat = models.Chat(self.event.peer_id)
+            settings = models.Settings(self.event.peer_id)
+            settings.update()
             if chat.check():
                 chat.add_message()
             else:

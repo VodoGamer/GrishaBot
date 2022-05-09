@@ -1,0 +1,14 @@
+{
+    "settings":[
+        {
+            "setting": "Закреп сообщений",
+            "alias": "pin",
+            "value": "False"
+        },
+        {
+            "setting": "Картинки к сообщениям бота",
+            "alias": "pictures",
+            "value": "False"
+        }
+    ]
+}

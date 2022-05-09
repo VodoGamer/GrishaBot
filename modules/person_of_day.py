@@ -20,6 +20,8 @@ async def change_name(message: Message, match):
         user = models.User(chat.chat_id,choice(users_id))
         output = await message.reply(f"{choice(phrases)} {match[0]} дня это {await user.get_mention()}")
         chat.set_last_person_send(now.day)
-        await bp.api.messages.pin(chat.chat_id, conversation_message_id=output.conversation_message_id)
+        setting = models.Settings(chat.chat_id)
+        if setting.get("value", "pin")[0] == "True":
+            await bp.api.messages.pin(chat.chat_id, conversation_message_id=output.conversation_message_id)
     else:
         await message.reply("Команду можно использовать один раз в сутки начиная с 00:00.")

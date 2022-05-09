@@ -174,5 +174,8 @@ class Rp():
         return f"{await self.from_user.get_mention()} {self.word} {await self.to_user.get_mention(self.case)}"
 
     async def send_message(self) -> None:
-        await self.message.answer(await self.get_text(),
-                                  attachment=self.image)
+        if models.Settings(self.from_user.chat_id).get("value", "pictures")[0] == "True":
+            await self.message.answer(await self.get_text(),
+                                    attachment=self.image)
+        else:
+            await self.message.answer(await self.get_text())

@@ -1,6 +1,7 @@
 import sqlite3
 from vkbottle.bot import Blueprint
 import pymorphy2
+from pydantic import BaseModel
 
 
 bp = Blueprint("Models")
@@ -141,3 +142,70 @@ class Chat():
         '''
         self.cursor.execute(f'''UPDATE chats SET last_person_send={date} WHERE chat_id={self.chat_id}''')
         self.connection.commit()
+
+
+class JSONSettings(BaseModel):
+    setting: str
+    alias: str
+    value: str
+
+class BaseSettings(BaseModel):
+    settings: list[JSONSettings]
+
+default_settings = BaseSettings.parse_file("./default_settings.json")
+
+class Settings():
+    def __init__(self, chat_id: int) -> None:
+        self.chat_id = chat_id
+
+        self.connection = sqlite3.connect("db.db")
+        self.cursor = self.connection.cursor()
+
+    def update(self):
+        for i in default_settings.settings:
+            if not self.get("alias", i.alias):
+                self.add(i.setting, i.alias, i.value)
+
+    def check(self):
+        '''
+        Проверяет есть ли чат в талице settings
+        '''
+        self.cursor.execute(f'''SELECT chat_id FROM settings WHERE chat_id={self.chat_id}''')
+        return self.cursor.fetchone()
+
+    def add(self, setting, alias, value):
+        '''
+        Добавляет новую настройку
+        '''
+        self.cursor.execute(f'''INSERT INTO settings (chat_id, setting, alias, value) VALUES ({self.chat_id}, "{setting}", "{alias}", "{value}")''')
+        self.connection.commit()
+
+    def get(self, field, alias):
+        '''
+        Возвращает поле определённой настройки
+        '''
+        self.cursor.execute(f'''SELECT "{field}" FROM settings WHERE chat_id={self.chat_id} AND alias="{alias}"''')
+        return self.cursor.fetchone()
+
+    def get_all(self):
+        '''
+        Вовращает все настройки чата
+        '''
+        self.cursor.execute(f'''SELECT * FROM settings WHERE chat_id={self.chat_id}''')
+        return self.cursor.fetchall()
+
+    def change_value(self, alias):
+        '''
+        Меняет значение value передаваемой настройки на противоположное
+        '''
+        res = self.get("value", alias)[0]
+        if res == "True":
+            value = "False"
+        else:
+            value = "True"
+        self.cursor.execute(f'''UPDATE settings SET value="{value}" WHERE chat_id={self.chat_id} AND alias="{alias}"''')
+        self.connection.commit()
+
+    def get_alias_by_setting(self, setting):
+        self.cursor.execute(f'''SELECT "alias" FROM settings WHERE chat_id={self.chat_id} AND setting="{setting}"''')
+        return self.cursor.fetchone()

@@ -19,13 +19,6 @@ async def change_name(message: Message, match):
         await message.reply("Кастомные имена выключены в настройках этого чата!")
 
 
-
-@bp.on.chat_message(RegexRule("(моё имя|мой ник|как меня зовут|ник)"))
-async def get_my_name(message: Message):
-    user = models.User(message.peer_id, message.from_id)
-    await message.reply(f"Ваше имя на данный момент: {await user.get_name()}")
-
-
 @bp.on.chat_message(ReplyMessageRule(), RegexRule("ник"))
 async def get_my_name(message: Message):
     chat = models.Chat(message.peer_id)
@@ -34,4 +27,12 @@ async def get_my_name(message: Message):
         await message.reply(f"Имя этого человека на данный момент: {await user.get_name()}")
     else:
         await message.reply("Только админ может писать эту команду!")
+
+
+@bp.on.chat_message(RegexRule("(моё имя|мой ник|как меня зовут|ник)"))
+async def get_my_name(message: Message):
+    user = models.User(message.peer_id, message.from_id)
+    await message.reply(f"Ваше имя на данный момент: {await user.get_name()}")
+
+
 

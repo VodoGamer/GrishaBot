@@ -82,6 +82,15 @@ class User():
         else:
             return await self.group.get_mention()
 
+    async def get_sex(self):
+        '''
+        Возвращает пол пользователя.\n
+        1 - девушка\n
+        0 - парень
+        '''
+        if self.group == False:  # Проверка на группу
+            return (await bp.api.users.get(self.user_id, "sex"))[0].sex.value
+
 
 class Group():
     def __init__(self, group_id: str) -> None:
@@ -218,3 +227,54 @@ class Settings():
         setting = setting.lower()
         self.cursor.execute(f'''SELECT "alias" FROM settings WHERE chat_id={self.chat_id} AND setting="{setting}"''')
         return self.cursor.fetchone()
+
+
+class Sex():
+    def __init__(self, chat_id: int, from_user: int) -> None:
+        self.chat_id = chat_id
+        self.from_user = from_user
+
+        self.connection = sqlite3.connect("db.db")
+        self.cursor = self.connection.cursor()
+
+    def start(self, to_id) -> None:
+        '''
+        "from_user" предлогает секс переданному юзеру
+        '''
+        self.cursor.execute(f'''UPDATE users SET sex_request={self.from_user} WHERE chat_id={self.chat_id} AND user_id={to_id}''')
+        self.connection.commit()
+
+    def get_request(self) -> None | int:
+        '''
+        есть ли запрос на секс у "from_user" от другого юзера
+        возвращает id другого юзера
+        '''
+        self.cursor.execute(
+            f'''SELECT sex_request FROM users WHERE chat_id={self.chat_id} AND user_id={self.from_user}''')
+        result = self.cursor.fetchone()
+        if result is None: return None
+        else: return result[0]
+
+    def get_send(self) -> None | int:
+        '''
+        отправлял ли "from_user" запрос на секс другому
+        возращает id другого юзера
+        '''
+        self.cursor.execute(f'''SELECT user_id FROM users WHERE chat_id={self.chat_id} AND sex_request={self.from_user}''')
+        result = self.cursor.fetchone()
+        if result is None: return None
+        else: return result[0]
+
+    def end_sex(self, to_id):
+        '''
+        убирает заявку на секс отправленную от "from_user"
+        '''
+        self.cursor.execute(f'''UPDATE users SET sex_request=Null WHERE chat_id={self.chat_id} AND user_id={to_id}''')
+        self.connection.commit()
+
+    def discard_sex(self):
+        '''
+        отклонение предложения секса от другого юзера "from_user"
+        '''
+        self.cursor.execute(f'''UPDATE users SET sex_request=Null WHERE chat_id={self.chat_id} AND user_id={self.from_user}''')
+        self.connection.commit()

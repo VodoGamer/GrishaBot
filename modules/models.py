@@ -58,7 +58,7 @@ class User():
         :param case: nomn | gent | datv | accs | ablt | loct | voct
         '''
         if self.group == False:  # Проверка на группу
-            if self.custom_name != None:
+            if self.check("custom_name"):
                 raw_name = morph.parse(self.custom_name)[0]
             else:
                 vk_info = await bp.api.users.get(self.user_id)

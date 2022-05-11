@@ -60,10 +60,10 @@ class User():
         if self.group == False:  # Проверка на группу
             if self.check("custom_name"):
                 raw_name = morph.parse(self.custom_name)[0]
+                return raw_name.inflect({case}).word.capitalize()
             else:
                 vk_info = await bp.api.users.get(self.user_id)
-                raw_name = morph.parse(vk_info[0].first_name)[0]
-            return raw_name.inflect({case}).word.capitalize()
+                return vk_info[0].first_name
         else:
             return await self.group.get_name()
 

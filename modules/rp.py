@@ -108,7 +108,7 @@ async def fuck(message: Message, match):
 
 @bp.on.chat_message(RegexRule("(плюнуть) (.*)|плюнуть"))
 async def fuck(message: Message, match):
-    await Rp(message, "плюнул", match[1], "photo-194020282_457239099").send_message()
+    await Rp(message, "плюнул в", match[1], "photo-194020282_457239099").send_message()
 
 
 @bp.on.chat_message(RegexRule("(потрогать|трогать) (.*)|потрогать|трогать"))

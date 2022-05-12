@@ -32,5 +32,5 @@ async def how_long_we(message: Message, match):
     user_2 = models.User(message.peer_id, message.reply_message.from_id)
     await message.answer(f"{await user_1.get_mention()} и "
                          f"{await user_2.get_mention()} "
-                         f"{choice(phrases_multi)} {match[-1]}"
+                         f"{choice(phrases_multi)} {match[-1]} "
                          f"на {randint(0, 100)}%")

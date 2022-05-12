@@ -83,7 +83,7 @@ async def kiss(message: Message):
             await message.answer('У тебя ещё есть незаконченый секс\nДля того чтобы его закончить напиши "-секс"', random_id=r_id)
     else:
         user = await bp.api.users.get(message.from_id)
-        await message.answer(f"@id{message.from_id} ({user[0].first_name}) начал ебать бота. ЛЁХА ИДИ НАХУЙ")
+        await message.answer(f"@id{message.from_id} ({user[0].first_name}) начал ебать бота.")
 
 
 @bp.on.chat_message(rules.RegexRule("-секс"))

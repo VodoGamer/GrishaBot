@@ -90,7 +90,11 @@ class User():
                 return raw_name.inflect({case}).word.capitalize()
             else:
                 vk_info = await bp.api.users.get(self.user_id)
-                return vk_info[0].first_name
+                try:
+                    raw_name = morph.parse(vk_info[0].first_name)[0]
+                    return raw_name.inflect({case}).word.capitalize()
+                except:
+                    return vk_info[0].first_name
         else:
             return await self.group.get_name()
 
@@ -301,7 +305,7 @@ class Settings():
         '''
         Меняет значение value передаваемой настройки на противоположное
         '''
-        res = self.get("value", alias)[0]
+        res = self.get_value(alias)[0]
         if res == "True":
             value = "False"
             value_return = "❌"
@@ -309,7 +313,7 @@ class Settings():
             value = "True"
             value_return = "✅"
         sql = ("UPDATE settings SET value = :value WHERE "
-               "chat_id = :chat_id AND alias :alias")
+               "chat_id = :chat_id AND alias = :alias")
         vars = {"value": value,
                 "chat_id": self.chat_id,
                 "alias": alias}

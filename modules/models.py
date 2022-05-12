@@ -174,13 +174,12 @@ class Chat():
             self.messages = result[2]
             self.last_person_send = result[3]
 
-    def check(self, field: str = "chat_id") -> bool:
+    def check(self) -> bool:
         '''
         Проверяет заполнено ли передаваемое поле в БД
         '''
-        sql = "SELECT :field FROM chats WHERE chat_id = :chat_id"
-        vars = {"field": field,
-                "chat_id": self.chat_id}
+        sql = "SELECT chat_id FROM chats WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
 
         self.cursor.execute(sql, vars)
         return self.cursor.fetchone()
@@ -240,7 +239,7 @@ class Settings():
 
     def update(self):
         for i in default_settings.settings:
-            if not self.get("alias", i.alias):
+            if not self.get_alias(i.alias):
                 self.add(i.setting, i.alias, i.value)
 
     def check(self):
@@ -271,6 +270,15 @@ class Settings():
 
     def get_value(self, alias):
         sql = ("SELECT value FROM settings WHERE "
+               "chat_id = :chat_id AND alias = :alias")
+        vars = {"chat_id": self.chat_id,
+                "alias": alias}
+
+        self.cursor.execute(sql, vars)
+        return self.cursor.fetchone()
+
+    def get_alias(self, alias):
+        sql = ("SELECT alias FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
         vars = {"chat_id": self.chat_id,
                 "alias": alias}
@@ -373,5 +381,5 @@ class Sex():
         self.connection.commit()
 
 
-# user = User(2000000005, 356467032)
-# print(user.test_custom_name("fsfd"))
+# chat = Chat(1)
+# chat.check()

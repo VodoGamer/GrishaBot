@@ -95,8 +95,8 @@ class User():
 
     def set_custom_name(self, name):
         if self.group == False:  # Проверка на группу
-            sql = ("UPDATE users SET custom_name = :name WHERE"
-                   "chat_id = :chat_id AND user_id :user_id")
+            sql = ("UPDATE users SET custom_name = :name WHERE "
+                   "chat_id = :chat_id AND user_id = :user_id")
             vars = {"name": name,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
@@ -254,16 +254,10 @@ class Settings():
         self.cursor.execute(sql, vars)
         self.connection.commit()
 
-    def get(self, field, alias):
-        field = field.lower()
-        alias = alias.lower()
-        '''
-        Возвращает поле определённой настройки
-        '''
-        sql = ("SELECT :field FROM settings WHERE "
+    def get_value(self, alias):
+        sql = ("SELECT value FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
-        vars = {"field": field,
-                "chat_id": self.chat_id,
+        vars = {"chat_id": self.chat_id,
                 "alias": alias}
 
         self.cursor.execute(sql, vars)

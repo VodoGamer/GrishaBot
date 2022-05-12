@@ -180,7 +180,7 @@ class Rp():
 
     async def send_message(self) -> None:
         settings = models.Settings(self.from_user.chat_id)
-        if settings.get("value", "pictures")[0] == "True":
+        if settings.get_value("pictures")[0] == "True":
             await self.message.answer(await self.get_text(),
                                       attachment=self.image)
         else:

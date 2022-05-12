@@ -23,7 +23,7 @@ async def change_name(message: Message, match):
                                      f"{await user.get_mention()}")
         chat.set_last_person_send(now.day)
         setting = models.Settings(chat.chat_id)
-        if setting.get("value", "pin")[0] == "True":
+        if setting.get_value("pin")[0] == "True":
             await bp.api.messages.pin(
                 chat.chat_id,
                 conversation_message_id=output.conversation_message_id)

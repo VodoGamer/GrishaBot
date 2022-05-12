@@ -21,12 +21,13 @@ class User():
 
             self.connection = sqlite3.connect("db.db")
             self.cursor = self.connection.cursor()
-            if self.check():
-                self.cursor.execute(f'''SELECT * FROM users WHERE chat_id = {self.chat_id} AND user_id={self.user_id}''')
-                result = self.cursor.fetchone()
-                self.messages = result[2]
-                self.custom_name = result[3]
-                self.sex_request = result[4]
+            if not self.check():
+                self.register(0)
+            self.cursor.execute(f'''SELECT * FROM users WHERE chat_id = {self.chat_id} AND user_id={self.user_id}''')
+            result = self.cursor.fetchone()
+            self.messages = result[2]
+            self.custom_name = result[3]
+            self.sex_request = result[4]
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -36,12 +37,12 @@ class User():
             self.cursor.execute(f'''SELECT {field} FROM users WHERE chat_id = {self.chat_id} AND user_id={self.user_id}''')
             return self.cursor.fetchone()
 
-    def register(self) -> None:
+    def register(self, messages_count: int = 1) -> None:
         '''
         Регистрирует нового пользователя
         '''
         if self.group == False:  # Проверка на группу
-            self.cursor.execute(f'''INSERT INTO users (chat_id, user_id, messages) VALUES ({self.chat_id}, {self.user_id}, 1)''')
+            self.cursor.execute(f'''INSERT INTO users (chat_id, user_id, messages) VALUES ({self.chat_id}, {self.user_id}, {messages_count})''')
             self.connection.commit()
 
     def add_message(self) -> None:
@@ -58,7 +59,7 @@ class User():
         :param case: nomn | gent | datv | accs | ablt | loct | voct
         '''
         if self.group == False:  # Проверка на группу
-            if self.check("custom_name"):
+            if self.custom_name != None:
                 raw_name = morph.parse(self.custom_name)[0]
                 return raw_name.inflect({case}).word.capitalize()
             else:

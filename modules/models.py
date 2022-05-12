@@ -14,7 +14,9 @@ class User():
         self.chat_id = chat_id
         self.user_id = user_id
 
-        if self.user_id < 0:  # Если передана группа, то происходит экранизация класса Group
+        if self.user_id < 0:
+            # Если передана группа,
+            # то происходит экранизация класса Group
             self.group = Group(self.user_id)
         else:
             self.group = False
@@ -23,7 +25,12 @@ class User():
             self.cursor = self.connection.cursor()
             if not self.check():
                 self.register(0)
-            self.cursor.execute(f'''SELECT * FROM users WHERE chat_id = {self.chat_id} AND user_id={self.user_id}''')
+            sql = ("SELECT * FROM users WHERE chat_id = :chat_id "
+                   "AND user_id = :user_id")
+            vars = {"chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
             result = self.cursor.fetchone()
             self.messages = result[2]
             self.custom_name = result[3]
@@ -34,7 +41,13 @@ class User():
         Проверяет заполнено ли передаваемое поле в БД
         '''
         if self.group == False:  # Проверка на группу
-            self.cursor.execute(f'''SELECT {field} FROM users WHERE chat_id = {self.chat_id} AND user_id={self.user_id}''')
+            sql = ("SELECT :field FROM users WHERE chat_id = :chat_id AND "
+                   "user_id = :user_id")
+            vars = {"field": field,
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
             return self.cursor.fetchone()
 
     def register(self, messages_count: int = 1) -> None:
@@ -42,7 +55,13 @@ class User():
         Регистрирует нового пользователя
         '''
         if self.group == False:  # Проверка на группу
-            self.cursor.execute(f'''INSERT INTO users (chat_id, user_id, messages) VALUES ({self.chat_id}, {self.user_id}, {messages_count})''')
+            sql = ("INSERT INTO users (chat_id, user_id, messages) VALUES "
+                   "(:chat_id, :user_id, :messages_count)")
+            vars = {"chat_id": self.chat_id,
+                    "user_id": self.user_id,
+                    "messages_count": messages_count}
+
+            self.cursor.execute(sql, vars)
             self.connection.commit()
 
     def add_message(self) -> None:
@@ -50,7 +69,13 @@ class User():
         Добавляет сообщение в статистику
         '''
         if self.group == False:  # Проверка на группу
-            self.cursor.execute(f'''UPDATE users SET messages={self.messages+1} WHERE chat_id={self.chat_id} AND user_id={self.user_id}''')
+            sql = ("UPDATE users SET messages = :messages WHERE "
+                   "chat_id = :chat_id AND user_id= :user_id")
+            vars = {"messages": self.messages + 1,
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
             self.connection.commit()
 
     async def get_name(self, case: str = "nomn") -> str:
@@ -70,7 +95,13 @@ class User():
 
     def set_custom_name(self, name):
         if self.group == False:  # Проверка на группу
-            self.cursor.execute(f'''UPDATE users SET custom_name="{name}" WHERE chat_id={self.chat_id} AND user_id={self.user_id}''')
+            sql = ("UPDATE users SET custom_name = :name WHERE"
+                   "chat_id = :chat_id AND user_id :user_id")
+            vars = {"name": name,
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
             self.connection.commit()
 
     async def get_mention(self, case: str = "nomn") -> str:
@@ -118,7 +149,10 @@ class Chat():
 
         self.connection = sqlite3.connect("db.db")
         self.cursor = self.connection.cursor()
-        self.cursor.execute(f'''SELECT * FROM chats WHERE chat_id = {self.chat_id}''')
+        sql = "SELECT * FROM chats WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
         result = self.cursor.fetchone()
         if self.check():
             self.owner_id = result[1]
@@ -129,28 +163,46 @@ class Chat():
         '''
         Проверяет заполнено ли передаваемое поле в БД
         '''
-        self.cursor.execute(f'''SELECT {field} FROM chats WHERE chat_id = {self.chat_id}''')
+        sql = "SELECT :field FROM chats WHERE chat_id = :chat_id"
+        vars = {"field": field,
+                "chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
         return self.cursor.fetchone()
 
     def register(self, owner_id: int):
         '''
         Регистрирует новый чат
         '''
-        self.cursor.execute(f'''INSERT INTO chats (chat_id, owner_id, messages) VALUES ({self.chat_id}, {owner_id}, 1)''')
+        sql = ("INSERT INTO chats (chat_id, owner_id, messages) VALUES "
+               "(:chat_id, :owner_id, 1)")
+        vars = {"chat_id": self.chat_id,
+                "owner_id": owner_id}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def add_message(self):
         '''
         Добавляет сообщение в статистику
         '''
-        self.cursor.execute(f'''UPDATE chats SET messages={self.messages+1} WHERE chat_id={self.chat_id}''')
+        sql = "UPDATE chats SET messages = :messages WHERE chat_id = :chat_id"
+        vars = {"messages": self.messages + 1,
+                "chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def set_last_person_send(self, date) -> None:
         '''
         Обновляет дату последнего использования человека дня
         '''
-        self.cursor.execute(f'''UPDATE chats SET last_person_send={date} WHERE chat_id={self.chat_id}''')
+        sql = ("UPDATE chats SET last_person_send = :date WHERE "
+               "chat_id = :chat_id")
+        vars = {"date": date,
+                "chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
 
@@ -180,7 +232,10 @@ class Settings():
         '''
         Проверяет есть ли чат в талице settings
         '''
-        self.cursor.execute(f'''SELECT chat_id FROM settings WHERE chat_id={self.chat_id}''')
+        sql = "SELECT chat_id FROM settings WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
         return self.cursor.fetchone()
 
     def add(self, setting, alias, value):
@@ -189,7 +244,14 @@ class Settings():
         '''
         Добавляет новую настройку
         '''
-        self.cursor.execute(f'''INSERT INTO settings (chat_id, setting, alias, value) VALUES ({self.chat_id}, "{setting}", "{alias}", "{value}")''')
+        sql = ("INSERT INTO settings (chat_id, setting, alias, value) VALUES "
+               "(:chat_id, :setting, :alias, :value)")
+        vars = {"chat_id": self.chat_id,
+                "setting": setting,
+                "alias": alias,
+                "value": value}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def get(self, field, alias):
@@ -198,14 +260,23 @@ class Settings():
         '''
         Возвращает поле определённой настройки
         '''
-        self.cursor.execute(f'''SELECT "{field}" FROM settings WHERE chat_id={self.chat_id} AND alias="{alias}"''')
+        sql = ("SELECT :field FROM settings WHERE "
+               "chat_id = :chat_id AND alias = :alias")
+        vars = {"field": field,
+                "chat_id": self.chat_id,
+                "alias": alias}
+
+        self.cursor.execute(sql, vars)
         return self.cursor.fetchone()
 
     def get_all(self):
         '''
         Вовращает все настройки чата
         '''
-        self.cursor.execute(f'''SELECT * FROM settings WHERE chat_id={self.chat_id}''')
+        sql = "SELECT * FROM settings WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
         return self.cursor.fetchall()
 
     def change_value(self, alias):
@@ -220,16 +291,28 @@ class Settings():
         else:
             value = "True"
             value_return = "✅"
-        self.cursor.execute(f'''UPDATE settings SET value="{value}" WHERE chat_id={self.chat_id} AND alias="{alias}"''')
+        sql = ("UPDATE settings SET value = :value WHERE "
+               "chat_id = :chat_id AND alias :alias")
+        vars = {"value": value,
+                "chat_id": self.chat_id,
+                "alias": alias}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
         return value_return
 
     def get_alias_by_setting(self, setting):
         setting = setting.lower()
-        self.cursor.execute(f'''SELECT "alias" FROM settings WHERE chat_id={self.chat_id} AND setting="{setting}"''')
+        sql = ("SELECT alias FROM settings WHERE chat_id = :chat_id "
+               "AND setting = :setting")
+        vars = {"chat_id": self.chat_id,
+                "setting": setting}
+
+        self.cursor.execute(sql, vars)
         return self.cursor.fetchone()
 
 
+# TODO: ЗАЩИТА ОТ SQL ИНЪЕКЦИЙ И PEP-8
 class Sex():
     def __init__(self, chat_id: int, from_user: int) -> None:
         self.chat_id = chat_id

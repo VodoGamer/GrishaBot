@@ -15,8 +15,7 @@ async def get_settings(message: Message):
         if i[3] == "False": bool = "❌"
         tuple.append(f"{bool} | {i[1]}")
     result = '\n'.join(tuple)
-    await message.reply(f"{result}\n\nЧтобы изменить команду напишите:"
-                        "\n!изменить Закреп сообщений")
+    await message.reply(f"{result}\n\nЧтобы изменить команду напишите:\n!изменить Закреп сообщений")
 
 
 @bp.on.chat_message(RegexRule("!(изменить) (.*)"))
@@ -25,8 +24,7 @@ async def change_setting(message: Message, match):
     if chat.owner_id == message.from_id:
         settings = models.Settings(message.peer_id)
         try:
-            result = settings.change_value(
-                settings.get_alias_by_setting(match[1])[0])
+            result = settings.change_value(settings.get_alias_by_setting(match[1])[0])
             await message.reply(f"{result}| Настройка упешно изменена!")
         except:
             await message.reply("❌Неправильно указано правило")

@@ -99,7 +99,7 @@ class User():
             return await self.group.get_name()
 
     def test_custom_name(self, name):
-        if re.search("^[а-я]+", name):
+        if re.search("^[а-я]+", name.lower()):
             try:
                 raw_name = morph.parse(name)[0]
                 cases = ["nomn", "gent", "datv",

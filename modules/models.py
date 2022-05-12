@@ -1,3 +1,4 @@
+import re
 import sqlite3
 from vkbottle.bot import Blueprint
 import pymorphy2
@@ -92,6 +93,20 @@ class User():
                 return vk_info[0].first_name
         else:
             return await self.group.get_name()
+
+    def test_custom_name(self, name):
+        if re.search("^[а-я]+", name):
+            try:
+                raw_name = morph.parse(name)[0]
+                cases = ["nomn", "gent", "datv",
+                         "accs", "ablt", "loct", "voct"]
+                for case in cases:
+                    raw_name.inflect({case}).word.capitalize()
+                return True
+            except:
+                return "case!"
+        else:
+            return "words!"
 
     def set_custom_name(self, name):
         if self.group == False:  # Проверка на группу
@@ -356,3 +371,7 @@ class Sex():
         '''
         self.cursor.execute(f'''UPDATE users SET sex_request=Null WHERE chat_id={self.chat_id} AND user_id={self.from_user}''')
         self.connection.commit()
+
+
+# user = User(2000000005, 356467032)
+# print(user.test_custom_name("fsfd"))

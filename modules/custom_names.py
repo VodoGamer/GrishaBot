@@ -8,10 +8,11 @@ bp = Blueprint("Custom names")
 
 @bp.on.chat_message(RegexRule("(поменять|изменить|сменить) (ник|имя) (.*)"))
 async def change_name(message: Message, match):
-    if re.search("^[а-я]+", match[2]):
+    user = models.User(message.peer_id, message.from_id)
+    test_custom_name = user.test_custom_name(match[2])
+    if test_custom_name is True:
         settings = models.Settings(message.peer_id)
         if settings.get_value("custom_names")[0] == "True":
-            user = models.User(message.peer_id, message.from_id)
             if len(match[2].split()) == 1:
                 user.set_custom_name(match[2])
                 await message.reply("Новое имя успешно установлено!")
@@ -21,8 +22,11 @@ async def change_name(message: Message, match):
         else:
             await message.reply(
                 "Кастомные имена выключены в настройках этого чата!")
-    else:
+    elif test_custom_name == "words!":
         await message.reply("Кастомное имя должно состоять из русских букв!")
+    elif test_custom_name == "case!":
+        await message.reply("Увы я не смог просклонять ваше имя. "
+                            "Попробуйте другое")
 
 
 @bp.on.chat_message(ReplyMessageRule(), RegexRule("ник"))

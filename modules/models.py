@@ -1,5 +1,6 @@
 import re
 import sqlite3
+from random import choice
 from vkbottle.bot import Blueprint
 import pymorphy2
 from pydantic import BaseModel
@@ -36,6 +37,7 @@ class User():
             self.messages = result[2]
             self.custom_name = result[3]
             self.sex_request = result[4]
+            self.money = result[5]
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -56,8 +58,8 @@ class User():
         Регистрирует нового пользователя
         '''
         if self.group == False:  # Проверка на группу
-            sql = ("INSERT INTO users (chat_id, user_id, messages) VALUES "
-                   "(:chat_id, :user_id, :messages_count)")
+            sql = ("INSERT INTO users (chat_id, user_id, messages, money) "
+                   "VALUES (:chat_id, :user_id, :messages_count, 0)")
             vars = {"chat_id": self.chat_id,
                     "user_id": self.user_id,
                     "messages_count": messages_count}
@@ -73,6 +75,17 @@ class User():
             sql = ("UPDATE users SET messages = :messages WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             vars = {"messages": self.messages + 1,
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
+            self.connection.commit()
+
+    def change_money(self, bonus):
+        if self.group == False:  # Проверка на группу
+            sql = ("UPDATE users SET money = :money WHERE "
+                   "chat_id = :chat_id AND user_id= :user_id")
+            vars = {"money": self.money + bonus,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
@@ -385,5 +398,77 @@ class Sex():
         self.connection.commit()
 
 
-# chat = Chat(1)
-# chat.check()
+class CasinoUser():
+    def __init__(self, chat_id, user_id):
+        self.chat_id = chat_id
+        self.user_id = user_id
+
+        self.connection = sqlite3.connect("db.db")
+        self.cursor = self.connection.cursor()
+
+        user_info = self.check()
+        if user_info != None:
+            self.bet = user_info[2]
+            self.feature = user_info[3]
+
+    def check(self) -> list:
+        '''
+        Проверяет учавствует ли юзер в крутке
+        '''
+        sql = ("SELECT * FROM casino WHERE chat_id = :chat_id AND "
+               "user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.user_id}
+        self.cursor.execute(sql, vars)
+        return self.cursor.fetchone()
+
+    def register(self, bet: int, feature: str):
+        '''
+        Регистрирует пользователя в крутку
+        '''
+        sql = ("INSERT INTO casino (chat_id, user_id, bet, feature) "
+               "VALUES (:chat_id, :user_id, :bet, :feature)")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.user_id,
+                "bet": bet,
+                "feature": feature}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+
+class Casino():
+    def __init__(self, chat_id) -> None:
+        self.chat_id = chat_id
+
+        self.connection = sqlite3.connect("db.db")
+        self.cursor = self.connection.cursor()
+
+    def get_users(self) -> list[tuple[int, int, int, str]]:
+        sql = "SELECT * FROM casino WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, vars)
+        return self.cursor.fetchall()
+
+    def get_winner_cash(self) -> int:
+        sql = "SELECT bet FROM casino WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, vars)
+        bets = self.cursor.fetchall()
+        winner_cash = 0
+        for bet in bets:
+            winner_cash = winner_cash + bet[0]
+        return winner_cash
+
+    def start(self):
+        '''
+        Выбирает рандомного победителя и очищает крутку
+        '''
+        user = choice(self.get_users())[1]
+
+        sql = "DELETE FROM casino WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+        return user

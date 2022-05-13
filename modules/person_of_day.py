@@ -2,7 +2,7 @@ from datetime import datetime
 from random import choice
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import RegexRule
-import modules.models as models
+from modules.models import Chat, User, Settings
 
 
 bp = Blueprint("Person of day")
@@ -10,7 +10,7 @@ phrases = ["Ящитаю что", "Мне кажется", "Вселенная �
 
 @bp.on.chat_message(RegexRule("(?i)(.*) дня"))
 async def change_name(message: Message, match):
-    chat = models.Chat(message.peer_id)
+    chat = Chat(message.peer_id)
     now = datetime.now()
     if chat.last_person_send != now.day or chat.last_person_send == None:
         users = await bp.api.messages.get_conversation_members(
@@ -18,11 +18,11 @@ async def change_name(message: Message, match):
         users_id = []
         for i in users.profiles:
             users_id.append(i.id)
-        user = models.User(chat.chat_id,choice(users_id))
+        user = User(chat.chat_id,choice(users_id))
         output = await message.reply(f"{choice(phrases)} {match[0]} дня это "
                                      f"{await user.get_mention()}")
         chat.set_last_person_send(now.day)
-        setting = models.Settings(chat.chat_id)
+        setting = Settings(chat.chat_id)
         if setting.get_value("pin")[0] == "True":
             await bp.api.messages.pin(
                 chat.chat_id,

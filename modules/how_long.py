@@ -1,7 +1,7 @@
 from random import choice, randint
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import RegexRule, ReplyMessageRule
-import modules.models as models
+from modules.models import User
 
 
 bp = Blueprint("How Long")
@@ -11,25 +11,25 @@ phrases_multi = ["не рассказывали что они", "скрывал�
                  "рассказали что они"]
 
 
-@bp.on.chat_message(RegexRule("(?i)(!|\/\|.)я (.*)"))
+@bp.on.chat_message(RegexRule("(?i)(!|\.|\/)я (.*)"))
 async def how_long_i(message: Message, match):
-    user = models.User(message.peer_id, message.from_id)
+    user = User(message.peer_id, message.from_id)
     await message.answer(f"{await user.get_mention()} {choice(phrases)} "
                          f"{match[-1]} на {randint(0, 100)}%")
 
 
-@bp.on.chat_message(RegexRule("(?i)(!|\/\|.)(он|она|оно) (.*)"),
+@bp.on.chat_message(RegexRule("(?i)(!|\.|\/)(он|она|оно) (.*)"),
                     ReplyMessageRule())
 async def how_long_he(message: Message, match):
-    user = models.User(message.peer_id, message.reply_message.from_id)
+    user = User(message.peer_id, message.reply_message.from_id)
     await message.answer(f"{await user.get_mention()} {choice(phrases)} "
                          f"{match[-1]} на {randint(0, 100)}%")
 
 
-@bp.on.chat_message(RegexRule("(?i)(!|\/\|.)мы (.*)"), ReplyMessageRule())
+@bp.on.chat_message(RegexRule("(?i)(!|\.|\/)мы (.*)"), ReplyMessageRule())
 async def how_long_we(message: Message, match):
-    user_1 = models.User(message.peer_id, message.from_id)
-    user_2 = models.User(message.peer_id, message.reply_message.from_id)
+    user_1 = User(message.peer_id, message.from_id)
+    user_2 = User(message.peer_id, message.reply_message.from_id)
     await message.answer(f"{await user_1.get_mention()} и "
                          f"{await user_2.get_mention()} "
                          f"{choice(phrases_multi)} {match[-1]} "

@@ -11,14 +11,14 @@ phrases_multi = ["не рассказывали что они", "скрывал�
                  "рассказали что они"]
 
 
-@bp.on.chat_message(RegexRule("(!|\/\|.)я (.*)"))
+@bp.on.chat_message(RegexRule("(?i)(!|\/\|.)я (.*)"))
 async def how_long_i(message: Message, match):
     user = models.User(message.peer_id, message.from_id)
     await message.answer(f"{await user.get_mention()} {choice(phrases)} "
                          f"{match[-1]} на {randint(0, 100)}%")
 
 
-@bp.on.chat_message(RegexRule("(!|\/\|.)(он|она|оно) (.*)"),
+@bp.on.chat_message(RegexRule("(?i)(!|\/\|.)(он|она|оно) (.*)"),
                     ReplyMessageRule())
 async def how_long_he(message: Message, match):
     user = models.User(message.peer_id, message.reply_message.from_id)
@@ -26,7 +26,7 @@ async def how_long_he(message: Message, match):
                          f"{match[-1]} на {randint(0, 100)}%")
 
 
-@bp.on.chat_message(RegexRule("(!|\/\|.)мы (.*)"), ReplyMessageRule())
+@bp.on.chat_message(RegexRule("(?i)(!|\/\|.)мы (.*)"), ReplyMessageRule())
 async def how_long_we(message: Message, match):
     user_1 = models.User(message.peer_id, message.from_id)
     user_2 = models.User(message.peer_id, message.reply_message.from_id)

@@ -1,12 +1,12 @@
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import CommandRule, RegexRule
+from vkbottle.dispatch.rules.base import RegexRule
 import modules.models as models
 
 
 bp = Blueprint("Settings")
 
 
-@bp.on.chat_message(CommandRule("настройки"))
+@bp.on.chat_message(RegexRule("(?i)!настройки"))
 async def get_settings(message: Message):
     settings = models.Settings(message.peer_id)
     tuple = []
@@ -19,7 +19,7 @@ async def get_settings(message: Message):
                         "\n!изменить Закреп сообщений")
 
 
-@bp.on.chat_message(RegexRule("!(изменить) (.*)"))
+@bp.on.chat_message(RegexRule("(?i)!(изменить) (.*)"))
 async def change_setting(message: Message, match):
     chat = models.Chat(message.peer_id)
     if chat.owner_id == message.from_id:

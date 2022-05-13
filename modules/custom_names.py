@@ -6,7 +6,7 @@ import modules.models as models
 bp = Blueprint("Custom names")
 
 
-@bp.on.chat_message(RegexRule("(поменять|изменить|сменить) (ник|имя) (.*)"))
+@bp.on.chat_message(RegexRule("(?i)(поменять|изменить|сменить) (ник|имя) (.*)"))
 async def change_name(message: Message, match):
     user = models.User(message.peer_id, message.from_id)
     test_custom_name = user.test_custom_name(match[2])
@@ -29,7 +29,7 @@ async def change_name(message: Message, match):
                             "Попробуйте другое")
 
 
-@bp.on.chat_message(ReplyMessageRule(), RegexRule("ник"))
+@bp.on.chat_message(ReplyMessageRule(), RegexRule("(?i)ник"))
 async def get_my_name(message: Message):
     chat = models.Chat(message.peer_id)
     if message.from_id == chat.owner_id:
@@ -40,7 +40,7 @@ async def get_my_name(message: Message):
         await message.reply("Только админ может писать эту команду!")
 
 
-@bp.on.chat_message(RegexRule("(моё имя|мой ник|как меня зовут|ник)"))
+@bp.on.chat_message(RegexRule("(?i)(моё имя|мой ник|как меня зовут|ник)"))
 async def get_my_name(message: Message):
     user = models.User(message.peer_id, message.from_id)
     await message.reply(f"Ваше имя на данный момент: {await user.get_name()}")

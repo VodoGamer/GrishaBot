@@ -8,7 +8,7 @@ import modules.models as models
 bp = Blueprint("Person of day")
 phrases = ["Ящитаю что", "Мне кажется", "Вселенная подсказала что"]
 
-@bp.on.chat_message(RegexRule("(.*) дня"))
+@bp.on.chat_message(RegexRule("(?i)(.*) дня"))
 async def change_name(message: Message, match):
     chat = models.Chat(message.peer_id)
     now = datetime.now()

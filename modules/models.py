@@ -38,6 +38,7 @@ class User():
             self.custom_name = result[3]
             self.sex_request = result[4]
             self.money = result[5] or 0
+            self.last_bonus = result[6]
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -154,6 +155,16 @@ class User():
         '''
         if self.group == False:  # Проверка на группу
             return (await bp.api.users.get(self.user_id, "sex"))[0].sex.value
+
+    def update_last_bonus(self, date: int):
+        sql = ("UPDATE users SET last_bonus = :date WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"date": date,
+                "chat_id": self.chat_id,
+                "user_id": self.user_id}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
 
 
 class Group():

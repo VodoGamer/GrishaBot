@@ -7,7 +7,7 @@ from modules.models import User, Casino, CasinoUser
 bp = Blueprint("Casino")
 
 
-@bp.on.chat_message(RegexRule("(?i)^(\d*)\s*?(к|б|ч|з)$"))
+@bp.on.chat_message(RegexRule("(?i)^(\d*)\s*?(к|ч|з)$"))
 async def new_bet(message: Message, match):
     user = User(message.peer_id, message.from_id)
     casino_user = CasinoUser(message.peer_id, message.from_id)

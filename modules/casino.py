@@ -57,7 +57,7 @@ async def twist(message: Message):
     winner_feature = casino.get_winner_feature()
     winner_users = casino.get_winner_users(winner_feature)
     if winner_users != []:
-        winner_cash = round(casino_money / len(winner_users) * 1.1)
+        winner_cash = round(casino_money / len(winner_users) * 2)
 
     winner_users_mention = []
     for winner_user in winner_users:

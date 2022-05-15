@@ -15,7 +15,10 @@ async def new_bet(message: Message, match):
         return
     user = User(message.peer_id, message.from_id)
     casino_user = CasinoUser(message.peer_id, message.from_id)
-    if user.money > int(match[0]):  # Проверка баланса
+    if int(match[0]) <= 0:
+        await message.reply("Иди нахуй!")
+        return
+    if user.money >= int(match[0]):  # Проверка баланса
         casino_user_check = casino_user.check()
         if not casino_user_check:  # Не учавствует ли уже юзер
             casino_user.register_bet(

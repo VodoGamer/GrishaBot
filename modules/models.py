@@ -41,6 +41,7 @@ class User():
             self.last_bonus = result[6]
             self.dick_size = result[7] or 0
             self.last_dick = result[8]
+            self.is_admin = result[9] or False
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -183,6 +184,16 @@ class User():
         sql = ("UPDATE users SET last_dick = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         vars = {"date": date,
+                "chat_id": self.chat_id,
+                "user_id": self.user_id}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+    def update_admin(self, value):
+        sql = ("UPDATE users SET is_admin = :value WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"value": value,
                 "chat_id": self.chat_id,
                 "user_id": self.user_id}
 

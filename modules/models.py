@@ -37,7 +37,7 @@ class User():
             self.messages = result[2]
             self.custom_name = result[3]
             self.sex_request = result[4]
-            self.money = result[5]
+            self.money = result[5] or 0
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -81,11 +81,11 @@ class User():
             self.cursor.execute(sql, vars)
             self.connection.commit()
 
-    def change_money(self, bonus):
+    def change_money(self, value):
         if self.group == False:  # Проверка на группу
             sql = ("UPDATE users SET money = :money WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
-            vars = {"money": self.money + bonus,
+            vars = {"money": self.money + value,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
@@ -399,7 +399,7 @@ class Sex():
 
 
 class CasinoUser():
-    def __init__(self, chat_id, user_id):
+    def __init__(self, chat_id: int, user_id: int) -> None:
         self.chat_id = chat_id
         self.user_id = user_id
 
@@ -422,7 +422,7 @@ class CasinoUser():
         self.cursor.execute(sql, vars)
         return self.cursor.fetchone()
 
-    def register(self, bet: int, feature: str):
+    def register_bet(self, bet: int, feature: str):
         '''
         Регистрирует пользователя в крутку
         '''
@@ -450,25 +450,33 @@ class Casino():
         self.cursor.execute(sql, vars)
         return self.cursor.fetchall()
 
-    def get_winner_cash(self) -> int:
-        sql = "SELECT bet FROM casino WHERE chat_id = :chat_id"
+    def get_winner_users(self, feature: str) -> list[int]:
+        sql = ("SELECT user_id FROM casino WHERE chat_id = :chat_id "
+               "AND feature = :feature")
+        vars = {"chat_id": self.chat_id,
+                "feature": feature}
+        self.cursor.execute(sql, vars)
+        users = self.cursor.fetchall()
+        result = []
+        for user in users:
+            result.append(user[0])
+        return result
+
+    def get_all_money(self):
+        sql = ("SELECT bet FROM casino WHERE chat_id = :chat_id")
         vars = {"chat_id": self.chat_id}
         self.cursor.execute(sql, vars)
-        bets = self.cursor.fetchall()
-        winner_cash = 0
-        for bet in bets:
-            winner_cash = winner_cash + bet[0]
-        return winner_cash
+        users_money = self.cursor.fetchall()
+        result = 0
+        for user_money in users_money:
+            result += user_money[0]
+        return result
 
-    def start(self):
-        '''
-        Выбирает рандомного победителя и очищает крутку
-        '''
-        user = choice(self.get_users())[1]
+    def get_winner_feature(self) -> str:
+        return choice(["🔴", "⚫️", "🍀"])
 
+    def delete_all(self):
         sql = "DELETE FROM casino WHERE chat_id = :chat_id"
         vars = {"chat_id": self.chat_id}
         self.cursor.execute(sql, vars)
         self.connection.commit()
-
-        return user

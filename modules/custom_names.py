@@ -8,14 +8,9 @@ bp = Blueprint("Custom names")
 
 @bp.on.chat_message(ReplyMessageRule(), RegexRule("(?i)ник"))
 async def get_my_name(message: Message):
-    chat = Chat(message.peer_id)
-    if message.from_id == chat.owner_id:
-        user = User(message.peer_id, message.reply_message.from_id)
-        await message.reply("Имя этого человека на данный момент: "
-                            f"{await user.get_name()}")
-    else:
-        await message.reply("Только админ может писать эту команду!")
-
+    user = User(message.peer_id, message.reply_message.from_id)
+    await message.reply("Имя этого человека на данный момент: "
+                        f"{await user.get_name()}")
 
 @bp.on.chat_message(RegexRule("(?i)^(моё имя|мой ник|как меня зовут|ник)$"))
 async def get_my_name(message: Message):

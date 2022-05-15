@@ -39,6 +39,8 @@ class User():
             self.sex_request = result[4]
             self.money = result[5] or 0
             self.last_bonus = result[6]
+            self.dick_size = result[7] or 0
+            self.last_dick = result[8]
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -158,6 +160,27 @@ class User():
 
     def update_last_bonus(self, date: int):
         sql = ("UPDATE users SET last_bonus = :date WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"date": date,
+                "chat_id": self.chat_id,
+                "user_id": self.user_id}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+    def change_dick(self, value):
+        if self.group == False:  # Проверка на группу
+            sql = ("UPDATE users SET dick_size = :size WHERE "
+                   "chat_id = :chat_id AND user_id= :user_id")
+            vars = {"size": self.dick_size + value,
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
+            self.connection.commit()
+
+    def update_last_dick(self, date: int):
+        sql = ("UPDATE users SET last_dick = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         vars = {"date": date,
                 "chat_id": self.chat_id,

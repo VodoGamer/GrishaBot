@@ -2,13 +2,17 @@ import asyncio
 from vkbottle.dispatch.rules.base import RegexRule
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import RegexRule
-from modules.models import User, Casino, CasinoUser
+from modules.models import User, Casino, CasinoUser, Settings
 
 bp = Blueprint("Casino")
 
 
 @bp.on.chat_message(RegexRule("(?i)^(\d*)\s*?(к|ч|з)$"))
 async def new_bet(message: Message, match):
+    settings = Settings(message.peer_id)
+    if settings.get_value("casino")[0] == "False":
+        await message.reply("Казино выключено в настройках этого чата!")
+        return
     user = User(message.peer_id, message.from_id)
     casino_user = CasinoUser(message.peer_id, message.from_id)
     if user.money > int(match[0]):  # Проверка баланса
@@ -29,6 +33,10 @@ async def new_bet(message: Message, match):
 
 @bp.on.chat_message(RegexRule("(?i)^го$"))
 async def twist(message: Message):
+    settings = Settings(message.peer_id)
+    if settings.get_value("casino")[0] == "False":
+        await message.reply("Казино выключено в настройках этого чата!")
+        return
     casino = Casino(message.peer_id)
     casino_users = casino.get_users()
     casino_money = casino.get_all_money()

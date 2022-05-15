@@ -59,6 +59,9 @@ async def twist(message: Message):
     if winner_users != []:
         winner_cash = round(casino_money / len(winner_users) * 2)
 
+        if winner_feature == "🍀":
+            winner_cash = round(casino_money / len(winner_users) * 8)
+
     winner_users_mention = []
     for winner_user in winner_users:
         winner_user = User(message.peer_id, winner_user)

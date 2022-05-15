@@ -16,7 +16,7 @@ async def get_balance(message: Message):
 
 
 @bp.on.chat_message(
-    RegexRule("(?i)^(!|\.)?\s*(намазать сод(у|ой)|намазать (член|писю))$"))
+    RegexRule("(?i)^(!|\.)?\s*(намазать|помазать сод(у|ой)|член|писю)$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     now = datetime.now()
@@ -27,5 +27,14 @@ async def get_balance(message: Message):
         return
     user.update_last_dick(now.day)
     user.change_dick(size)
-    await message.reply(f"Писюн {await user.get_mention('gent')} "
-                        f"изменился на {size} см")
+    if size > 0:
+        word = "увеличился"
+    else:
+        word = "уменьшился"
+        size = str(size)[1:]
+    if size == 0:
+        await message.reply(f"Писюн {await user.get_mention('gent')} "
+                            f"сегодня не изменился")
+    else:
+        await message.reply(f"Писюн {await user.get_mention('gent')} "
+                            f"{word} на {size} см")

@@ -8,7 +8,7 @@ bp = Blueprint("Settings")
 
 @bp.on.chat_message(RegexRule("(?i)!настройки"))
 async def get_settings(message: Message):
-    settings = Settings(message.peer_id)
+    settings = models.Settings(message.peer_id)
     tuple = []
     for i in settings.get_all():
         if i[3] == "True": bool = "✅"
@@ -23,9 +23,12 @@ async def get_settings(message: Message):
 async def change_setting(message: Message, match):
     user = models.User(message.peer_id, message.from_id)
     chat = models.Chat(message.peer_id)
-    if chat.owner_id != message.from_id or user.is_admin == False:
-        await message.reply("❌Эта команда доступна только админам чата!")
-        return
+    if user.is_admin is False:
+        if chat.owner_id == message.from_id:
+            pass
+        else:
+            await message.reply("❌Эта команда доступна только админам чата!")
+            return
 
     settings = models.Settings(message.peer_id)
     try:

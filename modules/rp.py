@@ -6,154 +6,174 @@ bp = Blueprint("Rp commands")
 bp.labeler.auto_rules = [ReplyMessageRule()]
 
 
-@bp.on.chat_message(RegexRule("(ударить|ёбнуть) (.*)|ударить|ёбнуть"))
+@bp.on.chat_message(RegexRule("(?i)(ударить|ёбнуть)\s*(.*)?"))
 async def kick(message: Message, match):
-    await Rp(message, "ударил", match[1], "photo-194020282_457239111").send_message()
+    await Rp(message, "ударил", match[-1], "photo-194020282_457239111").send_message()
 
 
-@bp.on.chat_message(RegexRule("(обдристать) (.*)|обдристать"))
+@bp.on.chat_message(RegexRule("(?i)(обдристать)\s*(.*)?"))
 async def poooooo(message: Message, match):
-    await Rp(message, "обдристал", match[1], "photo-194020282_457239089").send_message()
+    await Rp(message, "обдристал", match[-1], "photo-194020282_457239089").send_message()
 
 
-@bp.on.chat_message(RegexRule("(выебать|трахнуть) (.*)|выебать|трахнуть"))
+@bp.on.chat_message(RegexRule("(?i)(выебать|трахнуть)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "выебал", match[1], "photo-194020282_457239085").send_message()
+    await Rp(message, "выебал", match[-1], "photo-194020282_457239085").send_message()
 
 
-@bp.on.chat_message(RegexRule("(уебать) (.*)|уебать"))
+@bp.on.chat_message(RegexRule("(?i)(уебать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "уебал", match[1], "photo-194020282_457239112").send_message()
+    await Rp(message, "уебал", match[-1], "photo-194020282_457239112").send_message()
 
 
-@bp.on.chat_message(RegexRule("(кончить) (.*)|кончить"))
+@bp.on.chat_message(RegexRule("(?i)(кончить)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "обкончал", match[1], "photo-194020282_457239090").send_message()
+    await Rp(message, "обкончал", match[-1], "photo-194020282_457239090").send_message()
 
 
-@bp.on.chat_message(RegexRule("(отсосать) (.*)|отсосать"))
+@bp.on.chat_message(RegexRule("(?i)(отсосать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "отсосал у", match[1], "photo-194020282_457239097").send_message()
+    await Rp(message, "отсосал у", match[-1], "photo-194020282_457239097").send_message()
 
 
-@bp.on.chat_message(RegexRule("(обнять|прижать) (.*)|обнять|прижать"))
+@bp.on.chat_message(RegexRule("(?i)(обнять|прижать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "обнял", match[1], "photo-194020282_457239092").send_message()
+    await Rp(message, "обнял", match[-1], "photo-194020282_457239092").send_message()
 
 
-@bp.on.chat_message(RegexRule("(засосать) (.*)|засосать"))
+@bp.on.chat_message(RegexRule("(?i)(засосать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "засосал", match[1], "photo-194020282_457239086").send_message()
+    await Rp(message, "засосал", match[-1], "photo-194020282_457239086").send_message()
 
 
-@bp.on.chat_message(RegexRule("(п.рнуть) (.*)|п.рнуть"))
+@bp.on.chat_message(RegexRule("(?i)(п.рнуть)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "пёрнул на", match[1], "photo-194020282_457239098").send_message()
+    await Rp(message, "пёрнул на", match[-1], "photo-194020282_457239098").send_message()
 
 
-@bp.on.chat_message(RegexRule("(о(т|тт)рахать) (.*)|о(т|тт)рахать"))
+@bp.on.chat_message(RegexRule("(?i)(о(т|тт)рахать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "обтрахал", match[-2], "photo-194020282_457239094").send_message()
+    await Rp(message, "обтрахал", match[-1], "photo-194020282_457239094").send_message()
 
 
-@bp.on.chat_message(RegexRule("(убить) (.*)|убить"))
+@bp.on.chat_message(RegexRule("(?i)(убить)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "убил", match[1], "photo-194020282_457239110").send_message()
+    await Rp(message, "убил", match[-1], "photo-194020282_457239110").send_message()
 
 
-@bp.on.chat_message(RegexRule("(послать) (.*)|послать"))
+@bp.on.chat_message(RegexRule("(?i)(послать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "послал", match[1], "photo-194020282_457239104").send_message()
+    await Rp(message, "послал", match[-1], "photo-194020282_457239104").send_message()
 
 
-@bp.on.chat_message(RegexRule("(шлёпнуть) (.*)|шлёпнуть"))
+@bp.on.chat_message(RegexRule("(?i)(шлёпнуть)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "шлёпнул", match[1], "photo-194020282_457239113").send_message()
+    await Rp(message, "шлёпнул", match[-1], "photo-194020282_457239113").send_message()
 
 
-@bp.on.chat_message(RegexRule("(пнуть) (.*)|пнуть"))
+@bp.on.chat_message(RegexRule("(?i)(пнуть)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "пнул", match[1], "photo-194020282_457239100").send_message()
+    await Rp(message, "пнул", match[-1], "photo-194020282_457239100").send_message()
 
 
-@bp.on.chat_message(RegexRule("(сжечь) (.*)|сжечь"))
+@bp.on.chat_message(RegexRule("(?i)(сжечь)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "сжёг", match[1], "photo-194020282_457239107").send_message()
+    await Rp(message, "сжёг", match[-1], "photo-194020282_457239107").send_message()
 
 
-@bp.on.chat_message(RegexRule("(понюхать) (.*)|понюхать"))
+@bp.on.chat_message(RegexRule("(?i)(понюхать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "понюхал", match[1], "photo-194020282_457239103").send_message()
+    await Rp(message, "понюхал", match[-1], "photo-194020282_457239103").send_message()
 
 
-@bp.on.chat_message(RegexRule("(лизнуть|полизать|облизать) (.*)|(лизнуть|полизать|облизать)"))
+@bp.on.chat_message(RegexRule("(?i)(лизнуть|облизать|полизать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "облизал", match[-2], "photo-194020282_457239091").send_message()
+    await Rp(message, "облизал", match[-1], "photo-194020282_457239091").send_message()
 
 
-@bp.on.chat_message(RegexRule("(отлизать) (.*)|отлизать"))
+@bp.on.chat_message(RegexRule("(?i)(отлизать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "отлизал", match[1], "photo-194020282_457239096", "gent").send_message()
+    await Rp(message, "отлизал", match[-1], "photo-194020282_457239096", "gent").send_message()
 
 
-@bp.on.chat_message(RegexRule("(погладить) (.*)|погладить"))
+@bp.on.chat_message(RegexRule("(?i)(погладить)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "погладил", match[1], "photo-194020282_457239101").send_message()
+    await Rp(message, "погладил", match[-1], "photo-194020282_457239101").send_message()
 
 
-@bp.on.chat_message(RegexRule("(обоссать|обосать) (.*)|обоссать|обосать"))
+@bp.on.chat_message(RegexRule("(?i)(обо(с|сс)ать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "обоссал", match[1], "photo-194020282_457239093").send_message()
+    await Rp(message, "обоссал", match[-1], "photo-194020282_457239093").send_message()
 
 
-@bp.on.chat_message(RegexRule("(плюнуть) (.*)|плюнуть"))
+@bp.on.chat_message(RegexRule("(?i)(плюнуть)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "плюнул в", match[1], "photo-194020282_457239099").send_message()
+    await Rp(message, "плюнул в", match[-1], "photo-194020282_457239099").send_message()
 
 
-@bp.on.chat_message(RegexRule("(потрогать|трогать) (.*)|потрогать|трогать"))
+@bp.on.chat_message(RegexRule("(?i)((по)?трогать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "потрогал", match[1], "photo-194020282_457239105").send_message()
+    await Rp(message, "потрогал", match[-1], "photo-194020282_457239105").send_message()
 
 
-@bp.on.chat_message(RegexRule("(насрать|обосрать) (.*)|насрать|обосрать"))
+@bp.on.chat_message(RegexRule("(?i)(насрать|обо(сс|с)рать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "насрал", match[1], "photo-194020282_457239088").send_message()
+    await Rp(message, "насрал", match[-1], "photo-194020282_457239088").send_message()
 
 
-@bp.on.chat_message(RegexRule("(навонять) (.*)|навонять"))
+@bp.on.chat_message(RegexRule("(?i)(навонять)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "навонял", match[1], "photo-194020282_457239087", "datv").send_message()
+    await Rp(message, "навонял", match[-1], "photo-194020282_457239087", "datv").send_message()
 
 
-@bp.on.chat_message(RegexRule("(полапать|лапать) (.*)|полапать|лапать"))
+@bp.on.chat_message(RegexRule("(?i)((по)?лапать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "полапал", match[1], "photo-194020282_457239102").send_message()
+    await Rp(message, "полапал", match[-1], "photo-194020282_457239102").send_message()
 
 
-@bp.on.chat_message(RegexRule("(съесть) (.*)|съесть"))
+@bp.on.chat_message(RegexRule("(?i)(съесть)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "съел", match[1], "photo-194020282_457239108").send_message()
+    await Rp(message, "съел", match[-1], "photo-194020282_457239108").send_message()
 
 
-@bp.on.chat_message(RegexRule("(откусить) (.*)|откусить"))
+@bp.on.chat_message(RegexRule("(?i)(откусить)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "откусил", match[1], "photo-194020282_457239095").send_message()
+    await Rp(message, "откусил", match[-1], "photo-194020282_457239095").send_message()
 
 
-@bp.on.chat_message(RegexRule("(укусить) (.*)|укусить"))
+@bp.on.chat_message(RegexRule("(?i)(укусить)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "укусил", match[1], "photo-194020282_457239115").send_message()
+    await Rp(message, "укусил", match[-1], "photo-194020282_457239115").send_message()
 
 
-@bp.on.chat_message(RegexRule("(поцеловать) (.*)|поцеловать"))
+@bp.on.chat_message(RegexRule("(?i)(поцеловать)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "поцеловал", match[1], "photo-194020282_457239106").send_message()
+    await Rp(message, "поцеловал", match[-1], "photo-194020282_457239106").send_message()
 
 
-@bp.on.chat_message(RegexRule("(напасть) (.*)|напасть"))
+@bp.on.chat_message(RegexRule("(?i)(напасть)\s*(.*)?"))
 async def fuck(message: Message, match):
-    await Rp(message, "напал на", match[1], "photo-194020282_457239116").send_message()
+    await Rp(message, "напал на", match[-1], "photo-194020282_457239116").send_message()
+
+
+@bp.on.chat_message(RegexRule("(?i)(разрезать)\s*(.*)?"))
+async def fuck(message: Message, match):
+    await Rp(message, "разрезал", match[-1], "photo-194020282_457239119").send_message()
+
+
+@bp.on.chat_message(RegexRule("(?i)(ра(с|сс)трелять)\s*(.*)?"))
+async def fuck(message: Message, match):
+    await Rp(message, "расстрелял", match[-1], "photo-194020282_457239120").send_message()
+
+
+@bp.on.chat_message(RegexRule("(?i)(помацать)\s*(.*)?"))
+async def fuck(message: Message, match):
+    await Rp(message, "помацал", match[-1], "photo-194020282_457239118").send_message()
+
+
+@bp.on.chat_message(RegexRule("(?i)(захуярить)\s*(.*)?"))
+async def fuck(message: Message, match):
+    await Rp(message, "захуярил", match[-1], "photo-194020282_457239117").send_message()
 
 
 class Rp():

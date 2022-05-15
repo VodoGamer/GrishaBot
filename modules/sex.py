@@ -7,7 +7,7 @@ import modules.models as models
 bp = Blueprint("Sex")
 
 
-@bp.on.chat_message(RegexRule("секс|посексим"), ReplyMessageRule())
+@bp.on.chat_message(RegexRule("(?i)секс|посексим"), ReplyMessageRule())
 async def new_sex_request(message: Message):
     from_user = models.User(message.peer_id, message.from_id)
     to_user = models.User(message.peer_id, message.reply_message.from_id)
@@ -56,7 +56,7 @@ async def sex_disagree(message: Message):
         await message.answer(f"{await from_user.get_mention()} отказался от секса с {await partner_info.get_mention('ablt')}")
 
 
-@bp.on.chat_message(RegexRule("-секс"))
+@bp.on.chat_message(RegexRule("(?i)-секс"))
 async def discard_sex_request(message: Message):
     from_user = models.User(message.peer_id, message.from_id)
     sex = models.Sex(message.peer_id, from_user.user_id)

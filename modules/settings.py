@@ -1,14 +1,14 @@
 from vkbottle.bot import Blueprint, Message
+
 from vkbottle.dispatch.rules.base import CommandRule, RegexRule, ReplyMessageRule
 import modules.models as models
-
 
 bp = Blueprint("Settings")
 
 
-@bp.on.chat_message(CommandRule("настройки"))
+@bp.on.chat_message(RegexRule("(?i)!настройки"))
 async def get_settings(message: Message):
-    settings = models.Settings(message.peer_id)
+    settings = Settings(message.peer_id)
     tuple = []
     for i in settings.get_all():
         if i[3] == "True": bool = "✅"

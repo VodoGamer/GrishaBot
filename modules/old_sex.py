@@ -60,7 +60,7 @@ class Sex():
         self.connection.commit()
 
 
-@bp.on.chat_message(rules.ReplyMessageRule(), rules.RegexRule("секс|посексим"))
+@bp.on.chat_message(rules.ReplyMessageRule(), rules.RegexRule("(?i)секс|посексим"))
 async def kiss(message: Message):
     KEYBOARD = Keyboard(inline=True)
     KEYBOARD.add(Text("Согласиться", payload={"sex": "agree"}))
@@ -86,7 +86,7 @@ async def kiss(message: Message):
         await message.answer(f"@id{message.from_id} ({user[0].first_name}) начал ебать бота.")
 
 
-@bp.on.chat_message(rules.RegexRule("-секс"))
+@bp.on.chat_message(rules.RegexRule("(?i)-секс"))
 async def minus_sex(message: Message):
     r_id = message.from_id + message.conversation_message_id
     sex = Sex(message.peer_id)

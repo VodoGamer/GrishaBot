@@ -1,6 +1,6 @@
 import re
 import sqlite3
-from random import choice
+from random import choice, randint
 from vkbottle.bot import Blueprint
 import pymorphy2
 from pydantic import BaseModel
@@ -518,7 +518,10 @@ class Casino():
         return result
 
     def get_winner_feature(self) -> str:
-        return choice(["🔴", "⚫️", "🍀"])
+        random_int = randint(1, 10)
+        if random_int == 1:
+            return "🍀"
+        return choice(["🔴", "⚫️"])
 
     def delete_all(self):
         sql = "DELETE FROM casino WHERE chat_id = :chat_id"

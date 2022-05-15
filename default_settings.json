@@ -14,6 +14,11 @@
             "setting": "кастомные имена",
             "alias": "custom_names",
             "value": "True"
+        },
+        {
+            "setting": "казино",
+            "alias": "casino",
+            "value": "False"
         }
     ]
 }

@@ -1,5 +1,6 @@
 import re
 import sqlite3
+from random import choice
 from vkbottle.bot import Blueprint
 import pymorphy2
 from pydantic import BaseModel
@@ -36,6 +37,11 @@ class User():
             self.messages = result[2]
             self.custom_name = result[3]
             self.sex_request = result[4]
+            self.money = result[5] or 0
+            self.last_bonus = result[6]
+            self.dick_size = result[7] or 0
+            self.last_dick = result[8]
+            self.is_admin = result[9] or False
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -56,8 +62,8 @@ class User():
         Регистрирует нового пользователя
         '''
         if self.group == False:  # Проверка на группу
-            sql = ("INSERT INTO users (chat_id, user_id, messages) VALUES "
-                   "(:chat_id, :user_id, :messages_count)")
+            sql = ("INSERT INTO users (chat_id, user_id, messages, money) "
+                   "VALUES (:chat_id, :user_id, :messages_count, 0)")
             vars = {"chat_id": self.chat_id,
                     "user_id": self.user_id,
                     "messages_count": messages_count}
@@ -73,6 +79,17 @@ class User():
             sql = ("UPDATE users SET messages = :messages WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             vars = {"messages": self.messages + 1,
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
+            self.connection.commit()
+
+    def change_money(self, value):
+        if self.group == False:  # Проверка на группу
+            sql = ("UPDATE users SET money = :money WHERE "
+                   "chat_id = :chat_id AND user_id= :user_id")
+            vars = {"money": self.money + value,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
@@ -141,6 +158,47 @@ class User():
         '''
         if self.group == False:  # Проверка на группу
             return (await bp.api.users.get(self.user_id, "sex"))[0].sex.value
+
+    def update_last_bonus(self, date: int):
+        sql = ("UPDATE users SET last_bonus = :date WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"date": date,
+                "chat_id": self.chat_id,
+                "user_id": self.user_id}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+    def change_dick(self, value):
+        if self.group == False:  # Проверка на группу
+            sql = ("UPDATE users SET dick_size = :size WHERE "
+                   "chat_id = :chat_id AND user_id= :user_id")
+            vars = {"size": self.dick_size + value,
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
+
+            self.cursor.execute(sql, vars)
+            self.connection.commit()
+
+    def update_last_dick(self, date: int):
+        sql = ("UPDATE users SET last_dick = :date WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"date": date,
+                "chat_id": self.chat_id,
+                "user_id": self.user_id}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+    def update_admin(self, value):
+        sql = ("UPDATE users SET is_admin = :value WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"value": value,
+                "chat_id": self.chat_id,
+                "user_id": self.user_id}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
 
 
 class Group():
@@ -385,5 +443,85 @@ class Sex():
         self.connection.commit()
 
 
-# chat = Chat(1)
-# chat.check()
+class CasinoUser():
+    def __init__(self, chat_id: int, user_id: int) -> None:
+        self.chat_id = chat_id
+        self.user_id = user_id
+
+        self.connection = sqlite3.connect("db.db")
+        self.cursor = self.connection.cursor()
+
+        user_info = self.check()
+        if user_info != None:
+            self.bet = user_info[2]
+            self.feature = user_info[3]
+
+    def check(self) -> list:
+        '''
+        Проверяет учавствует ли юзер в крутке
+        '''
+        sql = ("SELECT * FROM casino WHERE chat_id = :chat_id AND "
+               "user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.user_id}
+        self.cursor.execute(sql, vars)
+        return self.cursor.fetchone()
+
+    def register_bet(self, bet: int, feature: str):
+        '''
+        Регистрирует пользователя в крутку
+        '''
+        sql = ("INSERT INTO casino (chat_id, user_id, bet, feature) "
+               "VALUES (:chat_id, :user_id, :bet, :feature)")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.user_id,
+                "bet": bet,
+                "feature": feature}
+
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+
+class Casino():
+    def __init__(self, chat_id) -> None:
+        self.chat_id = chat_id
+
+        self.connection = sqlite3.connect("db.db")
+        self.cursor = self.connection.cursor()
+
+    def get_users(self) -> list[tuple[int, int, int, str]]:
+        sql = "SELECT * FROM casino WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, vars)
+        return self.cursor.fetchall()
+
+    def get_winner_users(self, feature: str) -> list[int]:
+        sql = ("SELECT user_id FROM casino WHERE chat_id = :chat_id "
+               "AND feature = :feature")
+        vars = {"chat_id": self.chat_id,
+                "feature": feature}
+        self.cursor.execute(sql, vars)
+        users = self.cursor.fetchall()
+        result = []
+        for user in users:
+            result.append(user[0])
+        return result
+
+    def get_all_money(self):
+        sql = ("SELECT bet FROM casino WHERE chat_id = :chat_id")
+        vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, vars)
+        users_money = self.cursor.fetchall()
+        result = 0
+        for user_money in users_money:
+            result += user_money[0]
+        return result
+
+    def get_winner_feature(self) -> str:
+        return choice(["🔴", "⚫️", "🍀"])
+
+    def delete_all(self):
+        sql = "DELETE FROM casino WHERE chat_id = :chat_id"
+        vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, vars)
+        self.connection.commit()

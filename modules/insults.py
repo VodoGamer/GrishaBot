@@ -1,6 +1,6 @@
 from random import choice
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import RegexRule, ReplyMessageRule
+from vkbottle.dispatch.rules.base import ReplyMessageRule
 from modules.models import User
 from config import NameCalling
 
@@ -12,7 +12,7 @@ BeforeTheNameCalling = ["скрывал, что он", "оказывается",
                         "не рассказывал что он"]
 
 
-@bp.on.chat_message(RegexRule("(?i)обозвать"), ReplyMessageRule())
+@bp.on.chat_message(ReplyMessageRule(), regex="(?i)обозвать")
 async def insult(message: Message):
     user = User(message.peer_id, message.reply_message.from_id)
     await message.answer(f"{await user.get_mention()} "

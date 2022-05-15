@@ -1,12 +1,12 @@
 from vkbottle.bot import Blueprint, Message
-
-from vkbottle.dispatch.rules.base import CommandRule, RegexRule, ReplyMessageRule
+from vkbottle.dispatch.rules.base import ReplyMessageRule
 import modules.models as models
+
 
 bp = Blueprint("Settings")
 
 
-@bp.on.chat_message(RegexRule("(?i)!настройки"))
+@bp.on.chat_message(regex=("(?i)!настройки"))
 async def get_settings(message: Message):
     settings = models.Settings(message.peer_id)
     tuple = []
@@ -19,7 +19,7 @@ async def get_settings(message: Message):
                         "\n!изменить Закреп сообщений")
 
 
-@bp.on.chat_message(RegexRule("(?i)!(изменить) (.*)"))
+@bp.on.chat_message(regex=("(?i)!(изменить) (.*)"))
 async def change_setting(message: Message, match):
     user = models.User(message.peer_id, message.from_id)
     chat = models.Chat(message.peer_id)
@@ -38,8 +38,8 @@ async def change_setting(message: Message, match):
     except:
         await message.reply("❌Неправильно указано правило")
 
-@bp.on.chat_message(RegexRule("(?i)^назначить админ(ом|а)$"),
-                    ReplyMessageRule())
+
+@bp.on.chat_message(ReplyMessageRule(), regex=("(?i)^назначить админ(ом|а)$"))
 async def set_admin(message: Message):
     chat = models.Chat(message.peer_id)
 
@@ -50,8 +50,8 @@ async def set_admin(message: Message):
                             "снять админа")
 
 
-@bp.on.chat_message(RegexRule("(?i)^снять админ(истратора|а)$"),
-                    ReplyMessageRule())
+@bp.on.chat_message(ReplyMessageRule(),
+                    regex=("(?i)^снять админ(истратора|а)$"))
 async def set_admin(message: Message):
     chat = models.Chat(message.peer_id)
 

@@ -1,21 +1,20 @@
 from datetime import datetime
 from random import randint
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import RegexRule
 from modules.models import User
 
 
 bp = Blueprint("Balance")
 
 
-@bp.on.chat_message(RegexRule("(?i)^(баланс|б)$"))
+@bp.on.chat_message(regex=("(?i)^(баланс|б)$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     await message.reply(f"Баланс {await user.get_mention('gent')} "
                         f"на данный момент: {user.money}")
 
 
-@bp.on.chat_message(RegexRule("(?i)^(бонус)$"))
+@bp.on.chat_message(regex=("(?i)^(бонус)$"))
 async def get_bonus(message: Message):
     user = User(message.peer_id, message.from_id)
     now = datetime.now()

@@ -1,13 +1,12 @@
 import asyncio
-from vkbottle.dispatch.rules.base import RegexRule
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import RegexRule
 from modules.models import User, Casino, CasinoUser, Settings
+
 
 bp = Blueprint("Casino")
 
 
-@bp.on.chat_message(RegexRule("(?i)^(\d*)\s*?(к|ч|з)$"))
+@bp.on.chat_message(regex=("(?i)^(\d*)\s*?(к|ч|з)$"))
 async def new_bet(message: Message, match):
     settings = Settings(message.peer_id)
     if settings.get_value("casino")[0] == "False":
@@ -34,7 +33,7 @@ async def new_bet(message: Message, match):
         await message.reply("У вас недостаточно денег!")
 
 
-@bp.on.chat_message(RegexRule("(?i)^го$"))
+@bp.on.chat_message(regex=("(?i)^го$"))
 async def twist(message: Message):
     settings = Settings(message.peer_id)
     if settings.get_value("casino")[0] == "False":
@@ -77,6 +76,7 @@ async def twist(message: Message):
                          "{}"
                          f"\nполучили {winner_cash}"
                          "".format('\n'.join(winner_users_mention)))
+
 
 async def convert_text_to_emoji(text: str):
     if text.lower() == "к":

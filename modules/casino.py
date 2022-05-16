@@ -39,9 +39,9 @@ async def twist(message: Message):
     if settings.get_value("casino")[0] == "False":
         await message.reply("Казино выключено в настройках этого чата!")
         return
+
     casino = Casino(message.peer_id)
     casino_users = casino.get_users()
-    casino_money = casino.get_all_money()
     if casino_users == []:
         await message.reply("Никто не учавствует в казино!")
         return
@@ -54,19 +54,21 @@ async def twist(message: Message):
     await message.answer("В казино учавствуют:\n"
                          "{}".format('\n'.join(casino_users_mentions)))
 
-    winner_feature = casino.get_winner_feature()
+    winner_feature = await casino.get_winner_feature()
     winner_users = casino.get_winner_users(winner_feature)
-    if winner_users != []:
-        winner_cash = round(casino_money / len(winner_users) * 2)
-
-        if winner_feature == "🍀":
-            winner_cash = round(casino_money / len(winner_users) * 8)
-
     winner_users_mention = []
+
     for winner_user in winner_users:
         winner_user = User(message.peer_id, winner_user)
-        winner_users_mention.append(await winner_user.get_mention())
+        winner_casino_user = CasinoUser(message.peer_id, winner_user.user_id)
+        if winner_feature != "🍀":
+            winner_cash = winner_casino_user.bet * 2
+        else:
+            winner_cash = winner_casino_user.bet * 8
+
         winner_user.change_money(winner_cash)
+        winner_users_mention.append(f"{await winner_user.get_mention()} "
+                                    f"выиграл {winner_cash}")
 
     casino.delete_all()
 
@@ -76,9 +78,7 @@ async def twist(message: Message):
         await message.answer(f"Выпало {winner_feature}.\nНикто не выиграл.")
         return
     await message.answer(f"Выпало {winner_feature}.\n"
-                         "{}"
-                         f"\nполучили {winner_cash}"
-                         "".format('\n'.join(winner_users_mention)))
+                         "{}".format('\n'.join(winner_users_mention)))
 
 
 async def convert_text_to_emoji(text: str):

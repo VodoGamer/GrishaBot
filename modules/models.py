@@ -507,19 +507,8 @@ class Casino():
             result.append(user[0])
         return result
 
-    def get_all_money(self):
-        sql = ("SELECT bet FROM casino WHERE chat_id = :chat_id")
-        vars = {"chat_id": self.chat_id}
-        self.cursor.execute(sql, vars)
-        users_money = self.cursor.fetchall()
-        result = 0
-        for user_money in users_money:
-            result += user_money[0]
-        return result
-
-    def get_winner_feature(self) -> str:
-        random_int = randint(1, 10)
-        if random_int == 1:
+    async def get_winner_feature(self) -> str:
+        if randint(1, 10) == 1:
             return "🍀"
         return choice(["🔴", "⚫️"])
 

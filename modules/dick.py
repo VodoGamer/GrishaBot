@@ -15,7 +15,7 @@ async def get_balance(message: Message):
 
 
 @bp.on.chat_message(
-regex=("(?i)^(!|\.)?\s*(намазать|помазать сод(у|ой)|член|писю)$"))
+    regex=("(?i)^(!|\.)?\s*(намазать|помазать)\s*(сод(у|ой))?(член|писю)?$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     now = datetime.now()

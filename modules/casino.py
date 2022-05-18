@@ -58,6 +58,9 @@ async def twist(message: Message):
     winner_users = casino.get_winner_users(winner_feature)
     winner_users_mention = []
 
+    # Добавление в историю / лог
+    casino.add_to_history(winner_feature)
+
     for winner_user in winner_users:
         winner_user = User(message.peer_id, winner_user)
         winner_casino_user = CasinoUser(message.peer_id, winner_user.user_id)
@@ -79,6 +82,14 @@ async def twist(message: Message):
         return
     await message.answer(f"Выпало {winner_feature}.\n"
                          "{}".format('\n'.join(winner_users_mention)))
+
+
+@bp.on.chat_message(regex=("(?i)^лог|история$"))
+async def get_log(message: Message):
+    casino = Casino(message.peer_id)
+    print(casino.get_history())
+    await message.reply("Предыдущие крутки за сегодня:\n"
+                        "{}".format("\n".join(casino.get_history())))
 
 
 async def convert_text_to_emoji(text: str):

@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 import sqlite3
 from random import choice, randint
@@ -517,3 +518,32 @@ class Casino():
         vars = {"chat_id": self.chat_id}
         self.cursor.execute(sql, vars)
         self.connection.commit()
+
+    def add_to_history(self, feature: str):
+        now_date = datetime.now()
+        sql = ("INSERT INTO casino_history (chat_id, month_year, "
+               "day, win_feature) VALUES "
+               "(:chat_id, :month_year, :day, :feature)")
+        vars = {"chat_id": self.chat_id,
+                "month_year": f"{now_date.month}{now_date.year}",
+                "day": now_date.day,
+                "feature": feature}
+        self.cursor.execute(sql, vars)
+        self.connection.commit()
+
+    def get_history(self) -> list[str] | None:
+        now_date = datetime.now()
+        sql = ("SELECT win_feature FROM casino_history WHERE "
+               "chat_id = :chat_id AND day = :day AND month_year = :month_year")
+        vars = {"chat_id": self.chat_id,
+                "day": now_date.day,
+                "month_year": f"{now_date.month}{now_date.year}"}
+        self.cursor.execute(sql, vars)
+        features = self.cursor.fetchall()
+        if features == []:
+            return None
+        else:
+            feature_list = []
+            for feature in features:
+                feature_list.append(feature[0])
+            return feature_list

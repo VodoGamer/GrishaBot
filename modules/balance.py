@@ -1,6 +1,7 @@
 from datetime import datetime
 from random import randint
 from vkbottle.bot import Blueprint, Message
+from vkbottle.dispatch.rules.base import ReplyMessageRule
 from modules.models import User
 
 
@@ -26,3 +27,22 @@ async def get_bonus(message: Message):
     user.update_last_bonus(now.day)
     user.change_money(bonus)
     await message.reply(f"{await user.get_mention()} получил {bonus}")
+
+
+@bp.on.chat_message(
+    ReplyMessageRule(),
+    regex=("(?i)^(дать|передать|подарить)\s*(денег|баб(ки|ок))?\s*(\d*)$"))
+async def send_money(message: Message, match):
+    from_user = User(message.peer_id, message.from_id)
+    reply_user = User(message.peer_id, message.reply_message.from_id)
+    money = int(match[-1])
+
+    if from_user.money < money:
+        await message.reply("Недостаточно денег!")
+        return
+    if not message.from_id == message.reply_message.from_id:
+        from_user.change_money(-money)
+        reply_user.change_money(money)
+
+    await message.answer(f"{await from_user.get_mention()} передал {money} "
+                         f"{await reply_user.get_mention('datv')}")

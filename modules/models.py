@@ -534,7 +534,8 @@ class Casino():
     def get_history(self) -> list[str] | None:
         now_date = datetime.now()
         sql = ("SELECT win_feature FROM casino_history WHERE "
-               "chat_id = :chat_id AND day = :day AND month_year = :month_year")
+               "chat_id = :chat_id AND day = :day "
+               "AND month_year = :month_year LIMIT 10")
         vars = {"chat_id": self.chat_id,
                 "day": now_date.day,
                 "month_year": f"{now_date.month}{now_date.year}"}

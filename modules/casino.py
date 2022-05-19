@@ -58,9 +58,6 @@ async def twist(message: Message):
     winner_users = casino.get_winner_users(winner_feature)
     winner_users_mention = []
 
-    # Добавление в историю / лог
-    casino.add_to_history(winner_feature)
-
     for winner_user in winner_users:
         winner_user = User(message.peer_id, winner_user)
         winner_casino_user = CasinoUser(message.peer_id, winner_user.user_id)
@@ -82,6 +79,7 @@ async def twist(message: Message):
         return
     await message.answer(f"Выпало {winner_feature}.\n"
                          "{}".format('\n'.join(winner_users_mention)))
+    casino.add_to_history(winner_feature)  # Добавление в историю / лог
 
 
 @bp.on.chat_message(regex=("(?i)^лог|история$"))

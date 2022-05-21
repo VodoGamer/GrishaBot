@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
@@ -18,13 +18,16 @@ async def get_balance(message: Message):
 @bp.on.chat_message(regex=("(?i)^(бонус)$"))
 async def get_bonus(message: Message):
     user = User(message.peer_id, message.from_id)
-    now = datetime.now()
+    db_date = datetime.strptime(user.bonus_date,
+                                "%Y-%m-%d %X.%f")
+    now = datetime.now() + timedelta(hours=6)
     bonus = randint(100, 200)
-    if user.last_bonus == now.day:
-        await message.reply("Бонус можно получить раз в сутки, "
-                            "начиная с 00:00")
-        return
-    user.update_last_bonus(now.day)
+    if db_date is not None:
+        if db_date <= now:
+            await message.reply("Следующий бонус можно получить в "
+                                f"{now}")
+            return
+    user.update_last_bonus(now)
     user.change_money(bonus)
     await message.reply(f"{await user.get_mention()} получил {bonus}")
 

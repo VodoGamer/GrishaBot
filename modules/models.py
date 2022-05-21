@@ -39,10 +39,10 @@ class User():
             self.custom_name = result[3]
             self.sex_request = result[4]
             self.money = result[5] or 0
-            self.last_bonus = result[6]
-            self.dick_size = result[7] or 0
-            self.last_dick = result[8]
-            self.is_admin = result[9] or False
+            self.dick_size = result[6] or 0
+            self.last_dick = result[7]
+            self.is_admin = result[8] or False
+            self.bonus_date = result[9]
 
     def check(self, field: str = "user_id") -> int:
         '''
@@ -161,7 +161,7 @@ class User():
             return (await bp.api.users.get(self.user_id, "sex"))[0].sex.value
 
     def update_last_bonus(self, date: int):
-        sql = ("UPDATE users SET last_bonus = :date WHERE "
+        sql = ("UPDATE users SET bonus_date = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         vars = {"date": date,
                 "chat_id": self.chat_id,

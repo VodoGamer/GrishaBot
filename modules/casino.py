@@ -52,7 +52,8 @@ async def twist(message: Message):
             await User(message.peer_id, casino_user[1]).get_mention())
 
     await message.answer("В казино учавствуют:\n"
-                         "{}".format('\n'.join(casino_users_mentions)))
+                         "{}".format('\n'.join(casino_users_mentions)),
+                         disable_mentions=True)
 
     winner_feature = await casino.get_winner_feature()
     winner_users = casino.get_winner_users(winner_feature)
@@ -78,7 +79,8 @@ async def twist(message: Message):
         await message.answer(f"Выпало {winner_feature}.\nНикто не выиграл.")
     else:
         await message.answer(f"Выпало {winner_feature}.\n"
-                            "{}".format('\n'.join(winner_users_mention)))
+                             "{}".format('\n'.join(winner_users_mention)),
+                             disable_mentions=True)
     casino.add_to_history(winner_feature)  # Добавление в историю / лог
 
 
@@ -90,7 +92,8 @@ async def get_log(message: Message):
         await message.reply("За сегодня ещё никто не играл!")
         return
     await message.reply("Предыдущие крутки за сегодня:\n"
-                        "{}".format("\n".join(history)))
+                        "{}".format("\n".join(history)),
+                        disable_mentions=True)
 
 
 async def convert_text_to_emoji(text: str):

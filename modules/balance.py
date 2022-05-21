@@ -26,8 +26,8 @@ async def get_bonus(message: Message):
     bonus = randint(100, 200)
     if db_date is not None:
         if db_date <= now:
-            await message.reply("Следующий бонус можно получить в "
-                                f"{now}")
+            await message.reply("Следующий бонус можно получить "
+                                f"{str(now).split('.')[0]}")
             return
     user.update_last_bonus(now)
     user.change_money(bonus)

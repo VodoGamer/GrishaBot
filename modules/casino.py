@@ -76,9 +76,9 @@ async def twist(message: Message):
     await asyncio.sleep(3)
     if winner_users_mention == []:
         await message.answer(f"Выпало {winner_feature}.\nНикто не выиграл.")
-        return
-    await message.answer(f"Выпало {winner_feature}.\n"
-                         "{}".format('\n'.join(winner_users_mention)))
+    else:
+        await message.answer(f"Выпало {winner_feature}.\n"
+                            "{}".format('\n'.join(winner_users_mention)))
     casino.add_to_history(winner_feature)  # Добавление в историю / лог
 
 

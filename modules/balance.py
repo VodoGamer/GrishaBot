@@ -18,8 +18,10 @@ async def get_balance(message: Message):
 @bp.on.chat_message(regex=("(?i)^(бонус)$"))
 async def get_bonus(message: Message):
     user = User(message.peer_id, message.from_id)
-    db_date = datetime.strptime(user.bonus_date,
-                                "%Y-%m-%d %X.%f")
+    db_date = user.bonus_date
+    if db_date is not None:
+        db_date = datetime.strptime(user.bonus_date,
+                                    "%Y-%m-%d %X.%f")
     now = datetime.now() + timedelta(hours=6)
     bonus = randint(100, 200)
     if db_date is not None:

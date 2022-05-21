@@ -520,25 +520,23 @@ class Casino():
         self.connection.commit()
 
     def add_to_history(self, feature: str):
-        now_date = datetime.now()
-        sql = ("INSERT INTO casino_history (chat_id, month_year, "
-               "day, win_feature) VALUES "
-               "(:chat_id, :month_year, :day, :feature)")
+        now = datetime.now()
+        sql = ("INSERT INTO casino_history "
+               "(chat_id, date, time, win_feature) VALUES "
+               "(:chat_id, :date, :time, :feature)")
         vars = {"chat_id": self.chat_id,
-                "month_year": f"{now_date.month}{now_date.year}",
-                "day": now_date.day,
+                "date": now.date(),
+                "time": str(now.time()),
                 "feature": feature}
         self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def get_history(self) -> list[str] | None:
-        now_date = datetime.now()
+        now = datetime.now()
         sql = ("SELECT win_feature FROM casino_history WHERE "
-               "chat_id = :chat_id AND day = :day "
-               "AND month_year = :month_year LIMIT 10")
+               "chat_id = :chat_id AND date = :date LIMIT 20")
         vars = {"chat_id": self.chat_id,
-                "day": now_date.day,
-                "month_year": f"{now_date.month}{now_date.year}"}
+                "date": now.date()}
         self.cursor.execute(sql, vars)
         features = self.cursor.fetchall()
         if features == []:

@@ -85,9 +85,12 @@ async def twist(message: Message):
 @bp.on.chat_message(regex=("(?i)^лог|история$"))
 async def get_log(message: Message):
     casino = Casino(message.peer_id)
-    print(casino.get_history())
+    history = casino.get_history()
+    if history is None:
+        await message.reply("За сегодня ещё никто не играл!")
+        return
     await message.reply("Предыдущие крутки за сегодня:\n"
-                        "{}".format("\n".join(casino.get_history())))
+                        "{}".format("\n".join(history)))
 
 
 async def convert_text_to_emoji(text: str):

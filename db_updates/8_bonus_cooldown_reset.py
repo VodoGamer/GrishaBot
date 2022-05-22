@@ -5,9 +5,11 @@ cursor = connection.cursor()
 
 
 cursor.execute("SELECT chat_id, user_id FROM users")
-users = [cursor.fetchall()[0]]
-print(users)
+users = []
+for i in cursor.fetchall():
+    users.append(i)
 for user in users:
+    print(user)
     vars = {'chat_id': user[0],
             'user_id': user[1]}
     cursor.execute("UPDATE users SET bonus_date = Null WHERE "

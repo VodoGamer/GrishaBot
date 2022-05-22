@@ -284,6 +284,14 @@ class Chat():
         self.cursor.execute(sql, vars)
         self.connection.commit()
 
+    def get_dicks_top(self) -> list[int] | bool:
+        sql = ("SELECT user_id FROM users "
+               "WHERE chat_id = :chat_id ORDER BY dick_size DESC")
+        vars = {"chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
+        return self.cursor.fetchall() or False
+
 
 class JSONSettings(BaseModel):
     setting: str

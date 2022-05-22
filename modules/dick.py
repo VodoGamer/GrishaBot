@@ -1,7 +1,7 @@
 from datetime import datetime
 from random import randint
 from vkbottle.bot import Blueprint, Message
-from modules.models import User
+from modules.models import Chat, User
 
 
 bp = Blueprint("Dick")
@@ -37,3 +37,21 @@ async def get_balance(message: Message):
     else:
         await message.reply(f"Писюн {await user.get_mention('gent')} "
                             f"{word} на {size} см")
+
+
+@bp.on.chat_message(
+    regex="(?i)^(!|\.|\/)?\s*(топ|список)\s*(писюнов|членов)$")
+async def top_of_dicks(message: Message, match):
+    chat = Chat(message.peer_id)
+    if not chat.get_dicks_top():
+        await message.reply("Никто не мерится писюнами в этом чате 😔")
+        return
+    users_mentions = []
+    for user in chat.get_dicks_top():
+        user_info = User(chat.chat_id, user[0])
+        users_mentions.append(
+            f"{await user_info.get_mention()} | {user_info.dick_size} см")
+
+    await message.answer(f"топ {match[2]} в этом чате:\n"
+                         "{}".format('\n'.join(users_mentions)),
+                         disable_mentions=True)

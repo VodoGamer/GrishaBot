@@ -18,16 +18,19 @@ async def get_balance(message: Message):
 @bp.on.chat_message(regex=("(?i)^(бонус)$"))
 async def get_bonus(message: Message):
     user = User(message.peer_id, message.from_id)
-    db_date = user.bonus_date
-    if db_date is not None:
-        db_date = datetime.strptime(user.bonus_date,
-                                    "%Y-%m-%d %X.%f")
-    now = datetime.now() + timedelta(hours=6)
     bonus = randint(100, 200)
-    if db_date is not None:
-        if db_date <= now:
+
+    now = datetime.now()
+    if user.bonus_date:
+        db_date = datetime.strptime(user.bonus_date, "%Y-%m-%d %X.%f")
+        db_date_delta = db_date + timedelta(hours=6)
+    else:
+        db_date = False
+
+    if db_date:
+        if db_date_delta > now:
             await message.reply("Следующий бонус можно получить "
-                                f"{str(now).split('.')[0]}")
+                                f"{str(db_date_delta).split('.')[0]}")
             return
     user.update_last_bonus(now)
     user.change_money(bonus)

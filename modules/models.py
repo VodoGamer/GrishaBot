@@ -285,8 +285,8 @@ class Chat():
         self.connection.commit()
 
     def get_dicks_top(self) -> list[int] | bool:
-        sql = ("SELECT user_id FROM users "
-               "WHERE chat_id = :chat_id ORDER BY dick_size DESC")
+        sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
+               "AND dick_size <> 0 ORDER BY dick_size DESC")
         vars = {"chat_id": self.chat_id}
 
         self.cursor.execute(sql, vars)

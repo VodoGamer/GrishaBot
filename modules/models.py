@@ -7,8 +7,8 @@ import pymorphy2
 from pydantic import BaseModel
 
 
+# Иниты сюда
 bp = Blueprint("Models")
-
 morph = pymorphy2.MorphAnalyzer()
 
 
@@ -26,8 +26,10 @@ class User():
 
             self.connection = sqlite3.connect("db.db")
             self.cursor = self.connection.cursor()
+            # Регистрация юзера во избежания проблем
             if not self.check():
                 self.register(0)
+
             sql = ("SELECT * FROM users WHERE chat_id = :chat_id "
                    "AND user_id = :user_id")
             vars = {"chat_id": self.chat_id,
@@ -44,7 +46,7 @@ class User():
             self.is_admin = result[8] or False
             self.bonus_date = result[9]
 
-    def check(self, field: str = "user_id") -> int:
+    def check(self, field: str = "user_id") -> list[int] | None:
         '''
         Проверяет заполнено ли передаваемое поле в БД
         '''

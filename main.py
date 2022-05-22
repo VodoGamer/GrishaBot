@@ -1,7 +1,7 @@
 from loguru import logger
 from vkbottle import Bot, BaseMiddleware
 from vkbottle.bot import Message
-from modules import modules_list
+from modules import modules_list, models
 import config
 
 
@@ -14,8 +14,6 @@ bot = Bot(config.TOKEN)
 for bp in modules_list:
     bp.load(bot)
 
-from modules import models
-
 
 class RegistrationMiddleware(BaseMiddleware[Message]):
     '''
@@ -23,10 +21,7 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
     '''
     async def post(self):
         user = models.User(self.event.peer_id, self.event.from_id)
-        if user.check():
-            user.add_message()
-        else:
-            user.register()
+        user.add_message()
 
         if str(self.event.peer_id)[0] == "2":
             chat = models.Chat(self.event.peer_id)
@@ -42,5 +37,4 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
 
 
 bot.labeler.message_view.register_middleware(RegistrationMiddleware)
-
 bot.run_forever()

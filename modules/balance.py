@@ -12,7 +12,7 @@ bp = Blueprint("Balance")
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     await message.reply(f"Баланс {await user.get_mention('gent')} "
-                        f"на данный момент: {user.money}",
+                        f"на данный момент: {user.money} 💵",
                         disable_mentions=True)
 
 
@@ -30,7 +30,7 @@ async def get_bonus(message: Message):
 
     if db_date:
         if db_date_delta > now:
-            await message.reply("Следующий бонус можно получить "
+            await message.reply("❌ | Следующий бонус можно получить "
                                 f"{str(db_date_delta).split('.')[0]}")
             return
     user.update_last_bonus(now)
@@ -48,12 +48,12 @@ async def send_money(message: Message, match):
     money = int(match[-1])
 
     if from_user.money < money:
-        await message.reply("Недостаточно денег!")
+        await message.reply("❌ | Недостаточно денег!")
         return
     if not message.from_id == message.reply_message.from_id:
         from_user.change_money(-money)
         reply_user.change_money(money)
 
-    await message.answer(f"{await from_user.get_mention()} передал {money} "
+    await message.answer(f"{await from_user.get_mention()} передал {money} 💵"
                          f"{await reply_user.get_mention('datv')}",
                          disable_mentions=True)

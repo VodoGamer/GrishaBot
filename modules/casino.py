@@ -10,12 +10,13 @@ bp = Blueprint("Casino")
 async def new_bet(message: Message, match):
     settings = Settings(message.peer_id)
     if settings.get_value("casino")[0] == "False":
-        await message.reply("Казино выключено в настройках этого чата!")
+        await message.reply("❌| Казино выключено в настройках этого чата!\n"
+                            "Попроси администраторов его включить")
         return
     user = User(message.peer_id, message.from_id)
     casino_user = CasinoUser(message.peer_id, message.from_id)
     if int(match[0]) <= 0:
-        await message.reply("Иди нахуй!")
+        await message.reply("❌| Иди нахуй!")
         return
     if user.money >= int(match[0]):  # Проверка баланса
         casino_user_check = casino_user.check()
@@ -37,13 +38,14 @@ async def new_bet(message: Message, match):
 async def twist(message: Message):
     settings = Settings(message.peer_id)
     if settings.get_value("casino")[0] == "False":
-        await message.reply("Казино выключено в настройках этого чата!")
+        await message.reply("❌| Казино выключено в настройках этого чата!\n"
+                            "Попроси администраторов его включить")
         return
 
     casino = Casino(message.peer_id)
     casino_users = casino.get_users()
     if casino_users == []:
-        await message.reply("Никто не учавствует в казино!")
+        await message.reply("❌| Никто не учавствует в казино!")
         return
 
     casino_users_mentions = []
@@ -69,11 +71,12 @@ async def twist(message: Message):
 
         winner_user.change_money(winner_cash)
         winner_users_mention.append(f"{await winner_user.get_mention()} "
-                                    f"выиграл {winner_cash}")
+                                    f"выиграл {winner_cash} 💵")
 
     casino.delete_all()
 
-    await message.answer("🎲| Бросаем кубики")
+    await message.answer("🎲| Бросаем кубики",
+                         "video-194020282_456239019")
     await asyncio.sleep(3)
     if winner_users_mention == []:
         await message.answer(f"Выпало {winner_feature}.\nНикто не выиграл.")

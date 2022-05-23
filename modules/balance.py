@@ -61,7 +61,7 @@ async def send_money(message: Message, match):
 
 
 @bp.on.chat_message(regex=
-    ("(?i)^(!|\.|\/)?\s*(список|лист)\s*(форбс|forbes|богачей)?\s*(\d*)$"))
+    ("(?i)^(!|\.|\/)?\s*(список|лист|топ)\s*(форбс|forbes|богачей|денег)?\s*(\d*)$"))
 async def get_forbes_list(message: Message, match):
     chat = Chat(message.peer_id)
 

@@ -30,13 +30,13 @@ async def change_name(message: Message, match):
         if settings.get_value("custom_names")[0] == "True":
             if len(match[-1].split()) == 1:
                 user.set_custom_name(match[-1])
-                await message.reply("Новое имя успешно установлено!")
+                await message.reply("✅| Новое имя успешно установлено!")
             else:
                 await message.reply(
-                    "Можно устанавливать ник только из одного слова!")
+                    "❌| Можно устанавливать ник только из одного слова!")
         else:
             await message.reply(
-                "Кастомные имена выключены в настройках этого чата!")
+                "❌| Кастомные имена выключены в настройках этого чата!")
     elif test_custom_name == "words!":
         await message.reply("Кастомное имя должно состоять из русских букв!")
     elif test_custom_name == "case!":

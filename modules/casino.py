@@ -94,7 +94,7 @@ async def get_log(message: Message):
     if history is None:
         await message.reply("За сегодня ещё никто не играл!")
         return
-    await message.reply("Предыдущие крутки за сегодня:\n"
+    await message.reply("🕓| Предыдущие крутки за сегодня:\n"
                         "{}".format("\n".join(history)),
                         disable_mentions=True)
 

@@ -27,7 +27,7 @@ async def change_setting(message: Message, match):
         if chat.owner_id == message.from_id:
             pass
         else:
-            await message.reply("❌Эта команда доступна только админам чата!")
+            await message.reply("❌| Эта команда доступна только админам чата!")
             return
 
     settings = models.Settings(message.peer_id)
@@ -36,7 +36,7 @@ async def change_setting(message: Message, match):
             settings.get_alias_by_setting(match[-1])[0])
         await message.reply(f"{result}| Настройка упешно изменена!")
     except:
-        await message.reply("❌Неправильно указано правило")
+        await message.reply("❌| Неправильно указано правило")
 
 
 @bp.on.chat_message(ReplyMessageRule(),
@@ -47,7 +47,7 @@ async def set_admin(message: Message):
     if chat.owner_id == message.from_id:
         user = models.User(message.peer_id, message.reply_message.from_id)
         user.update_admin("True")
-        await message.reply("✅ Админ назначен!\nЧтобы снять админку напишите:\n"
+        await message.reply("✅| Админ назначен!\nЧтобы снять админку напишите:\n"
                             "снять админа")
 
 
@@ -59,4 +59,4 @@ async def set_admin(message: Message):
     if chat.owner_id == message.from_id:
         user = models.User(message.peer_id, message.reply_message.from_id)
         user.update_admin(None)
-        await message.reply("✅ Админка успешно снята!")
+        await message.reply("✅| Админка успешно снята!")

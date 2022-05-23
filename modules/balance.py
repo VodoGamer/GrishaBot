@@ -35,7 +35,7 @@ async def get_bonus(message: Message):
             return
     user.update_last_bonus(now)
     user.change_money(bonus)
-    await message.reply(f"{await user.get_mention()} получил {bonus}")
+    await message.reply(f"{await user.get_mention()} получил {bonus} 💵")
 
 
 @bp.on.chat_message(

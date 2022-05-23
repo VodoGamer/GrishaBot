@@ -6,7 +6,7 @@ import modules.models as models
 bp = Blueprint("Settings")
 
 
-@bp.on.chat_message(regex=("(?i)!настройки"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*настройки"))
 async def get_settings(message: Message):
     settings = models.Settings(message.peer_id)
     tuple = []
@@ -19,7 +19,7 @@ async def get_settings(message: Message):
                         "\n!изменить Закреп сообщений")
 
 
-@bp.on.chat_message(regex=("(?i)!(изменить) (.*)"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*(изменить)\s*(.*)"))
 async def change_setting(message: Message, match):
     user = models.User(message.peer_id, message.from_id)
     chat = models.Chat(message.peer_id)
@@ -39,7 +39,8 @@ async def change_setting(message: Message, match):
         await message.reply("❌Неправильно указано правило")
 
 
-@bp.on.chat_message(ReplyMessageRule(), regex=("(?i)^назначить админ(ом|а)$"))
+@bp.on.chat_message(ReplyMessageRule(),
+                    regex=("(?i)^(!|\.|\/)?\s*назначить\s*админ(ом|а)$"))
 async def set_admin(message: Message):
     chat = models.Chat(message.peer_id)
 
@@ -51,7 +52,7 @@ async def set_admin(message: Message):
 
 
 @bp.on.chat_message(ReplyMessageRule(),
-                    regex=("(?i)^снять админ(истратора|а)$"))
+                    regex=("(?i)^(!|\.|\/)?\s*снять админ(истратора|а)$"))
 async def set_admin(message: Message):
     chat = models.Chat(message.peer_id)
 

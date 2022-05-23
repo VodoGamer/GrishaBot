@@ -8,14 +8,15 @@ from modules.models import User
 bp = Blueprint("Balance")
 
 
-@bp.on.chat_message(regex=("(?i)^(баланс|б)$"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*(баланс|б)$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     await message.reply(f"Баланс {await user.get_mention('gent')} "
-                        f"на данный момент: {user.money}")
+                        f"на данный момент: {user.money}",
+                        disable_mentions=True)
 
 
-@bp.on.chat_message(regex=("(?i)^(бонус)$"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*(бонус)$"))
 async def get_bonus(message: Message):
     user = User(message.peer_id, message.from_id)
     bonus = randint(100, 200)
@@ -39,7 +40,8 @@ async def get_bonus(message: Message):
 
 @bp.on.chat_message(
     ReplyMessageRule(),
-    regex=("(?i)^(дать|передать|подарить)\s*(денег|баб(ки|ок))?\s*(\d*)$"))
+    regex=
+("(?i)^(!|\.|\/)?\s*(дать|передать|подарить)\s*(денег|баб(ки|ок))?\s*(\d*)$"))
 async def send_money(message: Message, match):
     from_user = User(message.peer_id, message.from_id)
     reply_user = User(message.peer_id, message.reply_message.from_id)
@@ -53,4 +55,5 @@ async def send_money(message: Message, match):
         reply_user.change_money(money)
 
     await message.answer(f"{await from_user.get_mention()} передал {money} "
-                         f"{await reply_user.get_mention('datv')}")
+                         f"{await reply_user.get_mention('datv')}",
+                         disable_mentions=True)

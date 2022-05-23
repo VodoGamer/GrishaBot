@@ -9,7 +9,7 @@ bp = Blueprint("Person of day")
 phrases = ["Ящитаю что", "Мне кажется", "Вселенная подсказала что"]
 
 
-@bp.on.chat_message(regex="(?i)^(.*) дня$")
+@bp.on.chat_message(regex="(?i)^(!|\.|\/)?\s*(.*)\s*дня$")
 async def change_name(message: Message, match):
     chat = Chat(message.peer_id)
     now = datetime.now()

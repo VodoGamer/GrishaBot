@@ -202,6 +202,8 @@ class Rp():
         settings = Settings(self.from_user.chat_id)
         if settings.get_value("pictures")[0] == "True":
             await self.message.answer(await self.get_text(),
-                                      attachment=self.image)
+                                      attachment=self.image,
+                                      disable_mentions=True)
         else:
-            await self.message.answer(await self.get_text())
+            await self.message.answer(await self.get_text(),
+                                      disable_mentions=True)

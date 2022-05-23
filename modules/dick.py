@@ -7,15 +7,17 @@ from modules.models import Chat, User
 bp = Blueprint("Dick")
 
 
-@bp.on.chat_message(regex=("(?i)^(!|\.)?\s*(писюн|моя пися|пися|член)$"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*(писюн|моя пися|пися|член)$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     await message.reply(f"Писюн {await user.get_mention('gent')} "
-                        f"на данный момент: {user.dick_size} см")
+                        f"на данный момент: {user.dick_size} см",
+                        disable_mentions=True)
 
 
 @bp.on.chat_message(
-    regex=("(?i)^(!|\.)?\s*(намазать|помазать)\s*(сод(у|ой))?(член|писю)?$"))
+    regex=
+("(?i)^(!|\.|\/)?\s*(намазать|помазать)\s*(сод(у|ой))?(член|писю)?$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     now = datetime.now()
@@ -31,12 +33,14 @@ async def get_balance(message: Message):
     else:
         word = "уменьшился"
         size = str(size)[1:]
-    if size == 0:
+    if int(size) == 0:
         await message.reply(f"Писюн {await user.get_mention('gent')} "
-                            f"сегодня не изменился")
+                            f"сегодня не изменился",
+                            disable_mentions=True)
     else:
         await message.reply(f"Писюн {await user.get_mention('gent')} "
-                            f"{word} на {size} см")
+                            f"{word} на {size} см",
+                            disable_mentions=True)
 
 
 @bp.on.chat_message(

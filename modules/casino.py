@@ -33,7 +33,7 @@ async def new_bet(message: Message, match):
         await message.reply("У вас недостаточно денег!")
 
 
-@bp.on.chat_message(regex=("(?i)^го$"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*го$"))
 async def twist(message: Message):
     settings = Settings(message.peer_id)
     if settings.get_value("casino")[0] == "False":
@@ -84,7 +84,7 @@ async def twist(message: Message):
     casino.add_to_history(winner_feature)  # Добавление в историю / лог
 
 
-@bp.on.chat_message(regex=("(?i)^лог|история$"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*лог|история$"))
 async def get_log(message: Message):
     casino = Casino(message.peer_id)
     history = casino.get_history()

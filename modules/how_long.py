@@ -12,7 +12,7 @@ phrases_multi = ["не рассказывали что они", "скрывал�
                  "рассказали что они"]
 
 
-@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*я\s*(.*)"))
+@bp.on.chat_message(regex=("(?i)^(!|\.|\/)\s*я\s*(.*)"))
 async def how_long_i(message: Message, match):
     user = User(message.peer_id, message.from_id)
     await message.answer(f"{await user.get_mention()} {choice(phrases)} "
@@ -21,7 +21,7 @@ async def how_long_i(message: Message, match):
 
 
 @bp.on.chat_message(ReplyMessageRule(),
-                    regex=("(?i)^(!|\.|\/)?\s*(он|она|оно)\s*(.*)"))
+                    regex=("(?i)^(!|\.|\/)\s*(он|она|оно)\s*(.*)"))
 async def how_long_he(message: Message, match):
     user = User(message.peer_id, message.reply_message.from_id)
     await message.answer(f"{await user.get_mention()} {choice(phrases)} "
@@ -29,7 +29,7 @@ async def how_long_he(message: Message, match):
                          disable_mentions=True)
 
 
-@bp.on.chat_message(ReplyMessageRule(), regex=("(?i)^(!|\.|\/)?\s*мы\s*(.*)"))
+@bp.on.chat_message(ReplyMessageRule(), regex=("(?i)^(!|\.|\/)\s*мы\s*(.*)"))
 async def how_long_we(message: Message, match):
     user_1 = User(message.peer_id, message.from_id)
     user_2 = User(message.peer_id, message.reply_message.from_id)

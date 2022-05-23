@@ -292,6 +292,14 @@ class Chat():
         self.cursor.execute(sql, vars)
         return self.cursor.fetchall() or False
 
+    def get_forbes_list(self) -> list[list[int]] | bool:
+        sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
+               "AND money <> 0 ORDER BY money DESC")
+        vars = {"chat_id": self.chat_id}
+
+        self.cursor.execute(sql, vars)
+        return self.cursor.fetchall() or False
+
 
 class JSONSettings(BaseModel):
     setting: str

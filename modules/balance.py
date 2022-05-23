@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from random import randint
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
-from modules.models import User
+from modules.models import Chat, User
 
 
 bp = Blueprint("Balance")
@@ -35,7 +35,8 @@ async def get_bonus(message: Message):
             return
     user.update_last_bonus(now)
     user.change_money(bonus)
-    await message.reply(f"{await user.get_mention()} получил {bonus} 💵")
+    await message.reply(f"{await user.get_mention()} получил {bonus} 💵",
+                        disable_mentions=True)
 
 
 @bp.on.chat_message(
@@ -57,3 +58,21 @@ async def send_money(message: Message, match):
     await message.answer(f"{await from_user.get_mention()} передал {money} 💵"
                          f"{await reply_user.get_mention('datv')}",
                          disable_mentions=True)
+
+
+@bp.on.chat_message(regex=
+    ("(?i)^(!|\.|\/)?\s*(список|лист)\s*(форбс|forbes|богачей)?\s*(\d*)$"))
+async def get_forbes_list(message: Message, match):
+    chat = Chat(message.peer_id)
+
+    if chat.get_forbes_list():
+        users_mentions = []
+        for user in chat.get_forbes_list():
+            user_info = User(chat.chat_id, user[0])
+            users_mentions.append(
+                f"{await user_info.get_mention()} | {user_info.money} 💵")
+        await message.answer("Список Forbes этой беседы:\n"
+                             "{}".format("\n".join(users_mentions)),
+                             disable_mentions=True)
+    else:
+        await message.reply("беседа бомжей :)")

@@ -33,7 +33,7 @@ async def change_setting(message: Message, match):
     settings = models.Settings(message.peer_id)
     try:
         result = settings.change_value(
-            settings.get_alias_by_setting(match[1])[0])
+            settings.get_alias_by_setting(match[-1])[0])
         await message.reply(f"{result}| Настройка упешно изменена!")
     except:
         await message.reply("❌Неправильно указано правило")

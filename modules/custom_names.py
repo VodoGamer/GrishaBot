@@ -28,8 +28,8 @@ async def change_name(message: Message, match):
     if test_custom_name is True:
         settings = Settings(message.peer_id)
         if settings.get_value("custom_names")[0] == "True":
-            if len(match[2].split()) == 1:
-                user.set_custom_name(match[2])
+            if len(match[-1].split()) == 1:
+                user.set_custom_name(match[-1])
                 await message.reply("Новое имя успешно установлено!")
             else:
                 await message.reply(

@@ -56,6 +56,6 @@ async def top_of_dicks(message: Message, match):
         users_mentions.append(
             f"{await user_info.get_mention()} | {user_info.dick_size} см")
 
-    await message.answer(f"топ {match[2]} в этом чате:\n"
+    await message.answer(f"топ {match[-1]} в этом чате:\n"
                          "{}".format('\n'.join(users_mentions)),
                          disable_mentions=True)

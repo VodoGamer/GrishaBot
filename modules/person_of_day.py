@@ -20,7 +20,7 @@ async def change_name(message: Message, match):
         for i in users.profiles:
             users_id.append(i.id)
         user = User(chat.chat_id,choice(users_id))
-        output = await message.reply(f"{choice(phrases)} {match[0]} дня это "
+        output = await message.reply(f"{choice(phrases)} {match[-1]} дня это "
                                      f"{await user.get_mention()}")
         chat.set_last_person_send(now.day)
         setting = Settings(chat.chat_id)

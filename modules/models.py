@@ -552,7 +552,8 @@ class Casino():
     def get_history(self) -> list[str] | None:
         now = datetime.now()
         sql = ("SELECT win_feature FROM casino_history WHERE "
-               "chat_id = :chat_id AND date = :date LIMIT 20")
+               "chat_id = :chat_id AND date = :date ORDER BY "
+               "time LIMIT 20")
         vars = {"chat_id": self.chat_id,
                 "date": now.date()}
         self.cursor.execute(sql, vars)

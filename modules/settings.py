@@ -9,12 +9,12 @@ bp = Blueprint("Settings")
 @bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*настройки"))
 async def get_settings(message: Message):
     settings = models.Settings(message.peer_id)
-    tuple = []
+    list = []
     for i in settings.get_all():
         if i[3] == "True": bool = "✅"
         if i[3] == "False": bool = "❌"
-        tuple.append(f"{bool} | {i[1]}")
-    result = '\n'.join(tuple)
+        list.append(f"{bool} | {i[1]}")
+    result = '\n'.join(list)
     await message.reply(f"{result}\n\nЧтобы изменить команду напишите:"
                         "\n!изменить Закреп сообщений")
 

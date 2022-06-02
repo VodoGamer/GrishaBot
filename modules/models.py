@@ -410,7 +410,6 @@ class Settings():
         return self.cursor.fetchone()
 
 
-# TODO: ЗАЩИТА ОТ SQL ИНЪЕКЦИЙ И PEP-8
 class Sex():
     def __init__(self, chat_id: int, from_user: int) -> None:
         self.chat_id = chat_id
@@ -421,9 +420,15 @@ class Sex():
 
     def start(self, to_id) -> None:
         '''
-        "from_user" предлогает секс переданному юзеру
+        "from_user" предлагает секс переданному юзеру ("to_id")
         '''
-        self.cursor.execute(f'''UPDATE users SET sex_request={self.from_user} WHERE chat_id={self.chat_id} AND user_id={to_id}''')
+        sql = ("UPDATE users SET sex_request = :request WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "request": self.from_user,
+                "user_id": to_id}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def get_request(self) -> None | int:
@@ -431,34 +436,58 @@ class Sex():
         есть ли запрос на секс у "from_user" от другого юзера
         возвращает id другого юзера
         '''
-        self.cursor.execute(
-            f'''SELECT sex_request FROM users WHERE chat_id={self.chat_id} AND user_id={self.from_user}''')
+        sql = ("SELECT sex_request FROM users WHERE chat_id = :chat_id "
+               "AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.from_user}
+
+        self.cursor.execute(sql, vars)
         result = self.cursor.fetchone()
-        if result is None: return None
-        else: return result[0]
+        if result is None:
+            return None
+        else:
+            return result[0]
 
     def get_send(self) -> None | int:
         '''
         отправлял ли "from_user" запрос на секс другому
         возращает id другого юзера
         '''
-        self.cursor.execute(f'''SELECT user_id FROM users WHERE chat_id={self.chat_id} AND sex_request={self.from_user}''')
+
+        sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
+               "AND sex_request = :request")
+        vars = {"chat_id": self.chat_id,
+                "request": self.from_user}
+
+        self.cursor.execute(sql, vars)
         result = self.cursor.fetchone()
-        if result is None: return None
-        else: return result[0]
+        if result is None:
+            return None
+        else:
+            return result[0]
 
     def end_sex(self, to_id):
         '''
         убирает заявку на секс отправленную от "from_user"
         '''
-        self.cursor.execute(f'''UPDATE users SET sex_request=Null WHERE chat_id={self.chat_id} AND user_id={to_id}''')
+        sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
+               "AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": to_id}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def discard_sex(self):
         '''
         отклонение предложения секса от другого юзера "from_user"
         '''
-        self.cursor.execute(f'''UPDATE users SET sex_request=Null WHERE chat_id={self.chat_id} AND user_id={self.from_user}''')
+        sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
+               "AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.from_user}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
 

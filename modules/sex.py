@@ -11,31 +11,33 @@ bp = Blueprint("Sex")
 async def new_sex_request(message: Message):
     from_user = models.User(message.peer_id, message.from_id)
     to_user = models.User(message.peer_id, message.reply_message.from_id)
-    if to_user.user_id > 0:
-        sex = models.Sex(message.peer_id, from_user.user_id)
-        if not sex.get_send():
-            if not sex.get_request():
-                sex.start(to_user.user_id)
-                KEYBOARD = Keyboard(inline=True)
-                KEYBOARD.add(Text("Согласиться", payload={
-                            "sex": "agree"}))
-                KEYBOARD.add(Text("Отказаться", payload={
-                            "sex": "disagree"}))
-                await message.answer(f"{await from_user.get_mention()} "
-                                     "предложил поняшиться "
-                                     f"{await to_user.get_mention('datv')}",
-                                    keyboard=KEYBOARD)
-            else:
-                await message.answer(f"У {await to_user.get_mention('gent')} "
-                                     "есть незаконченный секс\nПопроси его "
-                                     "поскорее потрахаться")
-        else:
-            await message.reply("У тебя есть незаконченный секс\nЧтобы "
-                                "закончить его напиши -секс")
-    else:
+    if to_user.user_id < 0:
+        # Проверка на группу
         await message.answer(f"{await from_user.get_mention()} ёбнулся и "
-                             "начал ебать бота "
+                             "начал ебать "
                              f"{await to_user.get_mention('gent')}👳‍♂️")
+        return
+    sex = models.Sex(message.peer_id, from_user.user_id)
+    if sex.get_send():
+        # Проверка на незаконченный секс у отправителя
+        await message.reply("У тебя есть незаконченный секс\nЧтобы "
+                            "закончить его напиши -секс")
+        return
+    if sex.get_request():
+        # Проверка на незаконченный секс у получателя
+        await message.answer(f"У {await to_user.get_mention('gent')} "
+                            "есть незаконченный секс\nПопроси его "
+                            "поскорее потрахаться")
+        return
+    # Если всё хорошо
+    sex.start(to_user.user_id)
+    KEYBOARD = Keyboard(inline=True)
+    KEYBOARD.add(Text("Согласиться", payload={"sex": "agree"}))
+    KEYBOARD.add(Text("Отказаться", payload={"sex": "disagree"}))
+    await message.answer(f"{await from_user.get_mention()} предложил "
+                        f"поняшиться {await to_user.get_mention('datv')}",
+                        keyboard=KEYBOARD)
+
 
 
 @bp.on.chat_message(payload={"sex": "agree"})

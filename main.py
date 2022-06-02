@@ -1,11 +1,7 @@
-from loguru import logger
 from vkbottle import Bot, BaseMiddleware
 from vkbottle.bot import Message
 from modules import modules_list, models
 import config
-
-
-logger.add("debug.log", format="{time} | {level} | {message}", level="DEBUG")
 
 
 bot = Bot(config.TOKEN)

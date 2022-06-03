@@ -39,12 +39,13 @@ async def change_setting(message: Message, match):
             return
 
     settings = Settings(message.peer_id)
+    if int(match[-2]) > 400:
+        await message.reply("❌| Максимальное ограничение времени может "
+                            "быть 400 сек")
+        return
     try:
         result = settings.change_value(
             settings.get_alias_by_setting(match[-1])[0], match[-2])
-        if match[-2] > 400:
-            await message.reply("❌| Максимальное ограничение времени может "
-                                "быть 400 сек")
         await message.reply(f"{result}| Настройка упешно изменена!")
     except ValueError:
         await message.reply("❌| Неправильно указано значение правила")

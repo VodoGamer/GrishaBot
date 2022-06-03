@@ -19,6 +19,11 @@
             "setting": "казино",
             "alias": "casino",
             "value": "False"
+        },
+        {
+            "setting": "кд на го",
+            "alias": "casino_cooldown",
+            "value": "10"
         }
     ]
 }

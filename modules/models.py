@@ -377,7 +377,7 @@ class Settings():
         self.cursor.execute(sql, vars)
         return self.cursor.fetchall()
 
-    def change_value(self, alias):
+    def change_value(self, alias: str, value=None):
         alias = alias.lower()
         '''
         Меняет значение value передаваемой настройки на противоположное
@@ -386,9 +386,14 @@ class Settings():
         if res == "True":
             value = "False"
             value_return = "❌"
-        else:
+        elif res == "False":
             value = "True"
             value_return = "✅"
+        else:
+            if value is None:
+                raise ValueError
+            value = value
+            value_return = value
         sql = ("UPDATE settings SET value = :value WHERE "
                "chat_id = :chat_id AND alias = :alias")
         vars = {"value": value,
@@ -565,3 +570,16 @@ class Casino():
             for feature in features:
                 feature_list.append(feature[0])
             return feature_list
+
+    def get_last_go(self) -> datetime:
+        now = datetime.now()
+        sql = ("SELECT time FROM casino_history WHERE "
+               "chat_id = :chat_id AND date = :date ORDER BY time DESC")
+        vars = {"chat_id": self.chat_id,
+                "date": now.date()}
+        self.cursor.execute(sql, vars)
+        result = self.cursor.fetchone()
+        if result is None:
+            return True
+        else:
+            return result[0]

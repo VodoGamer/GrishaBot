@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import asyncio
 from vkbottle.bot import Blueprint, Message
 from modules.models import User, Casino, CasinoUser, Settings
@@ -44,6 +45,15 @@ async def twist(message: Message):
 
     casino = Casino(message.peer_id)
     casino_users = casino.get_users()
+    if casino.get_last_go() != True:
+        now = datetime.now()
+        db_time = int(settings.get_value("casino_cooldown")[0])
+        last_go = datetime.strptime(casino.get_last_go(), "%H:%M:%S.%f")
+        next_time = last_go + timedelta(seconds=db_time)
+
+        if next_time.time() > now.time():
+            await message.answer("Кд на го ещё не прошло!")
+            return
     if casino_users == []:
         await message.reply("❌| Никто не учавствует в казино!")
         return

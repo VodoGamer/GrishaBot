@@ -11,15 +11,21 @@ async def get_settings(message: Message):
     settings = models.Settings(message.peer_id)
     list = []
     for i in settings.get_all():
-        if i[3] == "True": bool = "✅"
-        if i[3] == "False": bool = "❌"
-        list.append(f"{bool} | {i[1]}")
+        if i[3] == "True":
+            value = "✅"
+        elif i[3] == "False":
+            value = "❌"
+        elif i[3] != "True" and i[3] != "False":
+            value = i[3]
+        list.append(f"{value} | {i[1]}")
     result = '\n'.join(list)
     await message.reply(f"{result}\n\nЧтобы изменить команду напишите:"
-                        "\n!изменить Закреп сообщений")
+                        "\n!изменить 'новое значение (если доступно)' "
+                        "Закреп сообщений ")
 
 
-@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*(изменить)\s*(.*)"))
+@bp.on.chat_message(
+    regex=("(?i)^(!|\.|\/)?\s*(изменить|поменять)\s*(\d*)?\s*(.*)"))
 async def change_setting(message: Message, match):
     user = models.User(message.peer_id, message.from_id)
     chat = models.Chat(message.peer_id)
@@ -27,14 +33,17 @@ async def change_setting(message: Message, match):
         if chat.owner_id == message.from_id:
             pass
         else:
-            await message.reply("❌| Эта команда доступна только админам чата!")
+            await message.reply("❌| Эта команда доступна только админам "
+                                "чата!")
             return
 
     settings = models.Settings(message.peer_id)
     try:
         result = settings.change_value(
-            settings.get_alias_by_setting(match[-1])[0])
+            settings.get_alias_by_setting(match[-1])[0], match[-2])
         await message.reply(f"{result}| Настройка упешно изменена!")
+    except ValueError:
+        await message.reply("❌| Неправильно указано значение правила")
     except:
         await message.reply("❌| Неправильно указано правило")
 
@@ -47,8 +56,8 @@ async def set_admin(message: Message):
     if chat.owner_id == message.from_id:
         user = models.User(message.peer_id, message.reply_message.from_id)
         user.update_admin("True")
-        await message.reply("✅| Админ назначен!\nЧтобы снять админку напишите:\n"
-                            "снять админа")
+        await message.reply("✅| Админ назначен!\nЧтобы снять админку "
+                            "напишите:\nснять админа")
 
 
 @bp.on.chat_message(ReplyMessageRule(),

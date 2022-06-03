@@ -1,15 +1,16 @@
 from datetime import datetime
+from random import choice, randint
 import re
 import sqlite3
-from random import choice, randint
-from vkbottle.bot import Blueprint
-import pymorphy2
+
 from pydantic import BaseModel
+from vkbottle.bot import Blueprint
+from pymorphy2 import MorphAnalyzer
 
 
 # Иниты сюда
 bp = Blueprint("Models")
-morph = pymorphy2.MorphAnalyzer()
+morph = MorphAnalyzer()
 
 
 class User():

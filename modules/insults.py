@@ -1,8 +1,10 @@
 from random import choice
+
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
-from modules.models import User
+
 from config import NameCalling
+from modules.models import User
 
 
 bp = Blueprint("Insults")

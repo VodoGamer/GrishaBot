@@ -1,8 +1,10 @@
 from random import choice, randint
 import asyncio
+
 from vkbottle import Keyboard, Text
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import RegexRule, ReplyMessageRule
+
 from modules.models import User, Sex
 
 

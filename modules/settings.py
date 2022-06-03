@@ -1,6 +1,7 @@
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
-import modules.models as models
+
+from modules.models import Settings, User, Chat
 
 
 bp = Blueprint("Settings")
@@ -8,7 +9,7 @@ bp = Blueprint("Settings")
 
 @bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*настройки"))
 async def get_settings(message: Message):
-    settings = models.Settings(message.peer_id)
+    settings = Settings(message.peer_id)
     list = []
     for i in settings.get_all():
         if i[3] == "True":
@@ -27,8 +28,8 @@ async def get_settings(message: Message):
 @bp.on.chat_message(
     regex=("(?i)^(!|\.|\/)?\s*(изменить|поменять)\s*(\d*)?\s*(.*)"))
 async def change_setting(message: Message, match):
-    user = models.User(message.peer_id, message.from_id)
-    chat = models.Chat(message.peer_id)
+    user = User(message.peer_id, message.from_id)
+    chat = Chat(message.peer_id)
     if user.is_admin is False:
         if chat.owner_id == message.from_id:
             pass
@@ -37,7 +38,7 @@ async def change_setting(message: Message, match):
                                 "чата!")
             return
 
-    settings = models.Settings(message.peer_id)
+    settings = Settings(message.peer_id)
     try:
         result = settings.change_value(
             settings.get_alias_by_setting(match[-1])[0], match[-2])
@@ -51,10 +52,10 @@ async def change_setting(message: Message, match):
 @bp.on.chat_message(ReplyMessageRule(),
                     regex=("(?i)^(!|\.|\/)?\s*назначить\s*админ(ом|а)$"))
 async def set_admin(message: Message):
-    chat = models.Chat(message.peer_id)
+    chat = Chat(message.peer_id)
 
     if chat.owner_id == message.from_id:
-        user = models.User(message.peer_id, message.reply_message.from_id)
+        user = User(message.peer_id, message.reply_message.from_id)
         user.update_admin("True")
         await message.reply("✅| Админ назначен!\nЧтобы снять админку "
                             "напишите:\nснять админа")
@@ -63,9 +64,9 @@ async def set_admin(message: Message):
 @bp.on.chat_message(ReplyMessageRule(),
                     regex=("(?i)^(!|\.|\/)?\s*снять админ(истратора|а)$"))
 async def set_admin(message: Message):
-    chat = models.Chat(message.peer_id)
+    chat = Chat(message.peer_id)
 
     if chat.owner_id == message.from_id:
-        user = models.User(message.peer_id, message.reply_message.from_id)
+        user = User(message.peer_id, message.reply_message.from_id)
         user.update_admin(None)
         await message.reply("✅| Админка успешно снята!")

@@ -2,6 +2,7 @@ from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 from modules.models import User, Settings
 
+
 bp = Blueprint("Rp commands")
 bp.labeler.auto_rules = [ReplyMessageRule()]
 

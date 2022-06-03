@@ -1,6 +1,8 @@
 from datetime import datetime
 from random import randint
+
 from vkbottle.bot import Blueprint, Message
+
 from modules.models import Chat, User
 
 

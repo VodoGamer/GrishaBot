@@ -1,7 +1,9 @@
 from datetime import datetime, timedelta
 from random import randint
+
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
+
 from modules.models import Chat, User
 
 

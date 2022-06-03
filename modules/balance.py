@@ -33,7 +33,7 @@ async def get_bonus(message: Message):
     if db_date:
         if db_date_delta > now:
             await message.reply("❌ | Следующий бонус можно получить "
-                                f"{str(db_date_delta).split('.')[0]}")
+                                f"{str(db_date_delta).split('.')[0]} по мск")
             return
     user.update_last_bonus(now)
     user.change_money(bonus)
@@ -64,7 +64,7 @@ async def send_money(message: Message, match):
 
 @bp.on.chat_message(regex=
     ("(?i)^(!|\.|\/)?\s*(список|лист|топ)\s*(форбс|forbes|богачей|денег)?\s*(\d*)$"))
-async def get_forbes_list(message: Message, match):
+async def get_forbes_list(message: Message):
     chat = Chat(message.peer_id)
 
     if chat.get_forbes_list():

@@ -54,7 +54,8 @@ async def twist(message: Message):
         next_time = last_go + timedelta(seconds=db_time)
 
         if next_time.time() > now.time():
-            await message.answer("Кд на го ещё не прошло!")
+            await message.answer("Следующую крутку можно будет начать "
+                                 f"в\n{next_time.time()} по мск")
             return
     if casino_users == []:
         await message.reply("❌| Никто не учавствует в казино!")

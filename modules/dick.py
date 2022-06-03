@@ -26,7 +26,7 @@ async def get_balance(message: Message):
     size = randint(-10, 20)
     if user.last_dick == now.day:
         await message.reply("Мазать писюн можно только раз в сутки, "
-                            "начиная с 00:00")
+                            "начиная с 00:00 по мск")
         return
     user.update_last_dick(now.day)
     user.change_dick(size)

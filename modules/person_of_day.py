@@ -31,4 +31,4 @@ async def change_name(message: Message, match):
                 conversation_message_id=output.conversation_message_id)
     else:
         await message.reply("Команду можно использовать один раз в сутки "
-                            "начиная с 00:00.")
+                            "начиная с 00:00 по мск.")

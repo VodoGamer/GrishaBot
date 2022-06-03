@@ -1,5 +1,6 @@
 # Гриша Бот
-![alt text](markdowns/images/scam.jpg "казино")
+<img src="markdowns/images/scam.jpg" alt="drawing" width="300"/>
+
 Бот создан для того чтобы разбавить общение в беседах, имеет множетво функций:
 
 - [Казино](/modules/casino.py)
@@ -12,4 +13,4 @@
 Бот написан на [vkbottle 4.2](https://github.com/vkbottle/vkbottle/tree/v4.x), Python 3.10
 
 
-Для склонения кастомных имён используется библеотека [PyMorphy2 0.9.1](https://github.com/kmike/pymorphy2/releases/tag/0.9.1)
+Для склонения кастомных имён используется библиотека [PyMorphy2 0.9.1](https://github.com/kmike/pymorphy2/releases/tag/0.9.1)

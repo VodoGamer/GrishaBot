@@ -486,7 +486,7 @@ class Sex():
 
     def discard_sex(self):
         '''
-        отклонение предложения секса от другого юзера "from_user"
+        отклонение "from_user" от предложения секса другого юзера
         '''
         sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
                "AND user_id = :user_id")

@@ -51,9 +51,10 @@ async def sex_agree(message: Message):
         return
     sex_recipient = User(message.peer_id, sex.from_user)
     sex_sender = User(message.peer_id, sex.get_request())
+    sex.discard_sex()
 
-    words = ("поняшиться", "в кровать", "в постель", "потрахаться",
-             "порвать попку", "порвать пизду")
+    words = ("поняшиться😊", "в кровать🛏", "в постель🛏", "потрахаться🔞",
+             "порвать попку😖", "порвать пизду😖")
     await message.answer(f"{await sex_sender.get_mention()} соблазнил "
                          f"{await sex_recipient.get_mention('accs')} "
                          f"{choice(words)}",
@@ -65,7 +66,7 @@ async def sex_agree(message: Message):
                              "начали раздеваться",
                              disable_mentions=True)
     else:
-        words = ("начал снимать одежду с", "начал разрывать одежду")
+        words = ("начал снимать одежду👙 с", "начал разрывать одежду👙")
         await message.answer(f"{await sex_sender.get_mention()} "
                              f"{choice(words)} "
                              f"{await sex_recipient.get_mention('accs')}",
@@ -78,8 +79,8 @@ async def sex_agree(message: Message):
                          "photo-194020282_457239082",
                          disable_mentions=True)
     await asyncio.sleep(3)
-    words = ("ноги", "ножки", "ухо", "нос", "пятки", "сосок", "сиськи",
-             "руки", "пизду", "член", "анальную дырочку")
+    words = ("ноги🦵", "ножки🦵", "ухо👂", "нос👃", "пятки🦶", "сосок🔞", "сиськи🔞",
+             "руки🖐", "пизду🔞", "член🔞", "анальную дырочку🔞", "ладошку🖐")
     await message.answer(f"{await sex_sender.get_mention()} облизал "
                          f"{choice(words)} "
                          f"{await sex_recipient.get_mention('gent')}",
@@ -98,24 +99,24 @@ async def sex_agree(message: Message):
     await asyncio.sleep(2)
     await message.answer(f"{await sex_sender.get_mention()} "
                          f"вставил свои {sex_sender.dick_size} "
-                         f"см в {await sex_recipient.get_mention('gent')}",
+                         f"см в {await sex_recipient.get_mention('gent')} 😖",
                          disable_mentions=True)
     await asyncio.sleep(3)
     if randint(1, 5) != 1:
         words = ("попку", "писечку", "пизду")
         await message.answer(f"{await sex_sender.get_mention()} "
                              f"порвал {choice(words)} "
-                             f"{await sex_recipient.get_mention('gent')}",
+                             f"{await sex_recipient.get_mention('gent')} 😖",
                              disable_mentions=True)
         return
     await message.answer(f"{await sex_sender.get_mention()} "
                          "кончил в "
-                         f"{await sex_recipient.get_mention('gent')}",
+                         f"{await sex_recipient.get_mention('gent')} 😳",
                          disable_mentions=True)
     if randint(1, 2) == 1:
         await message.answer(f"У {await sex_sender.get_mention('gent')} "
                              f"и {await sex_recipient.get_mention('gent')} "
-                             "появился ребёнок",
+                             "появился ребёнок 😳",
                              disable_mentions=True)
 
 

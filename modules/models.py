@@ -1,15 +1,16 @@
 from datetime import datetime
+from random import choice, randint
 import re
 import sqlite3
-from random import choice, randint
-from vkbottle.bot import Blueprint
-import pymorphy2
+
 from pydantic import BaseModel
+from vkbottle.bot import Blueprint
+from pymorphy2 import MorphAnalyzer
 
 
 # Иниты сюда
 bp = Blueprint("Models")
-morph = pymorphy2.MorphAnalyzer()
+morph = MorphAnalyzer()
 
 
 class User():
@@ -377,7 +378,7 @@ class Settings():
         self.cursor.execute(sql, vars)
         return self.cursor.fetchall()
 
-    def change_value(self, alias):
+    def change_value(self, alias: str, value=None):
         alias = alias.lower()
         '''
         Меняет значение value передаваемой настройки на противоположное
@@ -386,9 +387,14 @@ class Settings():
         if res == "True":
             value = "False"
             value_return = "❌"
-        else:
+        elif res == "False":
             value = "True"
             value_return = "✅"
+        else:
+            if value == '':
+                raise ValueError
+            value = value
+            value_return = value
         sql = ("UPDATE settings SET value = :value WHERE "
                "chat_id = :chat_id AND alias = :alias")
         vars = {"value": value,
@@ -410,7 +416,6 @@ class Settings():
         return self.cursor.fetchone()
 
 
-# TODO: ЗАЩИТА ОТ SQL ИНЪЕКЦИЙ И PEP-8
 class Sex():
     def __init__(self, chat_id: int, from_user: int) -> None:
         self.chat_id = chat_id
@@ -421,9 +426,15 @@ class Sex():
 
     def start(self, to_id) -> None:
         '''
-        "from_user" предлогает секс переданному юзеру
+        "from_user" предлагает секс переданному юзеру ("to_id")
         '''
-        self.cursor.execute(f'''UPDATE users SET sex_request={self.from_user} WHERE chat_id={self.chat_id} AND user_id={to_id}''')
+        sql = ("UPDATE users SET sex_request = :request WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "request": self.from_user,
+                "user_id": to_id}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def get_request(self) -> None | int:
@@ -431,34 +442,58 @@ class Sex():
         есть ли запрос на секс у "from_user" от другого юзера
         возвращает id другого юзера
         '''
-        self.cursor.execute(
-            f'''SELECT sex_request FROM users WHERE chat_id={self.chat_id} AND user_id={self.from_user}''')
+        sql = ("SELECT sex_request FROM users WHERE chat_id = :chat_id "
+               "AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.from_user}
+
+        self.cursor.execute(sql, vars)
         result = self.cursor.fetchone()
-        if result is None: return None
-        else: return result[0]
+        if result is None:
+            return None
+        else:
+            return result[0]
 
     def get_send(self) -> None | int:
         '''
         отправлял ли "from_user" запрос на секс другому
         возращает id другого юзера
         '''
-        self.cursor.execute(f'''SELECT user_id FROM users WHERE chat_id={self.chat_id} AND sex_request={self.from_user}''')
+
+        sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
+               "AND sex_request = :request")
+        vars = {"chat_id": self.chat_id,
+                "request": self.from_user}
+
+        self.cursor.execute(sql, vars)
         result = self.cursor.fetchone()
-        if result is None: return None
-        else: return result[0]
+        if result is None:
+            return None
+        else:
+            return result[0]
 
     def end_sex(self, to_id):
         '''
         убирает заявку на секс отправленную от "from_user"
         '''
-        self.cursor.execute(f'''UPDATE users SET sex_request=Null WHERE chat_id={self.chat_id} AND user_id={to_id}''')
+        sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
+               "AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": to_id}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
     def discard_sex(self):
         '''
-        отклонение предложения секса от другого юзера "from_user"
+        отклонение "from_user" от предложения секса другого юзера
         '''
-        self.cursor.execute(f'''UPDATE users SET sex_request=Null WHERE chat_id={self.chat_id} AND user_id={self.from_user}''')
+        sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
+               "AND user_id = :user_id")
+        vars = {"chat_id": self.chat_id,
+                "user_id": self.from_user}
+
+        self.cursor.execute(sql, vars)
         self.connection.commit()
 
 
@@ -565,3 +600,16 @@ class Casino():
             for feature in features:
                 feature_list.append(feature[0])
             return feature_list
+
+    def get_last_go(self) -> datetime:
+        now = datetime.now()
+        sql = ("SELECT time FROM casino_history WHERE "
+               "chat_id = :chat_id AND date = :date ORDER BY time DESC")
+        vars = {"chat_id": self.chat_id,
+                "date": now.date()}
+        self.cursor.execute(sql, vars)
+        result = self.cursor.fetchone()
+        if result is None:
+            return True
+        else:
+            return result[0]

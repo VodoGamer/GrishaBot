@@ -391,7 +391,7 @@ class Settings():
             value = "True"
             value_return = "✅"
         else:
-            if value is None:
+            if value == '':
                 raise ValueError
             value = value
             value_return = value

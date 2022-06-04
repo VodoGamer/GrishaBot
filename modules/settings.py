@@ -7,7 +7,7 @@ from modules.models import Settings, User, Chat
 bp = Blueprint("Settings")
 
 
-@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*настройки"))
+@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*настройки"))
 async def get_settings(message: Message):
     settings = Settings(message.peer_id)
     list = []
@@ -26,7 +26,7 @@ async def get_settings(message: Message):
 
 
 @bp.on.chat_message(
-    regex=("(?i)^(!|\.|\/)?\s*(изменить|поменять)\s*(\d*)?\s*(.*)"))
+    regex=(r"(?i)^(!|\.|\/)?\s*(изменить|поменять)\s*(\d*)?\s*(.*)"))
 async def change_setting(message: Message, match):
     user = User(message.peer_id, message.from_id)
     chat = Chat(message.peer_id)
@@ -39,22 +39,23 @@ async def change_setting(message: Message, match):
             return
 
     settings = Settings(message.peer_id)
-    if int(match[-2]) > 400:
-        await message.reply("❌| Максимальное ограничение времени может "
-                            "быть 400 сек")
-        return
+    if match[-2] != '':
+        if int(match[-2]) > 400:
+            await message.reply("❌| Максимальное ограничение времени может "
+                                "быть 400 сек")
+            return
     try:
         result = settings.change_value(
             settings.get_alias_by_setting(match[-1])[0], match[-2])
         await message.reply(f"{result}| Настройка упешно изменена!")
     except ValueError:
         await message.reply("❌| Неправильно указано значение правила")
-    except:
+    except TypeError:
         await message.reply("❌| Неправильно указано правило")
 
 
 @bp.on.chat_message(ReplyMessageRule(),
-                    regex=("(?i)^(!|\.|\/)?\s*назначить\s*админ(ом|а)$"))
+                    regex=(r"(?i)^(!|\.|\/)?\s*назначить\s*админ(ом|а)$"))
 async def set_admin(message: Message):
     chat = Chat(message.peer_id)
 
@@ -66,7 +67,7 @@ async def set_admin(message: Message):
 
 
 @bp.on.chat_message(ReplyMessageRule(),
-                    regex=("(?i)^(!|\.|\/)?\s*снять админ(истратора|а)$"))
+                    regex=(r"(?i)^(!|\.|\/)?\s*снять админ(истратора|а)$"))
 async def set_admin(message: Message):
     chat = Chat(message.peer_id)
 

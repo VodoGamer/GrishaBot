@@ -10,17 +10,17 @@ bp = Blueprint("Person of day")
 phrases = ["Ящитаю что", "Мне кажется", "Вселенная подсказала что"]
 
 
-@bp.on.chat_message(regex="(?i)^(!|\.|\/)?\s*(.*)\s{1,}дня$")
+@bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(.*)\s{1,}дня$")
 async def change_name(message: Message, match):
     chat = Chat(message.peer_id)
     now = datetime.now()
-    if chat.last_person_send != now.day or chat.last_person_send == None:
+    if chat.last_person_send != now.day or chat.last_person_send is None:
         users = await bp.api.messages.get_conversation_members(
                 peer_id=message.peer_id)
         users_id = []
         for i in users.profiles:
             users_id.append(i.id)
-        user = User(chat.chat_id,choice(users_id))
+        user = User(chat.chat_id, choice(users_id))
         output = await message.reply(f"{choice(phrases)} {match[-1]} дня это "
                                      f"{await user.get_mention()}")
         chat.set_last_person_send(now.day)

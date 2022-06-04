@@ -9,7 +9,7 @@ from modules.models import User, Casino, CasinoUser, Settings
 bp = Blueprint("Casino")
 
 
-@bp.on.chat_message(regex=("(?i)^(\d*)\s*?(к|ч|з)$"))
+@bp.on.chat_message(regex=(r"(?i)^(\d*)\s*?(к|ч|з)$"))
 async def new_bet(message: Message, match):
     settings = Settings(message.peer_id)
     if settings.get_value("casino")[0] == "False":
@@ -37,7 +37,7 @@ async def new_bet(message: Message, match):
         await message.reply("У вас недостаточно денег!")
 
 
-@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*го$"))
+@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*го$"))
 async def twist(message: Message):
     settings = Settings(message.peer_id)
     if settings.get_value("casino")[0] == "False":
@@ -47,7 +47,7 @@ async def twist(message: Message):
 
     casino = Casino(message.peer_id)
     casino_users = casino.get_users()
-    if casino.get_last_go() != True:
+    if casino.get_last_go() is not True:
         now = datetime.now()
         db_time = int(settings.get_value("casino_cooldown")[0])
         last_go = datetime.strptime(casino.get_last_go(), "%H:%M:%S.%f")
@@ -55,7 +55,8 @@ async def twist(message: Message):
 
         if next_time.time() > now.time():
             await message.answer("Следующую крутку можно будет начать "
-                                 f"в\n{str(next_time.time()).split('.')[0]} по мск")
+                                 f"в\n{str(next_time.time()).split('.')[0]}"
+                                 " по мск")
             return
     if casino_users == []:
         await message.reply("❌| Никто не учавствует в казино!")
@@ -100,7 +101,7 @@ async def twist(message: Message):
     casino.add_to_history(winner_feature)  # Добавление в историю / лог
 
 
-@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*лог|история$"))
+@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*лог|история$"))
 async def get_log(message: Message):
     casino = Casino(message.peer_id)
     history = casino.get_history()

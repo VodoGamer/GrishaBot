@@ -9,7 +9,7 @@ from modules.models import Chat, User
 bp = Blueprint("Dick")
 
 
-@bp.on.chat_message(regex=("(?i)^(!|\.|\/)?\s*(писюн|моя пися|пися|член)$"))
+@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(писюн|моя пися|пися|член)$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     await message.reply(f"Писюн {await user.get_mention('gent')} "
@@ -17,9 +17,8 @@ async def get_balance(message: Message):
                         disable_mentions=True)
 
 
-@bp.on.chat_message(
-    regex=
-("(?i)^(!|\.|\/)?\s*(намазать|помазать)\s*(сод(у|ой))?(член|писю)?$"))
+@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(намазать|помазать)\s*"
+                           r"(сод(у|ой))?(член|писю)?$"))
 async def get_balance(message: Message):
     user = User(message.peer_id, message.from_id)
     now = datetime.now()
@@ -45,8 +44,8 @@ async def get_balance(message: Message):
                             disable_mentions=True)
 
 
-@bp.on.chat_message(
-    regex="(?i)^(!|\.|\/)?\s*(топ|список)\s*(писюнов|членов)$")
+@bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(топ|список)\s*"
+                    r"(писюнов|членов)$")
 async def top_of_dicks(message: Message, match):
     chat = Chat(message.peer_id)
     if not chat.get_dicks_top():

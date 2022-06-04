@@ -51,7 +51,7 @@ class User():
         '''
         Проверяет заполнено ли передаваемое поле в БД
         '''
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             sql = ("SELECT :field FROM users WHERE chat_id = :chat_id AND "
                    "user_id = :user_id")
             vars = {"field": field,
@@ -65,7 +65,7 @@ class User():
         '''
         Регистрирует нового пользователя
         '''
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             sql = ("INSERT INTO users (chat_id, user_id, messages, money) "
                    "VALUES (:chat_id, :user_id, :messages_count, 0)")
             vars = {"chat_id": self.chat_id,
@@ -79,7 +79,7 @@ class User():
         '''
         Добавляет сообщение в статистику
         '''
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET messages = :messages WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             vars = {"messages": self.messages + 1,
@@ -90,7 +90,7 @@ class User():
             self.connection.commit()
 
     def change_money(self, value):
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET money = :money WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             vars = {"money": self.money + value,
@@ -105,8 +105,8 @@ class User():
         Возращает имя юзера в необходимом падеже
         :param case: nomn | gent | datv | accs | ablt | loct | voct
         '''
-        if self.group == False:  # Проверка на группу
-            if self.custom_name != None:
+        if self.group is False:  # Проверка на группу
+            if self.custom_name is not None:
                 raw_name = morph.parse(self.custom_name)[0]
                 return raw_name.inflect({case}).word.capitalize()
             else:
@@ -114,7 +114,7 @@ class User():
                 try:
                     raw_name = morph.parse(vk_info[0].first_name)[0]
                     return raw_name.inflect({case}).word.capitalize()
-                except:
+                except AttributeError:
                     return vk_info[0].first_name
         else:
             return await self.group.get_name()
@@ -130,13 +130,13 @@ class User():
                 for case in cases:
                     raw_name.inflect({case}).word.capitalize()
                 return True
-            except:
+            except AttributeError:
                 return "case!"
         else:
             return "words!"
 
     def set_custom_name(self, name):
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET custom_name = :name WHERE "
                    "chat_id = :chat_id AND user_id = :user_id")
             vars = {"name": name,
@@ -151,7 +151,7 @@ class User():
         Возращает упоминания юзера в необходимом падеже
         :param case: nomn | gent | datv | accs | ablt | loct | voct
         '''
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             return f"@id{self.user_id} ({await self.get_name(case)})"
         else:
             return await self.group.get_mention()
@@ -162,7 +162,7 @@ class User():
         1 - девушка\n
         0 - парень
         '''
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             return (await bp.api.users.get(self.user_id, "sex"))[0].sex.value
 
     def update_last_bonus(self, date: int):
@@ -176,7 +176,7 @@ class User():
         self.connection.commit()
 
     def change_dick(self, value):
-        if self.group == False:  # Проверка на группу
+        if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET dick_size = :size WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             vars = {"size": self.dick_size + value,
@@ -309,10 +309,13 @@ class JSONSettings(BaseModel):
     alias: str
     value: str
 
+
 class BaseSettings(BaseModel):
     settings: list[JSONSettings]
 
+
 default_settings = BaseSettings.parse_file("./default_settings.json")
+
 
 class Settings():
     def __init__(self, chat_id: int) -> None:
@@ -508,7 +511,7 @@ class CasinoUser():
         self.cursor = self.connection.cursor()
 
         user_info = self.check()
-        if user_info != None:
+        if user_info is not None:
             self.bet = user_info[2]
             self.feature = user_info[3]
 

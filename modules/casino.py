@@ -55,7 +55,7 @@ async def twist(message: Message):
 
         if next_time.time() > now.time():
             await message.answer("Следующую крутку можно будет начать "
-                                 f"в\n{next_time.time()} по мск")
+                                 f"в\n{str(next_time.time()).split('.')[0]} по мск")
             return
     if casino_users == []:
         await message.reply("❌| Никто не учавствует в казино!")

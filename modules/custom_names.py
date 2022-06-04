@@ -43,3 +43,5 @@ async def change_name(message: Message, match):
     elif test_custom_name == "case!":
         await message.reply("Увы я не смог просклонять ваше имя. "
                             "Попробуйте другое")
+    elif test_custom_name == "words_count!":
+        await message.reply("Длина имени должна быть не более 35 символов!")

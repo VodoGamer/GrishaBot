@@ -119,7 +119,9 @@ class User():
         else:
             return await self.group.get_name()
 
-    def test_custom_name(self, name):
+    def test_custom_name(self, name: str):
+        if len(name) > 35:
+            return "words_count!"
         if re.search("^[а-я]+", name.lower()):
             try:
                 raw_name = morph.parse(name)[0]

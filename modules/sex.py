@@ -111,7 +111,7 @@ async def sex_agree(message: Message):
         return
     await message.answer(f"{await sex_sender.get_mention()} "
                          "кончил в "
-                         f"{await sex_recipient.get_mention('gent')} 😳",
+                         f"{await sex_recipient.get_mention('accs')} 😳",
                          disable_mentions=True)
     if randint(1, 2) == 1:
         await message.answer(f"У {await sex_sender.get_mention('gent')} "

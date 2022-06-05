@@ -63,6 +63,7 @@ def upgrade():
         sa.Column('bonus_date', sa.Text()),
     )
 
+
 def downgrade():
     op.drop_table("chats")
     op.drop_table("settings")

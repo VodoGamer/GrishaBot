@@ -10,7 +10,7 @@ bp = Blueprint("Stat")
 async def get_own_stats(message: Message):
     user = User(message.peer_id, message.from_id)
     await message.reply(f"Вы написали в данной беседе {user.messages} "
-                         "сообщений")
+                        "сообщений")
 
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?стат(а)?|статистика$"))

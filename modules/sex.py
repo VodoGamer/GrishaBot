@@ -136,7 +136,6 @@ async def sex_disagree(message: Message):
         sex.discard_sex()
 
     partner_info = User(message.peer_id, partner)
-    print(await from_user.get_sex())
     if await from_user.get_sex() == 1:
         await message.answer(f"{await from_user.get_mention()} отказалась "
                              "от секса с "

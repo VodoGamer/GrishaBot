@@ -34,7 +34,7 @@ class User():
             sql = ("SELECT * FROM users WHERE chat_id = :chat_id "
                    "AND user_id = :user_id")
             sql_vars = {"chat_id": self.chat_id,
-                    "user_id": self.user_id}
+                        "user_id": self.user_id}
 
             self.cursor.execute(sql, sql_vars)
             result = self.cursor.fetchone()
@@ -55,8 +55,8 @@ class User():
             sql = ("SELECT :field FROM users WHERE chat_id = :chat_id AND "
                    "user_id = :user_id")
             sql_vars = {"field": field,
-                    "chat_id": self.chat_id,
-                    "user_id": self.user_id}
+                        "chat_id": self.chat_id,
+                        "user_id": self.user_id}
 
             self.cursor.execute(sql, sql_vars)
             return self.cursor.fetchone()
@@ -69,8 +69,8 @@ class User():
             sql = ("INSERT INTO users (chat_id, user_id, messages, money) "
                    "VALUES (:chat_id, :user_id, :messages_count, 0)")
             sql_vars = {"chat_id": self.chat_id,
-                    "user_id": self.user_id,
-                    "messages_count": messages_count}
+                        "user_id": self.user_id,
+                        "messages_count": messages_count}
 
             self.cursor.execute(sql, sql_vars)
             self.connection.commit()
@@ -83,8 +83,8 @@ class User():
             sql = ("UPDATE users SET messages = :messages WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             sql_vars = {"messages": self.messages + 1,
-                    "chat_id": self.chat_id,
-                    "user_id": self.user_id}
+                        "chat_id": self.chat_id,
+                        "user_id": self.user_id}
 
             self.cursor.execute(sql, sql_vars)
             self.connection.commit()
@@ -94,8 +94,8 @@ class User():
             sql = ("UPDATE users SET money = :money WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             sql_vars = {"money": self.money + value,
-                    "chat_id": self.chat_id,
-                    "user_id": self.user_id}
+                        "chat_id": self.chat_id,
+                        "user_id": self.user_id}
 
             self.cursor.execute(sql, sql_vars)
             self.connection.commit()
@@ -140,8 +140,8 @@ class User():
             sql = ("UPDATE users SET custom_name = :name WHERE "
                    "chat_id = :chat_id AND user_id = :user_id")
             sql_vars = {"name": name,
-                    "chat_id": self.chat_id,
-                    "user_id": self.user_id}
+                        "chat_id": self.chat_id,
+                        "user_id": self.user_id}
 
             self.cursor.execute(sql, sql_vars)
             self.connection.commit()
@@ -169,8 +169,8 @@ class User():
         sql = ("UPDATE users SET bonus_date = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         sql_vars = {"date": date,
-                "chat_id": self.chat_id,
-                "user_id": self.user_id}
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -180,8 +180,8 @@ class User():
             sql = ("UPDATE users SET dick_size = :size WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
             sql_vars = {"size": self.dick_size + value,
-                    "chat_id": self.chat_id,
-                    "user_id": self.user_id}
+                        "chat_id": self.chat_id,
+                        "user_id": self.user_id}
 
             self.cursor.execute(sql, sql_vars)
             self.connection.commit()
@@ -190,8 +190,8 @@ class User():
         sql = ("UPDATE users SET last_dick = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         sql_vars = {"date": date,
-                "chat_id": self.chat_id,
-                "user_id": self.user_id}
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -200,8 +200,8 @@ class User():
         sql = ("UPDATE users SET is_admin = :value WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         sql_vars = {"value": value,
-                "chat_id": self.chat_id,
-                "user_id": self.user_id}
+                    "chat_id": self.chat_id,
+                    "user_id": self.user_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -259,7 +259,7 @@ class Chat():
         sql = ("INSERT INTO chats (chat_id, owner_id, messages) VALUES "
                "(:chat_id, :owner_id, 1)")
         sql_vars = {"chat_id": self.chat_id,
-                "owner_id": owner_id}
+                    "owner_id": owner_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -270,7 +270,7 @@ class Chat():
         '''
         sql = "UPDATE chats SET messages = :messages WHERE chat_id = :chat_id"
         sql_vars = {"messages": self.messages + 1,
-                "chat_id": self.chat_id}
+                    "chat_id": self.chat_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -282,7 +282,7 @@ class Chat():
         sql = ("UPDATE chats SET last_person_send = :date WHERE "
                "chat_id = :chat_id")
         sql_vars = {"date": date,
-                "chat_id": self.chat_id}
+                    "chat_id": self.chat_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -346,9 +346,9 @@ class Settings():
         sql = ("INSERT INTO settings (chat_id, setting, alias, value) VALUES "
                "(:chat_id, :setting, :alias, :value)")
         sql_vars = {"chat_id": self.chat_id,
-                "setting": setting,
-                "alias": alias,
-                "value": value}
+                    "setting": setting,
+                    "alias": alias,
+                    "value": value}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -357,7 +357,7 @@ class Settings():
         sql = ("SELECT value FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
         sql_vars = {"chat_id": self.chat_id,
-                "alias": alias}
+                    "alias": alias}
 
         self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
@@ -366,7 +366,7 @@ class Settings():
         sql = ("SELECT alias FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
         sql_vars = {"chat_id": self.chat_id,
-                "alias": alias}
+                    "alias": alias}
 
         self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
@@ -400,8 +400,8 @@ class Settings():
         sql = ("UPDATE settings SET value = :value WHERE "
                "chat_id = :chat_id AND alias = :alias")
         sql_vars = {"value": value,
-                "chat_id": self.chat_id,
-                "alias": alias}
+                    "chat_id": self.chat_id,
+                    "alias": alias}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -412,7 +412,7 @@ class Settings():
         sql = ("SELECT alias FROM settings WHERE chat_id = :chat_id "
                "AND setting = :setting")
         sql_vars = {"chat_id": self.chat_id,
-                "setting": setting}
+                    "setting": setting}
 
         self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
@@ -433,8 +433,8 @@ class Sex():
         sql = ("UPDATE users SET sex_request = :request WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         sql_vars = {"chat_id": self.chat_id,
-                "request": self.from_user,
-                "user_id": to_id}
+                    "request": self.from_user,
+                    "user_id": to_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -447,7 +447,7 @@ class Sex():
         sql = ("SELECT sex_request FROM users WHERE chat_id = :chat_id "
                "AND user_id = :user_id")
         sql_vars = {"chat_id": self.chat_id,
-                "user_id": self.from_user}
+                    "user_id": self.from_user}
 
         self.cursor.execute(sql, sql_vars)
         result = self.cursor.fetchone()
@@ -465,7 +465,7 @@ class Sex():
         sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
                "AND sex_request = :request")
         sql_vars = {"chat_id": self.chat_id,
-                "request": self.from_user}
+                    "request": self.from_user}
 
         self.cursor.execute(sql, sql_vars)
         result = self.cursor.fetchone()
@@ -481,7 +481,7 @@ class Sex():
         sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
                "AND user_id = :user_id")
         sql_vars = {"chat_id": self.chat_id,
-                "user_id": to_id}
+                    "user_id": to_id}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -493,7 +493,7 @@ class Sex():
         sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
                "AND user_id = :user_id")
         sql_vars = {"chat_id": self.chat_id,
-                "user_id": self.from_user}
+                    "user_id": self.from_user}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -519,7 +519,7 @@ class CasinoUser():
         sql = ("SELECT * FROM casino WHERE chat_id = :chat_id AND "
                "user_id = :user_id")
         sql_vars = {"chat_id": self.chat_id,
-                "user_id": self.user_id}
+                    "user_id": self.user_id}
         self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
 
@@ -530,9 +530,9 @@ class CasinoUser():
         sql = ("INSERT INTO casino (chat_id, user_id, bet, feature) "
                "VALUES (:chat_id, :user_id, :bet, :feature)")
         sql_vars = {"chat_id": self.chat_id,
-                "user_id": self.user_id,
-                "bet": bet,
-                "feature": feature}
+                    "user_id": self.user_id,
+                    "bet": bet,
+                    "feature": feature}
 
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
@@ -555,7 +555,7 @@ class Casino():
         sql = ("SELECT user_id FROM casino WHERE chat_id = :chat_id "
                "AND feature = :feature")
         sql_vars = {"chat_id": self.chat_id,
-                "feature": feature}
+                    "feature": feature}
         self.cursor.execute(sql, sql_vars)
         users = self.cursor.fetchall()
         result = []
@@ -580,9 +580,9 @@ class Casino():
                "(chat_id, date, time, win_feature) VALUES "
                "(:chat_id, :date, :time, :feature)")
         sql_vars = {"chat_id": self.chat_id,
-                "date": now.date(),
-                "time": str(now.time()),
-                "feature": feature}
+                    "date": now.date(),
+                    "time": str(now.time()),
+                    "feature": feature}
         self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
@@ -592,7 +592,7 @@ class Casino():
                "chat_id = :chat_id AND date = :date ORDER BY "
                "time LIMIT 20")
         sql_vars = {"chat_id": self.chat_id,
-                "date": now.date()}
+                    "date": now.date()}
         self.cursor.execute(sql, sql_vars)
         features = self.cursor.fetchall()
         if features == []:
@@ -608,7 +608,7 @@ class Casino():
         sql = ("SELECT time FROM casino_history WHERE "
                "chat_id = :chat_id AND date = :date ORDER BY time DESC")
         sql_vars = {"chat_id": self.chat_id,
-                "date": now.date()}
+                    "date": now.date()}
         self.cursor.execute(sql, sql_vars)
         result = self.cursor.fetchone()
         if result is None:

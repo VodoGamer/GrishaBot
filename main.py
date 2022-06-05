@@ -19,7 +19,7 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
         user = models.User(self.event.peer_id, self.event.from_id)
         user.add_message()
 
-        if str(self.event.peer_id)[0] == "2":
+        if len(str(self.event.peer_id)) == 10:
             chat = models.Chat(self.event.peer_id)
             settings = models.Settings(self.event.peer_id)
             settings.update()

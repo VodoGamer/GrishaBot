@@ -8,7 +8,7 @@ bp = Blueprint("Custom names")
 
 
 @bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^(!|\.|\/)?\s*ник"))
-async def get_my_name(message: Message):
+async def get_his_name(message: Message):
     user = User(message.peer_id, message.reply_message.from_id)
     await message.reply("Имя этого человека на данный момент: "
                         f"{await user.get_name()}")

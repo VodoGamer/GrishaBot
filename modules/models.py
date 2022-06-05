@@ -33,10 +33,10 @@ class User():
 
             sql = ("SELECT * FROM users WHERE chat_id = :chat_id "
                    "AND user_id = :user_id")
-            vars = {"chat_id": self.chat_id,
+            sql_vars = {"chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-            self.cursor.execute(sql, vars)
+            self.cursor.execute(sql, sql_vars)
             result = self.cursor.fetchone()
             self.messages = result[2]
             self.custom_name = result[3]
@@ -54,11 +54,11 @@ class User():
         if self.group is False:  # Проверка на группу
             sql = ("SELECT :field FROM users WHERE chat_id = :chat_id AND "
                    "user_id = :user_id")
-            vars = {"field": field,
+            sql_vars = {"field": field,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-            self.cursor.execute(sql, vars)
+            self.cursor.execute(sql, sql_vars)
             return self.cursor.fetchone()
 
     def register(self, messages_count: int = 1) -> None:
@@ -68,11 +68,11 @@ class User():
         if self.group is False:  # Проверка на группу
             sql = ("INSERT INTO users (chat_id, user_id, messages, money) "
                    "VALUES (:chat_id, :user_id, :messages_count, 0)")
-            vars = {"chat_id": self.chat_id,
+            sql_vars = {"chat_id": self.chat_id,
                     "user_id": self.user_id,
                     "messages_count": messages_count}
 
-            self.cursor.execute(sql, vars)
+            self.cursor.execute(sql, sql_vars)
             self.connection.commit()
 
     def add_message(self) -> None:
@@ -82,22 +82,22 @@ class User():
         if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET messages = :messages WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
-            vars = {"messages": self.messages + 1,
+            sql_vars = {"messages": self.messages + 1,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-            self.cursor.execute(sql, vars)
+            self.cursor.execute(sql, sql_vars)
             self.connection.commit()
 
     def change_money(self, value):
         if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET money = :money WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
-            vars = {"money": self.money + value,
+            sql_vars = {"money": self.money + value,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-            self.cursor.execute(sql, vars)
+            self.cursor.execute(sql, sql_vars)
             self.connection.commit()
 
     async def get_name(self, case: str = "nomn") -> str:
@@ -139,11 +139,11 @@ class User():
         if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET custom_name = :name WHERE "
                    "chat_id = :chat_id AND user_id = :user_id")
-            vars = {"name": name,
+            sql_vars = {"name": name,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-            self.cursor.execute(sql, vars)
+            self.cursor.execute(sql, sql_vars)
             self.connection.commit()
 
     async def get_mention(self, case: str = "nomn") -> str:
@@ -168,42 +168,42 @@ class User():
     def update_last_bonus(self, date: int):
         sql = ("UPDATE users SET bonus_date = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
-        vars = {"date": date,
+        sql_vars = {"date": date,
                 "chat_id": self.chat_id,
                 "user_id": self.user_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def change_dick(self, value):
         if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET dick_size = :size WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
-            vars = {"size": self.dick_size + value,
+            sql_vars = {"size": self.dick_size + value,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-            self.cursor.execute(sql, vars)
+            self.cursor.execute(sql, sql_vars)
             self.connection.commit()
 
     def update_last_dick(self, date: int):
         sql = ("UPDATE users SET last_dick = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
-        vars = {"date": date,
+        sql_vars = {"date": date,
                 "chat_id": self.chat_id,
                 "user_id": self.user_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def update_admin(self, value):
         sql = ("UPDATE users SET is_admin = :value WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
-        vars = {"value": value,
+        sql_vars = {"value": value,
                 "chat_id": self.chat_id,
                 "user_id": self.user_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
 
@@ -233,9 +233,9 @@ class Chat():
         self.connection = sqlite3.connect("db.db")
         self.cursor = self.connection.cursor()
         sql = "SELECT * FROM chats WHERE chat_id = :chat_id"
-        vars = {"chat_id": self.chat_id}
+        sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         result = self.cursor.fetchone()
         if self.check():
             self.owner_id = result[1]
@@ -247,9 +247,9 @@ class Chat():
         Проверяет заполнено ли передаваемое поле в БД
         '''
         sql = "SELECT chat_id FROM chats WHERE chat_id = :chat_id"
-        vars = {"chat_id": self.chat_id}
+        sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
 
     def register(self, owner_id: int):
@@ -258,10 +258,10 @@ class Chat():
         '''
         sql = ("INSERT INTO chats (chat_id, owner_id, messages) VALUES "
                "(:chat_id, :owner_id, 1)")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "owner_id": owner_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def add_message(self):
@@ -269,10 +269,10 @@ class Chat():
         Добавляет сообщение в статистику
         '''
         sql = "UPDATE chats SET messages = :messages WHERE chat_id = :chat_id"
-        vars = {"messages": self.messages + 1,
+        sql_vars = {"messages": self.messages + 1,
                 "chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def set_last_person_send(self, date) -> None:
@@ -281,26 +281,26 @@ class Chat():
         '''
         sql = ("UPDATE chats SET last_person_send = :date WHERE "
                "chat_id = :chat_id")
-        vars = {"date": date,
+        sql_vars = {"date": date,
                 "chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def get_dicks_top(self) -> list[int] | bool:
         sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
                "AND dick_size <> 0 ORDER BY dick_size DESC")
-        vars = {"chat_id": self.chat_id}
+        sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchall() or False
 
     def get_forbes_list(self) -> list[list[int]] | bool:
         sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
                "AND money <> 0 ORDER BY money DESC")
-        vars = {"chat_id": self.chat_id}
+        sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchall() or False
 
 
@@ -334,43 +334,41 @@ class Settings():
         Проверяет есть ли чат в талице settings
         '''
         sql = "SELECT chat_id FROM settings WHERE chat_id = :chat_id"
-        vars = {"chat_id": self.chat_id}
+        sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
 
     def add(self, setting, alias, value):
+        '''Добавляет новую настройку'''
         setting = setting.lower()
         alias = alias.lower()
-        '''
-        Добавляет новую настройку
-        '''
         sql = ("INSERT INTO settings (chat_id, setting, alias, value) VALUES "
                "(:chat_id, :setting, :alias, :value)")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "setting": setting,
                 "alias": alias,
                 "value": value}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def get_value(self, alias):
         sql = ("SELECT value FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "alias": alias}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
 
     def get_alias(self, alias):
         sql = ("SELECT alias FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "alias": alias}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
 
     def get_all(self):
@@ -378,16 +376,16 @@ class Settings():
         Вовращает все настройки чата
         '''
         sql = "SELECT * FROM settings WHERE chat_id = :chat_id"
-        vars = {"chat_id": self.chat_id}
+        sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchall()
 
     def change_value(self, alias: str, value=None):
-        alias = alias.lower()
         '''
         Меняет значение value передаваемой настройки на противоположное
         '''
+        alias = alias.lower()
         res = self.get_value(alias)[0]
         if res == "True":
             value = "False"
@@ -398,15 +396,14 @@ class Settings():
         else:
             if value == '':
                 raise ValueError
-            value = value
             value_return = value
         sql = ("UPDATE settings SET value = :value WHERE "
                "chat_id = :chat_id AND alias = :alias")
-        vars = {"value": value,
+        sql_vars = {"value": value,
                 "chat_id": self.chat_id,
                 "alias": alias}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
         return value_return
 
@@ -414,10 +411,10 @@ class Settings():
         setting = setting.lower()
         sql = ("SELECT alias FROM settings WHERE chat_id = :chat_id "
                "AND setting = :setting")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "setting": setting}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
 
 
@@ -435,11 +432,11 @@ class Sex():
         '''
         sql = ("UPDATE users SET sex_request = :request WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "request": self.from_user,
                 "user_id": to_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def get_request(self) -> None | int:
@@ -449,10 +446,10 @@ class Sex():
         '''
         sql = ("SELECT sex_request FROM users WHERE chat_id = :chat_id "
                "AND user_id = :user_id")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "user_id": self.from_user}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         result = self.cursor.fetchone()
         if result is None:
             return None
@@ -467,10 +464,10 @@ class Sex():
 
         sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
                "AND sex_request = :request")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "request": self.from_user}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         result = self.cursor.fetchone()
         if result is None:
             return None
@@ -483,10 +480,10 @@ class Sex():
         '''
         sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
                "AND user_id = :user_id")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "user_id": to_id}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def discard_sex(self):
@@ -495,10 +492,10 @@ class Sex():
         '''
         sql = ("UPDATE users SET sex_request = Null WHERE chat_id = :chat_id "
                "AND user_id = :user_id")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "user_id": self.from_user}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
 
@@ -521,9 +518,9 @@ class CasinoUser():
         '''
         sql = ("SELECT * FROM casino WHERE chat_id = :chat_id AND "
                "user_id = :user_id")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "user_id": self.user_id}
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchone()
 
     def register_bet(self, bet: int, feature: str):
@@ -532,12 +529,12 @@ class CasinoUser():
         '''
         sql = ("INSERT INTO casino (chat_id, user_id, bet, feature) "
                "VALUES (:chat_id, :user_id, :bet, :feature)")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "user_id": self.user_id,
                 "bet": bet,
                 "feature": feature}
 
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
 
@@ -550,16 +547,16 @@ class Casino():
 
     def get_users(self) -> list[tuple[int, int, int, str]]:
         sql = "SELECT * FROM casino WHERE chat_id = :chat_id"
-        vars = {"chat_id": self.chat_id}
-        self.cursor.execute(sql, vars)
+        sql_vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, sql_vars)
         return self.cursor.fetchall()
 
     def get_winner_users(self, feature: str) -> list[int]:
         sql = ("SELECT user_id FROM casino WHERE chat_id = :chat_id "
                "AND feature = :feature")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "feature": feature}
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         users = self.cursor.fetchall()
         result = []
         for user in users:
@@ -573,8 +570,8 @@ class Casino():
 
     def delete_all(self):
         sql = "DELETE FROM casino WHERE chat_id = :chat_id"
-        vars = {"chat_id": self.chat_id}
-        self.cursor.execute(sql, vars)
+        sql_vars = {"chat_id": self.chat_id}
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def add_to_history(self, feature: str):
@@ -582,11 +579,11 @@ class Casino():
         sql = ("INSERT INTO casino_history "
                "(chat_id, date, time, win_feature) VALUES "
                "(:chat_id, :date, :time, :feature)")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "date": now.date(),
                 "time": str(now.time()),
                 "feature": feature}
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         self.connection.commit()
 
     def get_history(self) -> list[str] | None:
@@ -594,9 +591,9 @@ class Casino():
         sql = ("SELECT win_feature FROM casino_history WHERE "
                "chat_id = :chat_id AND date = :date ORDER BY "
                "time LIMIT 20")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "date": now.date()}
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         features = self.cursor.fetchall()
         if features == []:
             return None
@@ -610,9 +607,9 @@ class Casino():
         now = datetime.now()
         sql = ("SELECT time FROM casino_history WHERE "
                "chat_id = :chat_id AND date = :date ORDER BY time DESC")
-        vars = {"chat_id": self.chat_id,
+        sql_vars = {"chat_id": self.chat_id,
                 "date": now.date()}
-        self.cursor.execute(sql, vars)
+        self.cursor.execute(sql, sql_vars)
         result = self.cursor.fetchone()
         if result is None:
             return True

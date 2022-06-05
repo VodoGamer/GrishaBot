@@ -68,7 +68,7 @@ async def set_admin(message: Message):
 
 @bp.on.chat_message(ReplyMessageRule(),
                     regex=(r"(?i)^(!|\.|\/)?\s*снять админ(истратора|а)$"))
-async def set_admin(message: Message):
+async def unset_admin(message: Message):
     chat = Chat(message.peer_id)
 
     if chat.owner_id == message.from_id:

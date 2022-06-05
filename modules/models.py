@@ -4,8 +4,8 @@ import re
 import sqlite3
 
 from pydantic import BaseModel
-from vkbottle.bot import Blueprint
 from pymorphy2 import MorphAnalyzer
+from vkbottle.bot import Blueprint
 
 
 # Иниты сюда

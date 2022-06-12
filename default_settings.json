@@ -1,29 +1,32 @@
 {
   "settings":[
     {
-      "setting": "закреп сообщений",
-      "alias": "pin",
-      "value": "False"
+      "id": 1,
+      "alias": "Закреп сообщений бота",
+      "value": 0,
+      "disabled": "False",
+      "boolable": 1
     },
     {
-      "setting": "картинки к сообщениям бота",
-      "alias": "pictures",
-      "value": "True"
+      "id": 2,
+      "alias": "Картинки к сообщениям бота",
+      "value": 0,
+      "disabled": "False",
+      "boolable": 1
     },
     {
-      "setting": "кастомные имена",
-      "alias": "custom_names",
-      "value": "True"
+      "id": 3,
+      "alias": "Казино",
+      "value": 0,
+      "disabled": "False",
+      "boolable": 1
     },
     {
-      "setting": "казино",
-      "alias": "casino",
-      "value": "False"
-    },
-    {
-      "setting": "кд на го",
-      "alias": "casino_cooldown",
-      "value": "10"
+      "id": 4,
+      "alias": "КД на крутки в казино (сек)",
+      "value": 10,
+      "disabled": "False",
+      "boolable": 0
     }
   ]
 }

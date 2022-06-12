@@ -1,4 +1,4 @@
-"""empty message
+"""add chats column
 
 Revision ID: 3093d2fc742d
 Revises:

@@ -1,4 +1,4 @@
-"""empty message
+"""add accounts column
 
 Revision ID: 03109d7d3e85
 Revises: 3093d2fc742d

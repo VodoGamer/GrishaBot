@@ -53,9 +53,9 @@ class Chat:
     async def _get(self) -> None:
         '''Заполняет `self` строками'''
         information = await self._get_all_columns()
-        self.owner_id = information[1]
-        self.messages = information[2]
-        self.person_date = information[3]
+        self.owner_id: int = information[1]
+        self.messages: int = information[2]
+        self.person_date: datetime = information[3]
 
     async def register(self, owner_id: int) -> None:
         '''Регистрирует чат в БД'''
@@ -122,14 +122,14 @@ class Account:
     async def _get(self) -> None:
         '''Заполняет `self` строками'''
         information = await self._get_all_columns()
-        self.is_admin :int = information[2] or 0
-        self.custom_name :str = information[3]
-        self.messages :int = information[4]
-        self.sex_request :int = information[5]
-        self.money :int = information[6]
-        self.bonus_date :datetime = information[7]
-        self.dick_size :int = information[8]
-        self.dick_date :datetime = information[8]
+        self.is_admin: int = information[2] or 0
+        self.custom_name: str = information[3]
+        self.messages: int = information[4]
+        self.sex_request: int = information[5]
+        self.money: int = information[6]
+        self.bonus_date: datetime = information[7]
+        self.dick_size: int = information[8]
+        self.dick_date: datetime = information[8]
 
     async def _change_admin(self, value: int):
         async with aiosqlite.connect(database) as db:
@@ -288,9 +288,9 @@ class Setting:
     async def _get(self):
         '''Заполняет `self` строками'''
         information = await self._get_all_columns()
-        self.value = information[3]
-        self.alias = default_settings.settings[self.setting_id - 1].alias
-        self.boolable = information[4]
+        self.value: int = information[3]
+        self.alias: str = default_settings.settings[self.setting_id - 1].alias
+        self.boolable: int = information[4]
 
     async def add(self, value: int, title: str, boolable: int):
         '''Добавляет новую настройку к чату'''

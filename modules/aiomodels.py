@@ -1,11 +1,11 @@
 import asyncio
-import aiosqlite
+import re
 from datetime import datetime
+
+import aiosqlite
 from pydantic import BaseModel
 from pymorphy2 import MorphAnalyzer
-import re
 from vkbottle.bot import Blueprint
-
 
 # Иниты сюда
 bp = Blueprint("AioModels")
@@ -44,21 +44,22 @@ class FromUserDontSendSexRequest(Exception):
 
 class Chat:
     '''Описывает класс чата'''
+
     def __init__(self, id: int) -> None:
         self.chat_id = id
 
     async def _get_all_columns(self) -> tuple:
         '''Возвращает значение всех колонок по `self.chat_id`'''
+        sql = ("SELECT * FROM chats WHERE chat_id = :chat_id")
+        sql_vars = {"chat_id": self.chat_id}
         async with aiosqlite.connect(database) as db:
-            sql = ("SELECT * FROM chats WHERE chat_id = :chat_id")
-            sql_vars = {"chat_id": self.chat_id}
             async with db.execute(sql, sql_vars) as cursor:
                 result = await cursor.fetchone()
-                if result is None:
-                    raise RecordDoesNotExist
-                return result
+        if result is None:
+            raise RecordDoesNotExist
+        return result
 
-    async def _get(self) -> None:
+    async def get(self) -> None:
         '''Заполняет `self` строками'''
         information = await self._get_all_columns()
         self.owner_id: int = information[1]
@@ -67,38 +68,39 @@ class Chat:
 
     async def register(self, owner_id: int) -> None:
         '''Регистрирует чат в БД'''
+        sql = ("INSERT INTO chats (chat_id, owner_id, messages) VALUES "
+               "(:chat_id, :owner_id, 1)")
+        sql_vars = {"chat_id": self.chat_id,
+                    "owner_id": owner_id}
         async with aiosqlite.connect(database) as db:
-            sql = ("INSERT INTO chats (chat_id, owner_id, messages) VALUES "
-                   "(:chat_id, :owner_id, 1)")
-            sql_vars = {"chat_id": self.chat_id,
-                        "owner_id": owner_id}
             await db.execute(sql, sql_vars)
             await db.commit()
 
     async def add_message(self, messages_count: int) -> None:
         '''Добавляет сообщения в статистику чата'''
         messages = self.messages + messages_count
+        sql = ("UPDATE chats SET messages = :messages WHERE "
+               "chat_id = :chat_id")
+        sql_vars = {"chat_id": self.chat_id,
+                    "messages": messages}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE chats SET messages = :messages WHERE "
-                   "chat_id = :chat_id")
-            sql_vars = {"chat_id": self.chat_id,
-                        "messages": messages}
             await db.execute(sql, sql_vars)
             await db.commit()
 
     async def set_person_date(self, date: datetime) -> None:
         '''Обновляет дату последнего использования человека дня'''
+        sql = ("UPDATE chats SET person_date = :date WHERE "
+               "chat_id = :chat_id")
+        sql_vars = {"chat_id": self.chat_id,
+                    "date": date}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE chats SET person_date = :date WHERE "
-                   "chat_id = :chat_id")
-            sql_vars = {"chat_id": self.chat_id,
-                        "date": date}
             await db.execute(sql, sql_vars)
             await db.commit()
 
 
 class Account:
     '''Описывает класс акаунта(ботов и юзеров)'''
+
     def __init__(self, chat_id: int, id: int) -> None:
         self.chat = Chat(chat_id)
         self.id = id
@@ -106,28 +108,28 @@ class Account:
     async def _get_all_columns(self) -> tuple:
         '''Возвращает значение всех колонок по `self.id` и
         `self.chat.chat_id`'''
+        sql = ("SELECT * FROM accounts WHERE chat_id = :chat_id AND "
+               "id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.id}
         async with aiosqlite.connect(database) as db:
-            sql = ("SELECT * FROM accounts WHERE chat_id = :chat_id AND "
-                   "id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id}
             async with db.execute(sql, sql_vars) as cursor:
                 result = await cursor.fetchone()
-                if result is None:
-                    raise RecordDoesNotExist
-                return result
+        if result is None:
+            raise RecordDoesNotExist
+        return result
 
     async def register(self) -> None:
         '''Регистрирует акаунт в БД'''
+        sql = ("INSERT INTO accounts (chat_id, id, messages) VALUES "
+               "(:chat_id, :id, 1)")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.id}
         async with aiosqlite.connect(database) as db:
-            sql = ("INSERT INTO accounts (chat_id, id, messages) VALUES "
-                   "(:chat_id, :id, 1)")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id}
             await db.execute(sql, sql_vars)
             await db.commit()
 
-    async def _get(self) -> None:
+    async def get(self) -> None:
         '''Заполняет `self` строками'''
         information = await self._get_all_columns()
         self.is_admin: int = information[2] or 0
@@ -139,23 +141,23 @@ class Account:
         self.dick_size: int = information[8]
         self.dick_date: datetime = information[8]
 
-    async def _change_admin(self, value: int):
+    async def change_admin(self, value: int):
+        sql = ("UPDATE accounts SET is_admin = :value WHERE "
+               "chat_id = :chat_id AND id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.id,
+                    "value": value}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE accounts SET is_admin = :value WHERE "
-                   "chat_id = :chat_id AND id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id,
-                        "value": value}
             await db.execute(sql, sql_vars)
             await db.commit()
 
     async def set_admin(self):
         '''Назначает акаунт админом'''
-        await self._change_admin(1)
+        await self.change_admin(1)
 
     async def unset_admin(self):
         '''Убирает админку у акаунта'''
-        await self._change_admin(0)
+        await self.change_admin(0)
 
     async def test_custom_name(self, name: str) -> None:
         '''Проверяет кастомное имя'''
@@ -178,12 +180,12 @@ class Account:
 
     async def set_custom_name(self, name: str) -> None:
         '''Устанавливает кастомное имя'''
+        sql = ("UPDATE accounts SET custom_name = :name WHERE "
+               "chat_id = :chat_id AND id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.id,
+                    "name": name}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE accounts SET custom_name = :name WHERE "
-                   "chat_id = :chat_id AND id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id,
-                        "name": name}
             await db.execute(sql, sql_vars)
             await db.commit()
 
@@ -220,42 +222,42 @@ class Account:
 
     async def add_money(self, value: int):
         '''Добавляет деньги акаунту'''
+        sql = ("UPDATE accounts SET money = :money WHERE "
+               "chat_id = :chat_id AND id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.id,
+                    "money": self.money + value}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE accounts SET money = :money WHERE "
-                   "chat_id = :chat_id AND id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id,
-                        "money": self.money + value}
             await db.execute(sql, sql_vars)
             await db.commit()
 
     async def update_bonus_date(self, date: datetime):
         '''Обновляет дату последнего получения бонуса'''
+        sql = ("UPDATE accounts SET bonus_date = :date WHERE "
+               "chat_id = :chat_id AND id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.id,
+                    "date": date}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE accounts SET bonus_date = :date WHERE "
-                   "chat_id = :chat_id AND id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id,
-                        "date": date}
             await db.execute(sql, sql_vars)
             await db.commit()
 
     async def change_dick(self, date: datetime, size: int):
         '''Обновляет дату и размер писюна'''
-        async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE accounts SET dick_size = :size WHERE "
-                   "chat_id = :chat_id AND id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id,
-                        "size": self.dick_size + size}
-            await db.execute(sql, sql_vars)
+        sql = ("UPDATE accounts SET dick_size = :size WHERE "
+               "chat_id = :chat_id AND id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.id,
+                    "size": self.dick_size + size}
 
-            sql = ("UPDATE accounts SET dick_date = :date WHERE "
-                   "chat_id = :chat_id AND id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.id,
-                        "date": date}
+        sql2 = ("UPDATE accounts SET dick_date = :date WHERE "
+                "chat_id = :chat_id AND id = :id")
+        sql2_vars = {"chat_id": self.chat.chat_id,
+                     "id": self.id,
+                     "date": date}
+        async with aiosqlite.connect(database) as db:
             await db.execute(sql, sql_vars)
+            await db.execute(sql2, sql2_vars)
             await db.commit()
 
 
@@ -282,18 +284,18 @@ class Setting:
 
     async def _get_all_columns(self) -> tuple:
         '''Возвращает значение всех колонок по и `self.chat.chat_id`'''
+        sql = ("SELECT * FROM settings WHERE chat_id = :chat_id AND "
+               "setting_id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.setting_id}
         async with aiosqlite.connect(database) as db:
-            sql = ("SELECT * FROM settings WHERE chat_id = :chat_id AND "
-                   "setting_id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.setting_id}
             async with db.execute(sql, sql_vars) as cursor:
                 result = await cursor.fetchone()
-                if result is None:
-                    raise RecordDoesNotExist
-                return result
+        if result is None:
+            raise RecordDoesNotExist
+        return result
 
-    async def _get(self):
+    async def get(self):
         '''Заполняет `self` строками'''
         information = await self._get_all_columns()
         self.value: int = information[3]
@@ -302,36 +304,36 @@ class Setting:
 
     async def add(self, value: int, title: str, boolable: int):
         '''Добавляет новую настройку к чату'''
+        sql = ("INSERT INTO settings (chat_id, setting_id, value, "
+               "title, boolable) "
+               "VALUES (:chat_id, :id, :value, :title, :boolable)")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.setting_id,
+                    "value": value,
+                    "title": title,
+                    "boolable": boolable}
         async with aiosqlite.connect(database) as db:
-            sql = ("INSERT INTO settings (chat_id, setting_id, value, "
-                   "title, boolable) "
-                   "VALUES (:chat_id, :id, :value, :title, :boolable)")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.setting_id,
-                        "value": value,
-                        "title": title,
-                        "boolable": boolable}
             await db.execute(sql, sql_vars)
             await db.commit()
 
     async def delete(self):
         '''Удаляет настройку у чата'''
+        sql = ("DELETE FROM settings WHERE chat_id = :chat_id "
+               "AND setting_id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.setting_id}
         async with aiosqlite.connect(database) as db:
-            sql = ("DELETE FROM settings WHERE chat_id = :chat_id "
-                   "AND setting_id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.setting_id}
             await db.execute(sql, sql_vars)
             await db.commit()
 
     async def change_title(self, new_title: str):
         '''Изменяет название настройки в БД'''
+        sql = ("UPDATE settings SET title = :title WHERE "
+               "chat_id = :chat_id AND setting_id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.setting_id,
+                    "title": new_title}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE settings SET title = :title WHERE "
-                   "chat_id = :chat_id AND setting_id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.setting_id,
-                        "title": new_title}
             await db.execute(sql, sql_vars)
             await db.commit()
 
@@ -339,12 +341,12 @@ class Setting:
         '''Изменяет значение настройки в БД'''
         if self.boolable and value >= 2:
             raise BoolSettingDoesNotRandomInt
+        sql = ("UPDATE settings SET value = :value WHERE "
+               "chat_id = :chat_id AND setting_id = :id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "id": self.setting_id,
+                    "value": value}
         async with aiosqlite.connect(database) as db:
-            sql = ("UPDATE settings SET value = :value WHERE "
-                   "chat_id = :chat_id AND setting_id = :id")
-            sql_vars = {"chat_id": self.chat.chat_id,
-                        "id": self.setting_id,
-                        "value": value}
             await db.execute(sql, sql_vars)
             await db.commit()
 
@@ -363,15 +365,15 @@ class Settings:
 
     async def get_all(self) -> list[int, str, int]:
         '''Получает все настройки чата'''
+        sql = ("SELECT setting_id, title, value FROM settings "
+               "WHERE chat_id = :chat_id")
+        sql_vars = {"chat_id": self.chat.chat_id}
         async with aiosqlite.connect(database) as db:
-            sql = ("SELECT setting_id, title, value FROM settings "
-                   "WHERE chat_id = :chat_id")
-            sql_vars = {"chat_id": self.chat.chat_id}
             async with db.execute(sql, sql_vars) as cursor:
                 result = await cursor.fetchall()
-                if result is None:
-                    raise RecordDoesNotExist
-                return result
+        if result is None:
+            raise RecordDoesNotExist
+        return result
 
 
 class Sex():
@@ -461,16 +463,16 @@ async def settings_upgrade():
     '''Функция, запускающаяся при запуске бота. Проверяет JSON на наличие
     новых настроек или задизабленных настроек. Также проверяет настройки на
     смену тайтла (алиса). Выполняется один раз, при каждом запуске бота.'''
+    sql = ("SELECT chat_id FROM chats")
     async with aiosqlite.connect(database) as db:
-        sql = ("SELECT chat_id FROM chats")
         async with db.execute(sql) as cursor:
             chats = await cursor.fetchall()
 
     for chat in chats:
         for setting in default_settings.settings:
+            sql = (f"SELECT * FROM settings WHERE chat_id = {chat[0]} "
+                   f"AND setting_id = {setting.id}")
             async with aiosqlite.connect(database) as db:
-                sql = (f"SELECT * FROM settings WHERE chat_id = {chat[0]} "
-                       f"AND setting_id = {setting.id}")
                 async with db.execute(sql) as cursor:
                     result = await cursor.fetchone()
             setting_class = Setting(chat[0], setting.id)

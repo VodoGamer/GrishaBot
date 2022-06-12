@@ -34,6 +34,14 @@ class BoolSettingDoesNotRandomInt(Exception):
     ...
 
 
+class FromUserDoesntHaveSexRequest(Exception):
+    ...
+
+
+class FromUserDontSendSexRequest(Exception):
+    ...
+
+
 class Chat:
     '''Описывает класс чата'''
     def __init__(self, id: int) -> None:
@@ -364,6 +372,88 @@ class Settings:
                 if result is None:
                     raise RecordDoesNotExist
                 return result
+
+
+class Sex():
+    def __init__(self, chat_id: int, from_user: int) -> None:
+        self.chat_id = chat_id
+        self.from_user = from_user
+
+    async def start(self, to_id) -> None:
+        '''
+        "from_user" предлагает секс переданному юзеру ("to_id")
+        '''
+        sql = ("UPDATE accounts SET sex_request = :request WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        sql_vars = {"chat_id": self.chat_id,
+                    "request": self.from_user,
+                    "user_id": to_id}
+        async with aiosqlite.connect(database) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
+
+    async def get_request(self) -> int:
+        '''
+        есть ли запрос на секс у "from_user" от другого юзера
+        возвращает id другого юзера
+        '''
+        sql = ("SELECT sex_request FROM accounts WHERE chat_id = :chat_id "
+               "AND user_id = :user_id")
+        sql_vars = {"chat_id": self.chat_id,
+                    "user_id": self.from_user}
+
+        async with aiosqlite.connect(database) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                result = await cursor.fetchone()
+        if result is None:
+            raise FromUserDoesntHaveSexRequest
+        else:
+            return result[0]
+
+    async def get_send(self) -> int:
+        '''
+        отправлял ли "from_user" запрос на секс другому
+        возращает id другого юзера
+        '''
+
+        sql = ("SELECT user_id FROM accounts WHERE chat_id = :chat_id "
+               "AND sex_request = :request")
+        sql_vars = {"chat_id": self.chat_id,
+                    "request": self.from_user}
+
+        async with aiosqlite.connect(database) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                result = await cursor.fetchone()
+        if result is None:
+            raise FromUserDontSendSexRequest
+        else:
+            return result[0]
+
+    async def end_sex(self, to_id):
+        '''
+        убирает заявку на секс отправленную от "from_user"
+        '''
+        sql = ("UPDATE accounts SET sex_request = Null WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        sql_vars = {"chat_id": self.chat_id,
+                    "user_id": to_id}
+
+        async with aiosqlite.connect(database) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
+
+    async def discard_sex(self):
+        '''
+        отклонение "from_user" от предложения секса другого юзера
+        '''
+        sql = ("UPDATE accounts SET sex_request = Null WHERE "
+               "chat_id = :chat_id AND user_id = :user_id")
+        sql_vars = {"chat_id": self.chat_id,
+                    "user_id": self.from_user}
+
+        async with aiosqlite.connect(database) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
 
 # Settings init

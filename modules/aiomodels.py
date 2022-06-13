@@ -1,6 +1,7 @@
 import asyncio
 import re
 from datetime import datetime
+from random import choice, randint
 
 import aiosqlite
 from pydantic import BaseModel
@@ -198,10 +199,10 @@ class Account:
             name = self.custom_name
         elif self.id < 0:
             # Если кастомное имя не задано и это группа
-            name = (await bp.api.groups.get_by_id(self.group_id))[0].name
+            name = (await bp.api.groups.get_by_id(self.id))[0].name
         else:
             # Если кастомное имя не задано
-            name = (await bp.api.users.get(self.user_id))[0].first_name
+            name = (await bp.api.users.get(self.id))[0].first_name
 
         try:
             multi_name = []
@@ -456,6 +457,126 @@ class Sex():
         async with aiosqlite.connect(database) as db:
             await db.execute(sql, sql_vars)
             await db.commit()
+
+
+class CasinoUser():
+    def __init__(self, chat_id: int, user_id: int) -> None:
+        self.chat = Chat(chat_id)
+        self.user_id = user_id
+
+    async def _get_all_columns(self):
+        '''Возвращает значение всех колонок по `self.chat_id`'''
+        sql = ("SELECT * FROM casino WHERE chat_id = :chat_id AND "
+               "user_id = :user_id")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "user_id": self.user_id}
+        async with aiosqlite.connect(database) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                result = await cursor.fetchone()
+        if result is None:
+            raise RecordDoesNotExist
+        return result
+
+    async def get(self):
+        information = self._get_all_columns()
+        self.bet = information[2]
+        self.feature = information[3]
+
+    async def register_bet(self, bet: int, feature: str):
+        '''
+        Регистрирует пользователя в крутку
+        '''
+        sql = ("INSERT INTO casino (chat_id, user_id, bet, feature) "
+               "VALUES (:chat_id, :user_id, :bet, :feature)")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "user_id": self.user_id,
+                    "bet": bet,
+                    "feature": feature}
+        async with aiosqlite.connect(database) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
+
+
+class Casino():
+    def __init__(self, chat_id) -> None:
+        self.chat = Chat(chat_id)
+
+    async def get_users(self):
+        sql = "SELECT * FROM casino WHERE chat_id = :chat_id"
+        sql_vars = {"chat_id": self.chat.chat_id}
+        async with aiosqlite.connect(database) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchone()
+
+    async def get_winner_users(self, feature: str) -> list[int]:
+        sql = ("SELECT user_id FROM casino WHERE chat_id = :chat_id "
+               "AND feature = :feature")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "feature": feature}
+        async with aiosqlite.connect(database) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                users = await cursor.fetchall()
+        result = []
+        for user in users:
+            result.append(user[0])
+        return result
+
+    async def get_winner_feature(self) -> str:
+        if randint(1, 10) == 1:
+            return "🍀"
+        return choice(["🔴", "⚫️"])
+
+    async def delete_all(self):
+        sql = "DELETE FROM casino WHERE chat_id = :chat_id"
+        sql_vars = {"chat_id": self.chat.chat_id}
+        async with aiosqlite.connect(database) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
+
+    async def add_to_history(self, feature: str):
+        now = datetime.now()
+        sql = ("INSERT INTO casino_history "
+               "(chat_id, date, time, win_feature) VALUES "
+               "(:chat_id, :date, :time, :feature)")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "date": now.date(),
+                    "time": str(now.time()),
+                    "feature": feature}
+        async with aiosqlite.connect(database) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
+
+    async def get_history(self) -> list[str] | None:
+        now = datetime.now()
+        sql = ("SELECT win_feature FROM casino_history WHERE "
+               "chat_id = :chat_id AND date = :date ORDER BY "
+               "time LIMIT 20")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "date": now.date()}
+        async with aiosqlite.connect(database) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                features = await cursor.fetchall()
+        if features == []:
+            return None
+        else:
+            feature_list = []
+            for feature in features:
+                feature_list.append(feature[0])
+            return feature_list
+
+    async def get_last_go(self):
+        now = datetime.now()
+        sql = ("SELECT time FROM casino_history WHERE "
+               "chat_id = :chat_id AND date = :date ORDER BY time DESC")
+        sql_vars = {"chat_id": self.chat.chat_id,
+                    "date": now.date()}
+        async with aiosqlite.connect(database) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                result = await cursor.fetchone()
+        if result is None:
+            return True
+        else:
+            return result[0]
 
 
 # Settings init

@@ -1,8 +1,8 @@
+import re
 from datetime import datetime
 from random import choice, randint
-import re
-import sqlite3
 
+import aiosqlite
 from pydantic import BaseModel
 from pymorphy2 import MorphAnalyzer
 from vkbottle.bot import Blueprint
@@ -11,6 +11,7 @@ from vkbottle.bot import Blueprint
 # Иниты сюда
 bp = Blueprint("Models")
 morph = MorphAnalyzer()
+DATABASE_PATH = ("db.db")
 
 
 class User():
@@ -18,6 +19,7 @@ class User():
         self.chat_id = chat_id
         self.user_id = user_id
 
+    async def init(self):
         if self.user_id < 0:
             # Если передана группа,
             # то происходит экранизация класса Group
@@ -25,19 +27,18 @@ class User():
         else:
             self.group = False
 
-            self.connection = sqlite3.connect("db.db")
-            self.cursor = self.connection.cursor()
             # Регистрация юзера во избежания проблем
-            if not self.check():
-                self.register(0)
+            if not await self.check():
+                await self.register(0)
 
             sql = ("SELECT * FROM users WHERE chat_id = :chat_id "
                    "AND user_id = :user_id")
             sql_vars = {"chat_id": self.chat_id,
                         "user_id": self.user_id}
 
-            self.cursor.execute(sql, sql_vars)
-            result = self.cursor.fetchone()
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                async with db.execute(sql, sql_vars) as cursor:
+                    result = await cursor.fetchone()
             self.messages = result[2]
             self.custom_name = result[3]
             self.sex_request = result[4]
@@ -47,7 +48,7 @@ class User():
             self.is_admin = result[8] or False
             self.bonus_date = result[9]
 
-    def check(self, field: str = "user_id") -> list[int] | None:
+    async def check(self, field: str = "user_id") -> list[int] | None:
         '''
         Проверяет заполнено ли передаваемое поле в БД
         '''
@@ -58,10 +59,11 @@ class User():
                         "chat_id": self.chat_id,
                         "user_id": self.user_id}
 
-            self.cursor.execute(sql, sql_vars)
-            return self.cursor.fetchone()
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                async with db.execute(sql, sql_vars) as cursor:
+                    return await cursor.fetchone()
 
-    def register(self, messages_count: int = 1) -> None:
+    async def register(self, messages_count: int = 1) -> None:
         '''
         Регистрирует нового пользователя
         '''
@@ -72,10 +74,11 @@ class User():
                         "user_id": self.user_id,
                         "messages_count": messages_count}
 
-            self.cursor.execute(sql, sql_vars)
-            self.connection.commit()
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                await db.execute(sql, sql_vars)
+                await db.commit()
 
-    def add_message(self) -> None:
+    async def add_message(self) -> None:
         '''
         Добавляет сообщение в статистику
         '''
@@ -86,10 +89,11 @@ class User():
                         "chat_id": self.chat_id,
                         "user_id": self.user_id}
 
-            self.cursor.execute(sql, sql_vars)
-            self.connection.commit()
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                await db.execute(sql, sql_vars)
+                await db.commit()
 
-    def change_money(self, value):
+    async def change_money(self, value):
         if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET money = :money WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
@@ -97,8 +101,9 @@ class User():
                         "chat_id": self.chat_id,
                         "user_id": self.user_id}
 
-            self.cursor.execute(sql, sql_vars)
-            self.connection.commit()
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                await db.execute(sql, sql_vars)
+                await db.commit()
 
     async def get_name(self, case: str = "nomn") -> str:
         '''
@@ -108,18 +113,20 @@ class User():
         if self.group is False:  # Проверка на группу
             if self.custom_name is not None:
                 raw_name = morph.parse(self.custom_name)[0]
-                return raw_name.inflect({case}).word.capitalize()
+                return raw_name.inflect(  # type: ignore
+                    {case}).word.capitalize()
             else:
-                vk_info = await bp.api.users.get(self.user_id)
+                vk_info = await bp.api.users.get(self.user_id)  # type: ignore
                 try:
                     raw_name = morph.parse(vk_info[0].first_name)[0]
-                    return raw_name.inflect({case}).word.capitalize()
+                    return raw_name.inflect(  # type: ignore
+                        {case}).word.capitalize()
                 except AttributeError:
-                    return vk_info[0].first_name
+                    return vk_info[0].first_name  # type: ignore
         else:
             return await self.group.get_name()
 
-    def test_custom_name(self, name: str):
+    async def test_custom_name(self, name: str):
         if len(name) > 35:
             return "words_count!"
         if re.search("^[а-я]+", name.lower()):
@@ -135,7 +142,7 @@ class User():
         else:
             return "words!"
 
-    def set_custom_name(self, name):
+    async def set_custom_name(self, name):
         if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET custom_name = :name WHERE "
                    "chat_id = :chat_id AND user_id = :user_id")
@@ -143,8 +150,9 @@ class User():
                         "chat_id": self.chat_id,
                         "user_id": self.user_id}
 
-            self.cursor.execute(sql, sql_vars)
-            self.connection.commit()
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                await db.execute(sql, sql_vars)
+                await db.commit()
 
     async def get_mention(self, case: str = "nomn") -> str:
         '''
@@ -165,17 +173,18 @@ class User():
         if self.group is False:  # Проверка на группу
             return (await bp.api.users.get(self.user_id, "sex"))[0].sex.value
 
-    def update_last_bonus(self, date: int):
+    async def update_last_bonus(self, date: datetime):
         sql = ("UPDATE users SET bonus_date = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         sql_vars = {"date": date,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def change_dick(self, value):
+    async def change_dick(self, value):
         if self.group is False:  # Проверка на группу
             sql = ("UPDATE users SET dick_size = :size WHERE "
                    "chat_id = :chat_id AND user_id= :user_id")
@@ -183,32 +192,35 @@ class User():
                         "chat_id": self.chat_id,
                         "user_id": self.user_id}
 
-            self.cursor.execute(sql, sql_vars)
-            self.connection.commit()
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                await db.execute(sql, sql_vars)
+                await db.commit()
 
-    def update_last_dick(self, date: int):
+    async def update_last_dick(self, date: int):
         sql = ("UPDATE users SET last_dick = :date WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         sql_vars = {"date": date,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def update_admin(self, value):
+    async def update_admin(self, value):
         sql = ("UPDATE users SET is_admin = :value WHERE "
                "chat_id = :chat_id AND user_id = :user_id")
         sql_vars = {"value": value,
                     "chat_id": self.chat_id,
                     "user_id": self.user_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
 
 class Group():
-    def __init__(self, group_id: str) -> None:
+    def __init__(self, group_id: int) -> None:
         self.group_id = str(group_id)[1:]
         self.group_full_id = group_id
 
@@ -230,29 +242,30 @@ class Chat():
     def __init__(self, chat_id: int) -> None:
         self.chat_id = chat_id
 
-        self.connection = sqlite3.connect("db.db")
-        self.cursor = self.connection.cursor()
+    async def init(self):
         sql = "SELECT * FROM chats WHERE chat_id = :chat_id"
         sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        result = self.cursor.fetchone()
-        if self.check():
+        if await self.check():
+            async with aiosqlite.connect(DATABASE_PATH) as db:
+                async with db.execute(sql, sql_vars) as cursor:
+                    result = await cursor.fetchone()
             self.owner_id = result[1]
             self.messages = result[2]
             self.last_person_send = result[3]
 
-    def check(self) -> bool:
+    async def check(self) -> bool:
         '''
         Проверяет заполнено ли передаваемое поле в БД
         '''
         sql = "SELECT chat_id FROM chats WHERE chat_id = :chat_id"
         sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchone()
 
-    def register(self, owner_id: int):
+    async def register(self, owner_id: int):
         '''
         Регистрирует новый чат
         '''
@@ -261,10 +274,11 @@ class Chat():
         sql_vars = {"chat_id": self.chat_id,
                     "owner_id": owner_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def add_message(self):
+    async def add_message(self):
         '''
         Добавляет сообщение в статистику
         '''
@@ -272,10 +286,11 @@ class Chat():
         sql_vars = {"messages": self.messages + 1,
                     "chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def set_last_person_send(self, date) -> None:
+    async def set_last_person_send(self, date) -> None:
         '''
         Обновляет дату последнего использования человека дня
         '''
@@ -284,24 +299,27 @@ class Chat():
         sql_vars = {"date": date,
                     "chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def get_dicks_top(self) -> list[int] | bool:
+    async def get_dicks_top(self) -> list[int] | bool:
         sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
                "AND dick_size <> 0 ORDER BY dick_size DESC")
         sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchall() or False
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchall() or False
 
-    def get_forbes_list(self) -> list[list[int]] | bool:
+    async def get_forbes_list(self) -> list[list[int]] | bool:
         sql = ("SELECT user_id FROM users WHERE chat_id = :chat_id "
                "AND money <> 0 ORDER BY money DESC")
         sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchall() or False
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchall() or False
 
 
 class JSONSettings(BaseModel):
@@ -321,25 +339,23 @@ class Settings():
     def __init__(self, chat_id: int) -> None:
         self.chat_id = chat_id
 
-        self.connection = sqlite3.connect("db.db")
-        self.cursor = self.connection.cursor()
-
-    def update(self):
+    async def update(self):
         for i in default_settings.settings:
-            if not self.get_alias(i.alias):
-                self.add(i.setting, i.alias, i.value)
+            if not await self.get_alias(i.alias):
+                await self.add(i.setting, i.alias, i.value)
 
-    def check(self):
+    async def check(self):
         '''
         Проверяет есть ли чат в талице settings
         '''
         sql = "SELECT chat_id FROM settings WHERE chat_id = :chat_id"
         sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchone()
 
-    def add(self, setting, alias, value):
+    async def add(self, setting, alias, value):
         '''Добавляет новую настройку'''
         setting = setting.lower()
         alias = alias.lower()
@@ -350,43 +366,47 @@ class Settings():
                     "alias": alias,
                     "value": value}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def get_value(self, alias):
+    async def get_value(self, alias):
         sql = ("SELECT value FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
         sql_vars = {"chat_id": self.chat_id,
                     "alias": alias}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchone()
 
-    def get_alias(self, alias):
+    async def get_alias(self, alias):
         sql = ("SELECT alias FROM settings WHERE "
                "chat_id = :chat_id AND alias = :alias")
         sql_vars = {"chat_id": self.chat_id,
                     "alias": alias}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchone()
 
-    def get_all(self):
+    async def get_all(self):
         '''
         Вовращает все настройки чата
         '''
         sql = "SELECT * FROM settings WHERE chat_id = :chat_id"
         sql_vars = {"chat_id": self.chat_id}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchall()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchall()
 
-    def change_value(self, alias: str, value=None):
+    async def change_value(self, alias: str, value=None):
         '''
         Меняет значение value передаваемой настройки на противоположное
         '''
         alias = alias.lower()
-        res = self.get_value(alias)[0]
+        res = (await self.get_value(alias))[0]
         if res == "True":
             value = "False"
             value_return = "❌"
@@ -403,19 +423,21 @@ class Settings():
                     "chat_id": self.chat_id,
                     "alias": alias}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
         return value_return
 
-    def get_alias_by_setting(self, setting):
+    async def get_alias_by_setting(self, setting):
         setting = setting.lower()
         sql = ("SELECT alias FROM settings WHERE chat_id = :chat_id "
                "AND setting = :setting")
         sql_vars = {"chat_id": self.chat_id,
                     "setting": setting}
 
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchone()
 
 
 class Sex():
@@ -423,10 +445,7 @@ class Sex():
         self.chat_id = chat_id
         self.from_user = from_user
 
-        self.connection = sqlite3.connect("db.db")
-        self.cursor = self.connection.cursor()
-
-    def start(self, to_id) -> None:
+    async def start(self, to_id) -> None:
         '''
         "from_user" предлагает секс переданному юзеру ("to_id")
         '''
@@ -436,10 +455,11 @@ class Sex():
                     "request": self.from_user,
                     "user_id": to_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def get_request(self) -> None | int:
+    async def get_request(self) -> None | int:
         '''
         есть ли запрос на секс у "from_user" от другого юзера
         возвращает id другого юзера
@@ -449,14 +469,15 @@ class Sex():
         sql_vars = {"chat_id": self.chat_id,
                     "user_id": self.from_user}
 
-        self.cursor.execute(sql, sql_vars)
-        result = self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                result = await cursor.fetchone()
         if result is None:
             return None
         else:
             return result[0]
 
-    def get_send(self) -> None | int:
+    async def get_send(self) -> None | int:
         '''
         отправлял ли "from_user" запрос на секс другому
         возращает id другого юзера
@@ -467,14 +488,15 @@ class Sex():
         sql_vars = {"chat_id": self.chat_id,
                     "request": self.from_user}
 
-        self.cursor.execute(sql, sql_vars)
-        result = self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                result = await cursor.fetchone()
         if result is None:
             return None
         else:
             return result[0]
 
-    def end_sex(self, to_id):
+    async def end_sex(self, to_id):
         '''
         убирает заявку на секс отправленную от "from_user"
         '''
@@ -483,10 +505,11 @@ class Sex():
         sql_vars = {"chat_id": self.chat_id,
                     "user_id": to_id}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
-    def discard_sex(self):
+    async def discard_sex(self):
         '''
         отклонение "from_user" от предложения секса другого юзера
         '''
@@ -495,8 +518,9 @@ class Sex():
         sql_vars = {"chat_id": self.chat_id,
                     "user_id": self.from_user}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
 
 class CasinoUser():
@@ -504,15 +528,13 @@ class CasinoUser():
         self.chat_id = chat_id
         self.user_id = user_id
 
-        self.connection = sqlite3.connect("db.db")
-        self.cursor = self.connection.cursor()
-
-        user_info = self.check()
+    async def init(self):
+        user_info = await self.check()
         if user_info is not None:
             self.bet = user_info[2]
             self.feature = user_info[3]
 
-    def check(self) -> list:
+    async def check(self) -> list:
         '''
         Проверяет учавствует ли юзер в крутке
         '''
@@ -520,10 +542,11 @@ class CasinoUser():
                "user_id = :user_id")
         sql_vars = {"chat_id": self.chat_id,
                     "user_id": self.user_id}
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchone()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchone()
 
-    def register_bet(self, bet: int, feature: str):
+    async def register_bet(self, bet: int, feature: str):
         '''
         Регистрирует пользователя в крутку
         '''
@@ -534,30 +557,32 @@ class CasinoUser():
                     "bet": bet,
                     "feature": feature}
 
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
 
 
 class Casino():
     def __init__(self, chat_id) -> None:
         self.chat_id = chat_id
 
-        self.connection = sqlite3.connect("db.db")
-        self.cursor = self.connection.cursor()
-
-    def get_users(self) -> list[tuple[int, int, int, str]]:
+    async def get_users(self) -> list[tuple[int, int, int, str]]:
         sql = "SELECT * FROM casino WHERE chat_id = :chat_id"
         sql_vars = {"chat_id": self.chat_id}
-        self.cursor.execute(sql, sql_vars)
-        return self.cursor.fetchall()
 
-    def get_winner_users(self, feature: str) -> list[int]:
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                return await cursor.fetchall()
+
+    async def get_winner_users(self, feature: str) -> list[int]:
         sql = ("SELECT user_id FROM casino WHERE chat_id = :chat_id "
                "AND feature = :feature")
         sql_vars = {"chat_id": self.chat_id,
                     "feature": feature}
-        self.cursor.execute(sql, sql_vars)
-        users = self.cursor.fetchall()
+
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                users = await cursor.fetchall()
         result = []
         for user in users:
             result.append(user[0])
@@ -568,13 +593,15 @@ class Casino():
             return "🍀"
         return choice(["🔴", "⚫️"])
 
-    def delete_all(self):
+    async def delete_all(self):
         sql = "DELETE FROM casino WHERE chat_id = :chat_id"
         sql_vars = {"chat_id": self.chat_id}
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
 
-    def add_to_history(self, feature: str):
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
+
+    async def add_to_history(self, feature: str):
         now = datetime.now()
         sql = ("INSERT INTO casino_history "
                "(chat_id, date, time, win_feature) VALUES "
@@ -583,18 +610,22 @@ class Casino():
                     "date": now.date(),
                     "time": str(now.time()),
                     "feature": feature}
-        self.cursor.execute(sql, sql_vars)
-        self.connection.commit()
 
-    def get_history(self) -> list[str] | None:
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            await db.execute(sql, sql_vars)
+            await db.commit()
+
+    async def get_history(self) -> list[str] | None:
         now = datetime.now()
         sql = ("SELECT win_feature FROM casino_history WHERE "
                "chat_id = :chat_id AND date = :date ORDER BY "
                "time LIMIT 20")
         sql_vars = {"chat_id": self.chat_id,
                     "date": now.date()}
-        self.cursor.execute(sql, sql_vars)
-        features = self.cursor.fetchall()
+
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                features = await cursor.fetchall()
         if features == []:
             return None
         else:
@@ -603,14 +634,16 @@ class Casino():
                 feature_list.append(feature[0])
             return feature_list
 
-    def get_last_go(self) -> datetime:
+    async def get_last_go(self) -> datetime:
         now = datetime.now()
         sql = ("SELECT time FROM casino_history WHERE "
                "chat_id = :chat_id AND date = :date ORDER BY time DESC")
         sql_vars = {"chat_id": self.chat_id,
                     "date": now.date()}
-        self.cursor.execute(sql, sql_vars)
-        result = self.cursor.fetchone()
+
+        async with aiosqlite.connect(DATABASE_PATH) as db:
+            async with db.execute(sql, sql_vars) as cursor:
+                result = await cursor.fetchone()
         if result is None:
             return True
         else:

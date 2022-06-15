@@ -17,19 +17,21 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
     '''
     async def post(self):
         user = models.User(self.event.peer_id, self.event.from_id)
-        user.add_message()
+        await user.init()
+        await user.add_message()
 
         if len(str(self.event.peer_id)) == 10:
             chat = models.Chat(self.event.peer_id)
+            await chat.init()
             settings = models.Settings(self.event.peer_id)
-            settings.update()
-            if chat.check():
-                chat.add_message()
+            await settings.update()
+            if await chat.check():
+                await chat.add_message()
             else:
                 chat_vk = await bot.api.messages.get_conversations_by_id(
                     self.event.peer_id)
                 owner_id = chat_vk.items[0].chat_settings.owner_id
-                chat.register(owner_id)
+                await chat.register(owner_id)
 
 
 bot.labeler.message_view.register_middleware(RegistrationMiddleware)

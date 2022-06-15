@@ -1,3 +1,4 @@
+from mimetypes import init
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
@@ -220,24 +221,30 @@ class Rp():
     def __init__(self, message: Message, word: str, item: str,
                  image=None, case="accs") -> None:
         self.message = message
-        self.from_user = User(message.peer_id, message.from_id)
-        self.to_user = User(message.peer_id,
-                            message.reply_message.from_id)
 
         self.word = word
         self.item = item
         self.image = image
         self.case = case
 
+    async def init(self):
+        self.from_user = User(self.message.peer_id, self.message.from_id)
+        self.to_user = User(self.message.peer_id,
+                            self.message.reply_message.from_id)
+        await self.from_user.init()
+        await self.to_user.init()
+
     async def get_text(self) -> str:
+        await self.init()
         if self.item is not None:
             self.word = f"{self.word} {self.item}"
         return (f"{await self.from_user.get_mention()} {self.word} "
                 f"{await self.to_user.get_mention(self.case)}")
 
     async def send_message(self) -> None:
+        await self.init()
         settings = Settings(self.from_user.chat_id)
-        if settings.get_value("pictures")[0] == "True":
+        if (await settings.get_value("pictures"))[0] == "True":
             await self.message.answer(await self.get_text(),
                                       attachment=self.image,
                                       disable_mentions=True)

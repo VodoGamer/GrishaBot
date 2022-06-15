@@ -11,7 +11,7 @@ bp = Blueprint("Settings")
 async def get_settings(message: Message):
     settings = Settings(message.peer_id)
     list = []
-    for i in settings.get_all():
+    for i in await settings.get_all():
         if i[3] == "True":
             value = "✅"
         elif i[3] == "False":
@@ -29,7 +29,9 @@ async def get_settings(message: Message):
     regex=(r"(?i)^(!|\.|\/)?\s*(изменить|поменять)\s*(\d*)?\s*(.*)"))
 async def change_setting(message: Message, match):
     user = User(message.peer_id, message.from_id)
+    await user.init()
     chat = Chat(message.peer_id)
+    await chat.init()
     if user.is_admin is False:
         if chat.owner_id == message.from_id:
             pass
@@ -45,8 +47,8 @@ async def change_setting(message: Message, match):
                                 "быть 400 сек")
             return
     try:
-        result = settings.change_value(
-            settings.get_alias_by_setting(match[-1])[0], match[-2])
+        result = await settings.change_value(
+            (await settings.get_alias_by_setting(match[-1]))[0], match[-2])
         await message.reply(f"{result}| Настройка упешно изменена!")
     except ValueError:
         await message.reply("❌| Неправильно указано значение правила")
@@ -61,7 +63,8 @@ async def set_admin(message: Message):
 
     if chat.owner_id == message.from_id:
         user = User(message.peer_id, message.reply_message.from_id)
-        user.update_admin("True")
+        await user.init()
+        await user.update_admin("True")
         await message.reply("✅| Админ назначен!\nЧтобы снять админку "
                             "напишите:\nснять админа")
 
@@ -73,5 +76,6 @@ async def unset_admin(message: Message):
 
     if chat.owner_id == message.from_id:
         user = User(message.peer_id, message.reply_message.from_id)
-        user.update_admin(None)
+        await user.init()
+        await user.update_admin(None)
         await message.reply("✅| Админка успешно снята!")

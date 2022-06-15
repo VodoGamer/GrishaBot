@@ -10,6 +10,7 @@ bp = Blueprint("Custom names")
 @bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^(!|\.|\/)?\s*ник"))
 async def get_his_name(message: Message):
     user = User(message.peer_id, message.reply_message.from_id)
+    await user.init()
     await message.reply("Имя этого человека на данный момент: "
                         f"{await user.get_name()}")
 
@@ -18,6 +19,7 @@ async def get_his_name(message: Message):
                            r"|как меня зовут|ник)$"))
 async def get_my_name(message: Message):
     user = User(message.peer_id, message.from_id)
+    await user.init()
     await message.reply(f"Ваше имя на данный момент: {await user.get_name()}")
 
 
@@ -25,12 +27,13 @@ async def get_my_name(message: Message):
                            r"\s*(ник|имя)\s*(.*)"))
 async def change_name(message: Message, match):
     user = User(message.peer_id, message.from_id)
-    test_custom_name = user.test_custom_name(match[-1])
+    await user.init()
+    test_custom_name = await user.test_custom_name(match[-1])
     if test_custom_name is True:
         settings = Settings(message.peer_id)
-        if settings.get_value("custom_names")[0] == "True":
+        if (await settings.get_value("custom_names"))[0] == "True":
             if len(match[-1].split()) == 1:
-                user.set_custom_name(match[-1])
+                await user.set_custom_name(match[-1])
                 await message.reply("✅| Новое имя успешно установлено!")
             else:
                 await message.reply(

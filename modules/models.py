@@ -3,15 +3,16 @@ from datetime import datetime
 from random import choice, randint
 
 import aiosqlite
+from envparse import env
 from pydantic import BaseModel
 from pymorphy2 import MorphAnalyzer
 from vkbottle.bot import Blueprint
 
-
 # Иниты сюда
 bp = Blueprint("Models")
 morph = MorphAnalyzer()
-DATABASE_PATH = ("db.db")
+env.read_envfile(".env")
+DATABASE_PATH = (env.str("DB_PATH"))
 
 
 class User():

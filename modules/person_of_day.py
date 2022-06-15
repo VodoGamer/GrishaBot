@@ -3,11 +3,10 @@ from random import choice
 
 from vkbottle.bot import Blueprint, Message
 
-from modules.models import Chat, User, Settings
-
+from modules.models import Chat, Settings, User
+from modules.phrases import callingtheuniverse
 
 bp = Blueprint("Person of day")
-phrases = ["Ящитаю что", "Мне кажется", "Вселенная подсказала что"]
 
 
 @bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(.*)\s{1,}дня$")
@@ -23,7 +22,8 @@ async def change_name(message: Message, match):
             users_id.append(i.id)
         user = User(chat.chat_id, choice(users_id))
         await user.init()
-        output = await message.reply(f"{choice(phrases)} {match[-1]} дня это "
+        output = await message.reply(f"{choice(callingtheuniverse)} "
+                                     f"{match[-1]} дня это "
                                      f"{await user.get_mention()}")
         await chat.set_last_person_send(now.day)
         setting = Settings(chat.chat_id)

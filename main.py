@@ -1,10 +1,12 @@
-from vkbottle import Bot, BaseMiddleware
+from envparse import env
+from vkbottle import BaseMiddleware, Bot
 from vkbottle.bot import Message
-from modules import modules_list, models
-import config
+
+from modules import models, modules_list
 
 
-bot = Bot(config.TOKEN)
+env.read_envfile(".env")
+bot = Bot(env.str("BOT_TOKEN"))
 
 
 for bp in modules_list:

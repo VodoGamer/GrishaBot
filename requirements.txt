@@ -1,6 +1,8 @@
-vkbottle == 4.2.0
-pymorphy2 == 0.9.1
-alembic >= 1.7.7
-sqlalchemy >= 1.4.36
 aiosqlite == 0.17.0
+alembic >= 1.7.7
 envparse >= 0.2.0
+loguru >= 0.4.4
+pymorphy2 == 0.9.1
+sqlalchemy >= 1.4.36
+vkbottle == 4.3.4
+vkbottle-types==5.131.146.5

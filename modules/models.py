@@ -113,7 +113,8 @@ class User():
         if self.group is False:  # Проверка на группу
             if self.custom_name is not None:
                 raw_name = morph.parse(self.custom_name)[0]
-                return raw_name.inflect({case}).word.capitalize()  # type: ignore
+                return raw_name.inflect(  # type: ignore
+                    {case}).word.capitalize()
             else:
                 vk_info = await bp.api.users.get(self.user_id)  # type: ignore
                 try:

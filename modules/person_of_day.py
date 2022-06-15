@@ -13,6 +13,7 @@ phrases = ["Ящитаю что", "Мне кажется", "Вселенная �
 @bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(.*)\s{1,}дня$")
 async def change_name(message: Message, match):
     chat = Chat(message.peer_id)
+    await chat.init()
     now = datetime.now()
     if chat.last_person_send != now.day or chat.last_person_send is None:
         users = await bp.api.messages.get_conversation_members(
@@ -21,11 +22,12 @@ async def change_name(message: Message, match):
         for i in users.profiles:
             users_id.append(i.id)
         user = User(chat.chat_id, choice(users_id))
+        await user.init()
         output = await message.reply(f"{choice(phrases)} {match[-1]} дня это "
                                      f"{await user.get_mention()}")
-        chat.set_last_person_send(now.day)
+        await chat.set_last_person_send(now.day)
         setting = Settings(chat.chat_id)
-        if setting.get_value("pin")[0] == "True":
+        if (await setting.get_value("pin"))[0] == "True":
             await bp.api.messages.pin(
                 chat.chat_id,
                 conversation_message_id=output.conversation_message_id)

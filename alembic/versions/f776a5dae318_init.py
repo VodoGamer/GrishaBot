@@ -27,7 +27,7 @@ def upgrade():
 
     op.create_table(
         "settings",
-        sa.Column('chat_id', sa.Integer(), sa.ForeignKey("chats.id")),
+        sa.Column('chat_id', sa.Integer()),
         sa.Column('setting', sa.Text(), nullable=False),
         sa.Column('alias', sa.Text(), nullable=False),
         sa.Column('value', sa.Text(), nullable=False),
@@ -35,7 +35,7 @@ def upgrade():
 
     op.create_table(
         "casino",
-        sa.Column('chat_id', sa.Integer(), sa.ForeignKey("chats.id")),
+        sa.Column('chat_id', sa.Integer()),
         sa.Column('user_id', sa.Integer(), nullable=False),
         sa.Column('bet', sa.Integer(), nullable=False),
         sa.Column('feature', sa.Integer(), nullable=False),
@@ -43,7 +43,7 @@ def upgrade():
 
     op.create_table(
         "casino_history",
-        sa.Column('chat_id', sa.Integer(), sa.ForeignKey("chats.id")),
+        sa.Column('chat_id', sa.Integer()),
         sa.Column('date', sa.DateTime(), nullable=False),
         sa.Column('time', sa.DateTime(), nullable=False),
         sa.Column('win_feature', sa.Text(), nullable=False),
@@ -51,7 +51,7 @@ def upgrade():
 
     op.create_table(
         "users",
-        sa.Column('chat_id', sa.Integer(), sa.ForeignKey("chats.id")),
+        sa.Column('chat_id', sa.Integer()),
         sa.Column('user_id', sa.Integer(), primary_key=True),
         sa.Column('messages', sa.Integer()),
         sa.Column('custom_name', sa.Text()),

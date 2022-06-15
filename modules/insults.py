@@ -17,6 +17,7 @@ BeforeTheNameCalling = ["скрывал, что он", "оказывается",
 @bp.on.chat_message(ReplyMessageRule(), regex=r"(?i)^(!|\.|\/)?\s*обозвать")
 async def insult(message: Message):
     user = User(message.peer_id, message.reply_message.from_id)
+    await user.init()
     await message.answer(f"{await user.get_mention()} "
                          f"{choice(BeforeTheNameCalling)} "
                          f"{choice(NameCalling)}",

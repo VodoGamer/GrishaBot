@@ -4,7 +4,7 @@ from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
 from modules.models import User
-from phrases import notnotified, monikers
+from modules.phrases import notnotified, monikers
 
 
 bp = Blueprint("Insults")

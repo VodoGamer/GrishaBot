@@ -18,9 +18,8 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
     Мидлварь для статистики и регистрации новых пользователей и чатов
     '''
     async def post(self):
-        user = models.User(self.event.peer_id, self.event.from_id)
-        await user.init()
-        await user.add_message()
+        user = models.Account(self.event.peer_id, self.event.from_id)
+        await user.register()
 
         if len(str(self.event.peer_id)) == 10:
             chat = models.Chat(self.event.peer_id)

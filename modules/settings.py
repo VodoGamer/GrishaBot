@@ -60,6 +60,7 @@ async def change_setting(message: Message, match):
                     regex=(r"(?i)^(!|\.|\/)?\s*назначить\s*админ(ом|а)$"))
 async def set_admin(message: Message):
     chat = Chat(message.peer_id)
+    await chat.init()
 
     if chat.owner_id == message.from_id:
         user = User(message.peer_id, message.reply_message.from_id)
@@ -73,6 +74,7 @@ async def set_admin(message: Message):
                     regex=(r"(?i)^(!|\.|\/)?\s*снять админ(истратора|а)$"))
 async def unset_admin(message: Message):
     chat = Chat(message.peer_id)
+    await chat.init()
 
     if chat.owner_id == message.from_id:
         user = User(message.peer_id, message.reply_message.from_id)

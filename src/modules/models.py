@@ -12,7 +12,7 @@ from vkbottle.bot import Blueprint
 bp = Blueprint("Models")
 morph = MorphAnalyzer()
 env.read_envfile(".env")
-DATABASE_PATH = (env.str("DB_PATH"))
+DATABASE_PATH = "db.sqlite3"
 
 
 class User():
@@ -333,7 +333,7 @@ class BaseSettings(BaseModel):
     settings: list[JSONSettings]
 
 
-default_settings = BaseSettings.parse_file("./default_settings.json")
+# default_settings = BaseSettings.parse_file("./default_settings.json")
 
 
 class Settings():

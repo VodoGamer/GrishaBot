@@ -1,25 +1,17 @@
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from modules.models import Settings, User, Chat
+from modules.new_models import Setting, User, Chat
 
 
 bp = Blueprint("Settings")
 
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*настройки"))
-async def get_settings(message: Message):
-    settings = Settings(message.peer_id)
-    list = []
-    for i in await settings.get_all():
-        if i[3] == "True":
-            value = "✅"
-        elif i[3] == "False":
-            value = "❌"
-        elif i[3] != "True" and i[3] != "False":
-            value = i[3]
-        list.append(f"{value} | {i[1]}")
-    result = '\n'.join(list)
+async def get_settings(message: Message, chat: Chat):
+    result = await Setting.filter(chat_id=chat.id).all().prefetch_related(
+        'chat__settings')
+
     await message.reply(f"{result}\n\nЧтобы изменить команду напишите:"
                         "\n!изменить 'новое значение (если доступно)' "
                         "Закреп сообщений ")

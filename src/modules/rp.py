@@ -1,4 +1,3 @@
-from mimetypes import init
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 

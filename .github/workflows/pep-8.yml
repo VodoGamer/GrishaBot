@@ -23,4 +23,4 @@ jobs:
         pycodestyle --show-source --show-pep8 $(git ls-files '*.py')
     - name: Analysing the code with flake8
       run: |
-        flake8 --show-source $(git ls-files '*.py')
+        flake8

@@ -18,7 +18,8 @@ class BaseSettings(BaseModel):
     settings: list[JSONSettings]
 
 
-default_settings = BaseSettings.parse_file("src/settings/default_settings.json")
+default_settings = BaseSettings.parse_file(
+    "src/settings/default_settings.json")
 
 
 async def update_chat_settings(chat_id: int):
@@ -27,16 +28,16 @@ async def update_chat_settings(chat_id: int):
             setting_db = await Setting.get(chat_id=chat_id, id=setting.id)
         except DoesNotExist:
             setting_db = Setting(chat_id=chat_id,
-                                    id=setting.id,
-                                    title=setting.title,
-                                    value=setting.default_value)
+                                 id=setting.id,
+                                 title=setting.title,
+                                 value=setting.default_value)
             await setting_db.save()
             return
 
         if setting_db.title != setting.title:
             setting_db = Setting(chat_id=chat_id,
-                                    id=setting.id,
-                                    title=setting.title)
+                                 id=setting.id,
+                                 title=setting.title)
             await setting_db.save()
 
 

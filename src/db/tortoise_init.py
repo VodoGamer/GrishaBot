@@ -5,11 +5,12 @@ env.read_envfile(".env")
 
 
 TORTOISE_ORM = {
-    "connections": {"default": ("postgres://"
-                    f"{env.str('POSTGRES_USER')}:"
-                    f"{env.str('POSTGRES_USER_PASSWORD')}@"
-                    f"{env.str('POSTGRES_HOST')}:{env.str('POSTGRES_PORT')}"
-                    f"/{env.str('POSTGRES_DB_NAME')}"),
+    "connections": {"default": (
+        f"postgres://{env.str('POSTGRES_USER')}:"
+        f"{env.str('POSTGRES_USER_PASSWORD')}@"
+        f"{env.str('POSTGRES_HOST')}:{env.str('POSTGRES_PORT')}"
+        f"/{env.str('POSTGRES_DB_NAME')}"
+    ),
                     "sqlite_DEBUG": "sqlite://db.sqlite3"},
     "apps": {
         "models": {

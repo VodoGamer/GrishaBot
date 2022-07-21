@@ -42,5 +42,7 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
         self.user_filter = user_filter
 
     async def post(self):
-        await self.chat_filter.update(messages_count=self.chat.messages_count + 1)
-        await self.user_filter.update(messages_count=self.user.messages_count + 1)
+        await self.chat_filter.update(
+            messages_count=self.chat.messages_count + 1)
+        await self.user_filter.update(
+            messages_count=self.user.messages_count + 1)

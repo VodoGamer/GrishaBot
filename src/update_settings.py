@@ -3,7 +3,7 @@ import asyncio
 from pydantic import BaseModel
 from tortoise.exceptions import DoesNotExist
 
-from modules.new_models import Chat, Setting
+from db.new_models import Chat, Setting
 from db.tortoise_init import db_init, db_shutdown
 
 
@@ -12,6 +12,7 @@ class JSONSettings(BaseModel):
     enabled: bool
     title: str
     default_value: int
+    max_value: int
 
 
 class BaseSettings(BaseModel):
@@ -24,21 +25,20 @@ default_settings = BaseSettings.parse_file(
 
 async def update_chat_settings(chat_id: int):
     for setting in default_settings.settings:
-        try:
-            setting_db = await Setting.get(chat_id=chat_id, id=setting.id)
-        except DoesNotExist:
-            setting_db = Setting(chat_id=chat_id,
-                                 id=setting.id,
-                                 title=setting.title,
-                                 value=setting.default_value)
-            await setting_db.save()
-            return
+        setting_db = await Setting.get_or_create(
+            {"title": setting.title,
+             "value": setting.default_value,
+             "max_value": setting.max_value},
+            chat_id=chat_id,
+            id=setting.id)
 
-        if setting_db.title != setting.title:
-            setting_db = Setting(chat_id=chat_id,
-                                 id=setting.id,
-                                 title=setting.title)
-            await setting_db.save()
+        if setting_db[0].title != setting.title:
+            setting_db[0].title = setting.title
+
+        if setting_db[0].max_value != setting.max_value:
+            setting_db[0].max_value = setting.max_value
+
+        await setting_db[0].save()
 
 
 async def update_all_settings():

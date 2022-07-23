@@ -1,3 +1,4 @@
+from datetime import datetime
 from enum import Enum
 
 from pymorphy2 import MorphAnalyzer
@@ -25,32 +26,34 @@ class UserNameCases(Enum):
 
 
 class Chat(Model):
-    id = fields.IntField(pk=True, generated=False)
-    owner_id = fields.IntField()
-    messages_count = fields.IntField(default=1)
-    last_person_of_day_use = fields.DatetimeField(null=True)
+    id: int = fields.IntField(pk=True, generated=False)
+    owner_id: int = fields.IntField(null=True)
+    messages_count: int = fields.IntField(default=1)
+    last_person_of_day_use: datetime = fields.DatetimeField(null=True)
 
 
 class User(Model):
-    id = fields.IntField(pk=True, generated=False)
+    id: int = fields.IntField(pk=True, generated=False)
     chat = fields.ForeignKeyField('models.Chat', related_name='users')
-    is_admin = fields.BooleanField(default=False)
-    custom_name = fields.CharField(max_length=255, null=True)
-    messages_count = fields.IntField(default=1)
-    sex_request = fields.IntField(null=True)
+    is_admin: bool = fields.BooleanField(default=False)  # type: ignore
+    custom_name: str = fields.CharField(max_length=255, null=True)
+    messages_count: int = fields.IntField(default=1)
+    sex_request: int = fields.IntField(null=True)
 
     # Money
-    money = fields.IntField(default=0)
-    last_bonus_use = fields.DatetimeField(null=True)
+    money: int = fields.IntField(default=0)
+    last_bonus_use: datetime = fields.DatetimeField(null=True)
 
     # Dick
-    dick_size = fields.IntField(default=0)
-    last_dick_growth_use = fields.DatetimeField(null=True)
+    dick_size: int = fields.IntField(default=0)
+    last_dick_growth_use: datetime = fields.DatetimeField(null=True)
 
     # Casino
-    casino_bet_amount = fields.IntField(null=True)
-    casino_bet_color = fields.CharEnumField(SmileyCasinoChips, max_length=5,
-                                            null=True)
+    casino_bet_amount: int = fields.IntField(null=True)
+    casino_bet_color: SmileyCasinoChips = fields.CharEnumField(
+        SmileyCasinoChips,
+        max_length=5,
+        null=True)
 
 
 async def get_user_name(user: User,
@@ -70,7 +73,8 @@ async def get_user_mention(user: User,
 
 
 class Setting(Model):
-    id = fields.IntField(pk=True, generated=False)
+    id: int = fields.IntField(pk=True, generated=False)
     chat = fields.ForeignKeyField('models.Chat', related_name='settings')
-    title = fields.CharField(max_length=255)
-    value = fields.IntField()
+    title: str = fields.CharField(max_length=255)
+    value: int = fields.IntField()
+    max_value: int = fields.IntField(default=1)

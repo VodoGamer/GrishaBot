@@ -4,7 +4,29 @@
       "id": 1,
       "enabled": 1,
       "title": "Закреп сообщений, отправляемых ботом",
-      "default_value": 0
+      "default_value": 0,
+      "max_value": 1
+    },
+    {
+      "id": 2,
+      "enabled": 1,
+      "title": "Картинки к сообщениям бота",
+      "default_value": 0,
+      "max_value": 1
+    },
+    {
+      "id": 3,
+      "enabled": 1,
+      "title": "Казино",
+      "default_value": 0,
+      "max_value": 1
+    },
+    {
+      "id": 4,
+      "enabled": 1,
+      "title": "Кд на команду: \"го\"",
+      "default_value": 10,
+      "max_value": 300
     }
   ]
 }

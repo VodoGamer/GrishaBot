@@ -5,16 +5,17 @@ env.read_envfile(".env")
 
 
 TORTOISE_ORM = {
-    "connections": {"default": (
-        f"postgres://{env.str('POSTGRES_USER')}:"
-        f"{env.str('POSTGRES_USER_PASSWORD')}@"
-        f"{env.str('POSTGRES_HOST')}:{env.str('POSTGRES_PORT')}"
-        f"/{env.str('POSTGRES_DB_NAME')}"
-    ),
-                    "sqlite_DEBUG": "sqlite://db.sqlite3"},
+    "connections": {
+        "default": (
+            f"postgres://{env.str('POSTGRES_USER')}:"
+            f"{env.str('POSTGRES_USER_PASSWORD')}@"
+            f"{env.str('POSTGRES_HOST')}:{env.str('POSTGRES_PORT')}"
+            f"/{env.str('POSTGRES_DB_NAME')}"),
+        "sqlite_DEBUG": "sqlite://db.sqlite3"
+    },
     "apps": {
         "models": {
-            "models": ["modules.new_models", "aerich.models"],
+            "models": ["db.new_models", "aerich.models"],
             "default_connection": "default",
         },
     },

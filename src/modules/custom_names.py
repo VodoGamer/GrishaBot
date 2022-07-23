@@ -1,11 +1,10 @@
 import re
 
 from pymorphy2 import MorphAnalyzer
-from tortoise.queryset import QuerySet
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from modules.new_models import Chat, User, get_user_name
+from db.new_models import Chat, User, get_user_name
 
 bp = Blueprint("Custom names")
 morph = MorphAnalyzer()
@@ -28,7 +27,7 @@ async def get_my_name(message: Message, user: User):
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(поменять|изменить|сменить)?"
                            r"\s*(ник|имя)\s*(.*)"))
-async def change_name(message: Message, match, user_filter: QuerySet):
+async def change_name(message: Message, match, user: User):
     new_name = match[-1]
 
     if len(new_name) > 35:
@@ -43,6 +42,8 @@ async def change_name(message: Message, match, user_filter: QuerySet):
             raw_name.inflect(  # type: ignore
                 {case}).word.capitalize()
         await message.reply("Имя успешно изменено!")
-        await user_filter.update(custom_name=new_name)
+
+        user.custom_name = new_name
+        await user.save()
     except AttributeError:
         await message.reply("Имя не склоняется! Поробуйте другое.")

@@ -2,11 +2,10 @@ from datetime import datetime, timedelta
 from random import randint
 
 from pytz import UTC
-from tortoise.queryset import QuerySet
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from modules.new_models import Chat, User, UserNameCases, get_user_mention
+from db.new_models import Chat, User, UserNameCases, get_user_mention
 
 bp = Blueprint("Balance")
 
@@ -20,7 +19,7 @@ async def get_balance(message: Message, user: User):
 
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(бонус)$"))
-async def get_bonus(message: Message, user: User, user_filter: QuerySet):
+async def get_bonus(message: Message, user: User):
     bonus = randint(100, 200)
     now = datetime.now(tz=UTC)
 
@@ -31,7 +30,9 @@ async def get_bonus(message: Message, user: User, user_filter: QuerySet):
                                 f"{str(db_date_delta - now).split('.', 1)[0]}"
                                 )
             return
-    await user_filter.update(last_bonus_use=now, money=user.money + bonus)
+    user.money += bonus
+    user.last_bonus_use = now
+    await user.save()
 
     await message.reply(f"{await get_user_mention(user)} получил {bonus} 💵",
                         disable_mentions=True)
@@ -41,8 +42,7 @@ async def get_bonus(message: Message, user: User, user_filter: QuerySet):
     ReplyMessageRule(),
     regex=(r"(?i)^(!|\.|\/)?\s*(дать|передать|подарить)\s*(денег|баб(ки|ок))"
            r"?\s*(\d*)$"))
-async def send_money(message: Message, match, user: User, chat: Chat,
-                     user_filter: QuerySet):
+async def send_money(message: Message, match, user: User, chat: Chat):
     reply_user = await User.get(
         id=message.reply_message.from_id,  # type: ignore
         chat_id=chat.id)
@@ -53,10 +53,11 @@ async def send_money(message: Message, match, user: User, chat: Chat,
         await message.reply("❌ | Недостаточно денег!")
         return
     if not user.id == reply_user.id:
-        await user_filter.update(money=user.money - transferred_money)
+        user.money -= transferred_money
+        await user.save()
 
-        await User.filter(id=reply_user.id, chat_id=chat.id)\
-            .update(money=user.money + transferred_money)
+        reply_user.money += transferred_money
+        await reply_user.save()
 
     await message.answer(
         f"{await get_user_mention(user)} "
@@ -69,7 +70,7 @@ async def send_money(message: Message, match, user: User, chat: Chat,
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(список|лист|топ)\s*"
                            r"(форбс|forbes|богачей|денег)?\s*(\d*)$"))
 async def get_forbes_list(message: Message, user: User, chat: Chat):
-    forbes_list = await User.all().filter(chat_id=chat.id).exclude(money=0)\
+    forbes_list = await User.filter(chat_id=chat.id).exclude(money=0)\
         .order_by('-money')
 
     if forbes_list:

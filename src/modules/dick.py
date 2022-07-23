@@ -3,7 +3,7 @@ from random import randint
 
 from vkbottle.bot import Blueprint, Message
 
-from modules.models import Chat, User
+from db.new_models import Chat, User, get_user_name
 
 
 bp = Blueprint("Dick")

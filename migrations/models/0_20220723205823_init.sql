@@ -1,9 +1,16 @@
 -- upgrade --
 CREATE TABLE IF NOT EXISTS "chat" (
     "id" INT NOT NULL  PRIMARY KEY,
-    "owner_id" INT NOT NULL,
+    "owner_id" INT,
     "messages_count" INT NOT NULL  DEFAULT 1,
     "last_person_of_day_use" TIMESTAMPTZ
+);
+CREATE TABLE IF NOT EXISTS "setting" (
+    "id" INT NOT NULL  PRIMARY KEY,
+    "title" VARCHAR(255) NOT NULL,
+    "value" INT NOT NULL,
+    "max_value" INT NOT NULL  DEFAULT 1,
+    "chat_id" INT NOT NULL REFERENCES "chat" ("id") ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS "user" (
     "id" INT NOT NULL  PRIMARY KEY,

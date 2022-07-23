@@ -1,6 +1,6 @@
 from . import (rp, models, custom_names, person_of_day, settings,
                sex, how_long, insults, casino, balance, dick,
-               stats, new_models)
+               stats)
 
 
 modules_list = [
@@ -15,5 +15,4 @@ modules_list = [
     balance.bp,
     dick.bp,
     stats.bp,
-    new_models.bp,
 ]

@@ -1,75 +1,69 @@
+from tortoise.exceptions import DoesNotExist
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from modules.new_models import Setting, User, Chat
-
+from db.new_models import Chat, Setting, User
 
 bp = Blueprint("Settings")
 
 
+def convert_to_emoji(setting_value: int | bool):
+    if setting_value == 1:
+        return "✅"
+    elif not setting_value:
+        return "❌"
+    else:
+        return setting_value
+
+
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*настройки"))
 async def get_settings(message: Message, chat: Chat):
-    result = await Setting.filter(chat_id=chat.id).all().prefetch_related(
+    result = []
+    settings = await Setting.filter(chat_id=chat.id).prefetch_related(
         'chat__settings')
+    for setting in settings:
+        setting_value = convert_to_emoji(setting.value)
 
-    await message.reply(f"{result}\n\nЧтобы изменить команду напишите:"
-                        "\n!изменить 'новое значение (если доступно)' "
-                        "Закреп сообщений ")
+        result.append(f"{setting.id}. {setting_value} | {setting.title}")
+    result = "\n".join(result)
+    await message.reply(f"{result}\n\nЧтобы изменить настройку напишите:"
+                        "\n!изменить <номер настройки> <новое значение>\n"
+                        "Например:\n\n!изменить 1")
 
 
 @bp.on.chat_message(
-    regex=(r"(?i)^(!|\.|\/)?\s*(изменить|поменять)\s*(\d*)?\s*(.*)"))
-async def change_setting(message: Message, match):
-    user = User(message.peer_id, message.from_id)
-    await user.init()
-    chat = Chat(message.peer_id)
-    await chat.init()
-    if user.is_admin is False:
-        if chat.owner_id == message.from_id:
-            pass
-        else:
-            await message.reply("❌| Эта команда доступна только админам "
-                                "чата!")
-            return
+    regex=(r"(?i)^(!|\.|\/)?\s*(изменить|поменять)\s*(\d*)\s*(.*)?$"))
+async def change_setting(message: Message, match, user: User):
 
-    settings = Settings(message.peer_id)
-    if match[-2] != '':
-        if int(match[-2]) > 400:
-            await message.reply("❌| Максимальное ограничение времени может "
-                                "быть 400 сек")
-            return
+    if not user.is_admin:
+        await message.reply("❌| Эта команда доступна только админам "
+                            "чата!")
+        return
+
     try:
-        result = await settings.change_value(
-            (await settings.get_alias_by_setting(match[-1]))[0], match[-2])
-        await message.reply(f"{result}| Настройка упешно изменена!")
-    except ValueError:
-        await message.reply("❌| Неправильно указано значение правила")
-    except TypeError:
-        await message.reply("❌| Неправильно указано правило")
+        setting = await Setting.get(id=match[-2])
+        if setting.max_value == 1:
+            if match[-1] != '':
+                await message.reply("❌| Для этого правила не надо передавать "
+                                    "дополнительное значение!")
+                return
+        else:
+            if match[-1] == '':
+                await message.reply("❌| Не передано новое значение для "
+                                    "правила!")
+                return
+            if int(match[-1]) > setting.max_value:
+                await message.reply("❌| Максимальное значение для этого "
+                                    f"правила: {setting.max_value}")
+                return
 
-
-@bp.on.chat_message(ReplyMessageRule(),
-                    regex=(r"(?i)^(!|\.|\/)?\s*назначить\s*админ(ом|а)$"))
-async def set_admin(message: Message):
-    chat = Chat(message.peer_id)
-    await chat.init()
-
-    if chat.owner_id == message.from_id:
-        user = User(message.peer_id, message.reply_message.from_id)
-        await user.init()
-        await user.update_admin("True")
-        await message.reply("✅| Админ назначен!\nЧтобы снять админку "
-                            "напишите:\nснять админа")
-
-
-@bp.on.chat_message(ReplyMessageRule(),
-                    regex=(r"(?i)^(!|\.|\/)?\s*снять админ(истратора|а)$"))
-async def unset_admin(message: Message):
-    chat = Chat(message.peer_id)
-    await chat.init()
-
-    if chat.owner_id == message.from_id:
-        user = User(message.peer_id, message.reply_message.from_id)
-        await user.init()
-        await user.update_admin(None)
-        await message.reply("✅| Админка успешно снята!")
+        if setting.max_value == 1:
+            setting.value = 1 if setting.value == 0 else 0
+            await message.reply(f"✅| Настройка успешно изменена на: "
+                                f"{convert_to_emoji(setting.value)}")
+        else:
+            setting.value = int(match[-1])
+            await message.reply(f"✅| Настройка успешно изменена на: "
+                                f"{setting.value}")
+        await setting.save()
+    except DoesNotExist:
+        await message.reply("❌| Неправильно указано правило!")

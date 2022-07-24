@@ -1,7 +1,6 @@
 import asyncio
 
 from pydantic import BaseModel
-from tortoise.exceptions import DoesNotExist
 
 from db.new_models import Chat, Setting
 from db.tortoise_init import db_init, db_shutdown

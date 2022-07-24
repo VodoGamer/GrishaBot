@@ -1,13 +1,8 @@
 from datetime import datetime
 from enum import Enum
 
-from pymorphy2 import MorphAnalyzer
 from tortoise import fields
 from tortoise.models import Model
-from vkbottle.bot import Blueprint
-
-bp = Blueprint("new_models")
-morph = MorphAnalyzer()
 
 
 class SmileyCasinoChips(Enum):
@@ -54,22 +49,6 @@ class User(Model):
         SmileyCasinoChips,
         max_length=5,
         null=True)
-
-
-async def get_user_name(user: User,
-                        case: UserNameCases = UserNameCases.NOM):
-    if not user.custom_name:
-        name = await bp.api.users.get(user_id=user.id,
-                                      name_case=case.value[1])
-        return name[0].first_name
-    raw_name = morph.parse(user.custom_name)[0]
-    return raw_name.inflect(  # type: ignore
-        {case.value[0]}).word.capitalize()
-
-
-async def get_user_mention(user: User,
-                           case: UserNameCases = UserNameCases.NOM):
-    return f"@id{user.id} ({await get_user_name(user, case)})"
 
 
 class Setting(Model):

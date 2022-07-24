@@ -1,4 +1,3 @@
-from tortoise.exceptions import DoesNotExist
 from vkbottle import BaseMiddleware
 from vkbottle.bot import Message
 
@@ -26,13 +25,21 @@ class RegistrationMiddleware(BaseMiddleware[Message]):
             # Регистрируем админов беседы
             for admin_id in chat_vk.admin_ids:  # type: ignore
                 if admin_id > 0:
-                    await User.get_or_create(id=admin_id,
-                                             chat_id=self.chat[0].id,
-                                             is_admin=1)
+                    await User.get_or_create(
+                        {"messages_count": 0},
+                        id=admin_id,
+                        chat_id=self.chat[0].id,
+                        is_admin=1)
             # Регистрируем овнера беседы как админа
-            await User.get_or_create(id=chat_vk.owner_id,  # type: ignore
-                                     chat_id=self.chat[0].id,
-                                     is_admin=1)
+            await User.get_or_create(
+                {"messages_count": 0},
+                id=chat_vk.owner_id,  # type: ignore
+                chat_id=self.chat[0].id,
+                is_admin=1)
+
+            # Регистрируем группу как пользователя
+            await User.create(id=-(await bot.api.groups.get_by_id())[0].id,
+                              chat_id=self.chat[0].id)
 
             await update_chat_settings(self.chat[0].id)
 

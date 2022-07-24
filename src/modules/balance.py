@@ -5,7 +5,8 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from db.new_models import Chat, User, UserNameCases, get_user_mention
+from db.new_models import Chat, User, UserNameCases
+from repository.account import get_user_mention
 
 bp = Blueprint("Balance")
 

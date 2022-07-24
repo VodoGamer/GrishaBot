@@ -4,7 +4,8 @@ from pymorphy2 import MorphAnalyzer
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from db.new_models import Chat, User, get_user_name
+from db.new_models import Chat, User
+from repository.account import get_user_name
 
 bp = Blueprint("Custom names")
 morph = MorphAnalyzer()

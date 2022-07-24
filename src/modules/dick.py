@@ -3,17 +3,16 @@ from random import randint
 
 from vkbottle.bot import Blueprint, Message
 
-from db.new_models import Chat, User, get_user_name
-
+from db.new_models import Chat, User, UserNameCases
+from repository.account import get_user_mention
 
 bp = Blueprint("Dick")
 
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(писюн|моя пися|пися|член)$"))
-async def get_balance(message: Message):
-    user = User(message.peer_id, message.from_id)
-    await user.init()
-    await message.reply(f"Писюн {await user.get_mention('gent')} "
+async def get_balance(message: Message, user: User):
+    await message.reply(f"Писюн "
+                        f"{await get_user_mention(user, UserNameCases.GEN)} "
                         f"на данный момент: {user.dick_size} см",
                         disable_mentions=True)
 

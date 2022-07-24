@@ -3,40 +3,41 @@ import asyncio
 
 from vkbottle.bot import Blueprint, Message
 
-from modules.models import User, Casino, CasinoUser, Settings
+from db.new_models import User, Setting
 
 
 bp = Blueprint("Casino")
 
 
 @bp.on.chat_message(regex=(r"(?i)^(\d*)\s*?(к|ч|з)$"))
-async def new_bet(message: Message, match):
-    settings = Settings(message.peer_id)
-    if (await settings.get_value("casino"))[0] == "False":
+async def new_bet(message: Message, match, user: User):
+    bet = int(match[0])
+
+    setting = await Setting.get(id=3, chat_id=message.peer_id)
+    if not setting.value:
         await message.reply("❌| Казино выключено в настройках этого чата!\n"
                             "Попроси администраторов его включить")
         return
-    user = User(message.peer_id, message.from_id)
-    await user.init()
-    casino_user = CasinoUser(message.peer_id, message.from_id)
-    await casino_user.init()
-    if int(match[0]) <= 0:
+
+    if bet <= 0:
         await message.reply("❌| Иди нахуй!")
         return
-    if user.money >= int(match[0]):  # Проверка баланса
-        casino_user_check = await casino_user.check()
-        if not casino_user_check:  # Не учавствует ли уже юзер
-            await casino_user.register_bet(
-                int(match[0]),
-                await convert_text_to_emoji(match[1]))
 
-            await user.change_money(-int(match[0]))
-            await message.reply("Ставка защитана!")
-        else:
-            await message.reply(f"Вы уже поставили {casino_user_check[2]} "
-                                f"на {casino_user_check[3]}")
-    else:
+    if user.money < bet:  # Проверка баланса
         await message.reply("У вас недостаточно денег!")
+        return
+
+    if user.casino_bet_amount is not None:  # Не учавствует ли уже юзер
+        await message.reply(f"Вы уже поставили {user.casino_bet_amount} "
+                            f"на {user.casino_bet_color.value}")
+        return
+
+    user.casino_bet_amount = bet
+    user.money -= bet
+    user.casino_bet_color = convert_text_to_emoji(match[1])
+    await user.save()
+
+    await message.reply("Ставка защитана!")
 
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*го$"))
@@ -118,7 +119,7 @@ async def get_log(message: Message):
                         disable_mentions=True)
 
 
-async def convert_text_to_emoji(text: str):
+def convert_text_to_emoji(text: str):
     if text.lower() == "к":
         return "🔴"
     elif text.lower() == "ч":

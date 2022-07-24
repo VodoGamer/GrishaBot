@@ -1,10 +1,10 @@
 from bot_init import bot
-from db import new_models
 from db.tortoise_init import db_init, db_shutdown
 from middlewares.registration import RegistrationMiddleware
 from modules import modules_list
+from repository import account
 
-new_models.bp.load(bot)
+account.bp.load(bot)
 for bp in modules_list:
     bp.load(bot)
 

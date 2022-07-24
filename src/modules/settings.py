@@ -6,7 +6,7 @@ from db.new_models import Chat, Setting, User
 bp = Blueprint("Settings")
 
 
-def convert_to_emoji(setting_value: int | bool):
+def convert_to_emoji(setting_value: int):
     if setting_value == 1:
         return "✅"
     elif not setting_value:
@@ -40,7 +40,7 @@ async def change_setting(message: Message, match, user: User):
         return
 
     try:
-        setting = await Setting.get(id=match[-2])
+        setting = await Setting.get(id=match[-2], chat_id=message.peer_id)
         if setting.max_value == 1:
             if match[-1] != '':
                 await message.reply("❌| Для этого правила не надо передавать "

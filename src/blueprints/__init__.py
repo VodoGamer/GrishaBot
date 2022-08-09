@@ -11,7 +11,7 @@ from . import (
     sex,
     stats,
     coin_game,
-    shop
+    # shop
 )
 
 modules_list = (
@@ -26,6 +26,6 @@ modules_list = (
     stats.bp,
     sex.bp,
     coin_game.bp,
-    shop.bp,
+    # shop.bp,
     rp.bp,
 )

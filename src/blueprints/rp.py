@@ -1,8 +1,8 @@
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from db.new_models import User, Setting, UserNameCases
-from repository.account import get_user_mention
+from src.db.models import Setting, User
+from src.repository.account import Case, get_mention
 
 bp = Blueprint("Rp commands")
 bp.labeler.auto_rules = [ReplyMessageRule()]
@@ -113,7 +113,7 @@ async def lick(message: Message, match, user: User):
 @bp.on.chat_message(regex=(r"(?i)(отлизать)\s*(.*)?"))
 async def lick_it_off(message: Message, match, user: User):
     await Rp(message, "отлизал", match[-1], user,
-             "photo-194020282_457239096", UserNameCases.GEN).send_message()
+             "photo-194020282_457239096", Case.GENITIVE).send_message()
 
 
 @bp.on.chat_message(regex=(r"(?i)(погладить)\s*(.*)?"))
@@ -149,7 +149,7 @@ async def give_a_shit(message: Message, match, user: User):
 @bp.on.chat_message(regex=(r"(?i)(навонять)\s*(.*)?"))
 async def stink(message: Message, match, user: User):
     await Rp(message, "навонял", match[-1], user,
-             "photo-194020282_457239087", UserNameCases.DAT).send_message()
+             "photo-194020282_457239087", Case.DATIVE).send_message()
 
 
 @bp.on.chat_message(regex=(r"(?i)((по)?лапать)\s*(.*)?"))
@@ -217,9 +217,13 @@ class Rp():
     Класс для лёгкого создания РП хендлеров
     '''
 
-    def __init__(self, message: Message, word: str, item: str,
-                 from_user: User, image=None,
-                 case: UserNameCases = UserNameCases.ACC) -> None:
+    def __init__(self,
+                 message: Message,
+                 word: str,
+                 item: str,
+                 from_user: User,
+                 image=None,
+                 case: Case | None = Case.ACCUSATIVE) -> None:
         self.message = message
 
         self.word = " ".join((word, item))
@@ -232,8 +236,8 @@ class Rp():
             id=self.message.reply_message.from_id,  # type: ignore
             chat_id=self.message.peer_id)
 
-        return (f"{await get_user_mention(self.from_user)} {self.word} "
-                f"{await get_user_mention(self.to_user, self.case)}")
+        return (f"{await get_mention(self.from_user)} {self.word} "
+                f"{await get_mention(self.to_user, self.case)}")
 
     async def send_message(self) -> None:
         setting = await Setting.get(chat_id=self.message.peer_id,

@@ -3,8 +3,15 @@ CREATE TABLE IF NOT EXISTS "chat" (
     "id" INT NOT NULL  PRIMARY KEY,
     "owner_id" INT,
     "messages_count" INT NOT NULL  DEFAULT 1,
-    "last_person_of_day_use" TIMESTAMPTZ
+    "last_person_of_day_use" TIMESTAMPTZ,
+    "last_casino_use" TIMESTAMPTZ
 );
+CREATE TABLE IF NOT EXISTS "casino" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "winner_feature" VARCHAR(5) NOT NULL,
+    "chat_id" INT NOT NULL REFERENCES "chat" ("id") ON DELETE CASCADE
+);
+COMMENT ON COLUMN "casino"."winner_feature" IS 'RED: 🔴\nBLACK: ⚫️\nGREEN: 🍀';
 CREATE TABLE IF NOT EXISTS "setting" (
     "id" INT NOT NULL  PRIMARY KEY,
     "title" VARCHAR(255) NOT NULL,
@@ -24,6 +31,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     "last_dick_growth_use" TIMESTAMPTZ,
     "casino_bet_amount" INT,
     "casino_bet_color" VARCHAR(5),
+    "last_coin_game" TIMESTAMPTZ,
     "chat_id" INT NOT NULL REFERENCES "chat" ("id") ON DELETE CASCADE
 );
 COMMENT ON COLUMN "user"."casino_bet_color" IS 'RED: 🔴\nBLACK: ⚫️\nGREEN: 🍀';

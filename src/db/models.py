@@ -1,3 +1,4 @@
+'''all bot's models'''
 from datetime import datetime
 from enum import Enum
 
@@ -5,19 +6,10 @@ from tortoise import fields
 from tortoise.models import Model
 
 
-class SmileyCasinoChips(Enum):
+class CasinoChips(Enum):
     RED = "🔴"
     BLACK = "⚫️"
     GREEN = "🍀"
-
-
-class UserNameCases(Enum):
-    NOM = ["nomn", "nom"]  # Именительный
-    GEN = ["gent", "gen"]  # Родительный
-    DAT = ["datv", "dat"]  # Дательный
-    ACC = ["accs", "acc"]  # Венительный
-    INS = ["ablt", "ins"]  # Творительный
-    ABL = ["loct", "abl"]  # Предложный
 
 
 class Chat(Model):
@@ -25,6 +17,8 @@ class Chat(Model):
     owner_id: int = fields.IntField(null=True)
     messages_count: int = fields.IntField(default=1)
     last_person_of_day_use: datetime = fields.DatetimeField(null=True)
+    last_casino_use: datetime = fields.DatetimeField(null=True)
+    last_shop_message_id: int | None = fields.IntField(null=True)
 
 
 class User(Model):
@@ -33,7 +27,7 @@ class User(Model):
     is_admin: bool = fields.BooleanField(default=False)  # type: ignore
     custom_name: str = fields.CharField(max_length=255, null=True)
     messages_count: int = fields.IntField(default=1)
-    sex_request: int = fields.IntField(null=True)
+    sex_request: int | None = fields.IntField(null=True)
 
     # Money
     money: int = fields.IntField(default=0)
@@ -41,14 +35,17 @@ class User(Model):
 
     # Dick
     dick_size: int = fields.IntField(default=0)
-    last_dick_growth_use: datetime = fields.DatetimeField(null=True)
+    last_dick_growth_use: datetime | None = fields.DatetimeField(null=True)
 
     # Casino
     casino_bet_amount: int = fields.IntField(null=True)
-    casino_bet_color: SmileyCasinoChips = fields.CharEnumField(
-        SmileyCasinoChips,
+    casino_bet_color: CasinoChips | None = fields.CharEnumField(
+        CasinoChips,
         max_length=5,
         null=True)
+
+    # The Coin Game
+    last_coin_game: datetime | None = fields.DatetimeField(null=True)
 
 
 class Setting(Model):
@@ -57,3 +54,11 @@ class Setting(Model):
     title: str = fields.CharField(max_length=255)
     value: int = fields.IntField()
     max_value: int = fields.IntField(default=1)
+
+
+class Casino(Model):
+    id: int = fields.IntField(pk=True)
+    chat = fields.ForeignKeyField('models.Chat', related_name='casino')
+    winner_feature: CasinoChips = fields.CharEnumField(
+        CasinoChips,
+        max_length=5)

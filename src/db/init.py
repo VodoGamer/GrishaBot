@@ -1,5 +1,9 @@
+'''init db'''
 from envparse import env
+from loguru import logger
 from tortoise import Tortoise
+
+from src.settings.update_settings import update_all_settings
 
 env.read_envfile(".env")
 
@@ -15,7 +19,7 @@ TORTOISE_ORM = {
     },
     "apps": {
         "models": {
-            "models": ["db.new_models", "aerich.models"],
+            "models": ["src.db.models", "aerich.models"],
             "default_connection": "default",
         },
     },
@@ -24,7 +28,8 @@ TORTOISE_ORM = {
 
 async def db_init():
     await Tortoise.init(config=TORTOISE_ORM)
-    await Tortoise.generate_schemas()
+    await update_all_settings()
+    logger.info("All chat settings have been updated")
 
 
 async def db_shutdown():

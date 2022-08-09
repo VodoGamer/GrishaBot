@@ -1,6 +1,6 @@
 from vkbottle.bot import Blueprint, Message
 
-from db.new_models import User, Chat
+from src.db.models import Chat, User
 
 bp = Blueprint("Stat")
 

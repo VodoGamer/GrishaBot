@@ -1,7 +1,7 @@
 from tortoise.exceptions import DoesNotExist
 from vkbottle.bot import Blueprint, Message
 
-from db.new_models import Chat, Setting, User
+from src.db.models import Chat, Setting, User
 
 bp = Blueprint("Settings")
 

@@ -5,8 +5,9 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from db.new_models import Chat, User, UserNameCases
-from repository.account import get_user_mention
+from src.db.models import Chat, User
+from src.repository.account import (Case, command_not_available, get_mention,
+                                    get_top_list)
 
 bp = Blueprint("Balance")
 
@@ -14,7 +15,7 @@ bp = Blueprint("Balance")
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(баланс|б)$"))
 async def get_balance(message: Message, user: User):
     await message.reply(f"Баланс "
-                        f"{await get_user_mention(user, UserNameCases.GEN)} "
+                        f"{await get_mention(user, Case.GENITIVE)} "
                         f"на данный момент: {user.money} 💵",
                         disable_mentions=True)
 
@@ -22,20 +23,18 @@ async def get_balance(message: Message, user: User):
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(бонус)$"))
 async def get_bonus(message: Message, user: User):
     bonus = randint(100, 200)
-    now = datetime.now(tz=UTC)
+    cooldown = command_not_available(user.last_bonus_use, timedelta(hours=6))
 
-    if user.last_bonus_use:
-        db_date_delta = user.last_bonus_use + timedelta(hours=6)
-        if db_date_delta > now:
-            await message.reply("❌ | Следующий бонус можно получить через "
-                                f"{str(db_date_delta - now).split('.', 1)[0]}"
-                                )
-            return
+    if cooldown:
+        await message.reply("❌ | Следующий бонус можно получить через "
+                            f"{cooldown}"
+                            )
+        return
     user.money += bonus
-    user.last_bonus_use = now
+    user.last_bonus_use = datetime.now(tz=UTC)
     await user.save()
 
-    await message.reply(f"{await get_user_mention(user)} получил {bonus} 💵",
+    await message.reply(f"{await get_mention(user)} получил {bonus} 💵",
                         disable_mentions=True)
 
 
@@ -61,26 +60,22 @@ async def send_money(message: Message, match, user: User, chat: Chat):
         await reply_user.save()
 
     await message.answer(
-        f"{await get_user_mention(user)} "
+        f"{await get_mention(user)} "
         f"передал {transferred_money} 💵 "
-        f"{await get_user_mention(reply_user, UserNameCases.DAT)}",
+        f"{await get_mention(reply_user, Case.DATIVE)}",
         disable_mentions=True
     )
 
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(список|лист|топ)\s*"
                            r"(форбс|forbes|богачей|денег)?\s*(\d*)$"))
-async def get_forbes_list(message: Message, user: User, chat: Chat):
+async def get_forbes_list(message: Message, chat: Chat):
     forbes_list = await User.filter(chat_id=chat.id).exclude(money=0)\
         .order_by('-money')
+    top = await get_top_list(forbes_list)
 
-    if forbes_list:
-        users_mentions = []
-        for user in forbes_list:
-            users_mentions.append(
-                f"{await get_user_mention(user)} | {user.money} 💵")
-        await message.answer("Список Forbes этой беседы:\n"
-                             "{}".format("\n".join(users_mentions)),
+    if top:
+        await message.answer(f"Список Forbes этой беседы:\n {top}",
                              disable_mentions=True)
     else:
         await message.reply("беседа бомжей :)")

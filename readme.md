@@ -12,11 +12,10 @@
 
 ## Гайд по установке
 1. Установить зависимости (`pip install -r requirements.txt`)
-2. Скопировать файл `.env.example`
-3. Переименовать скопированный файл в `.env`
-4. Заполнить енв
-5. `alembic upgrade head`
-6. Бот готов! Запуск производится файлом `main.py`
+2. Скопировать файл `.env.example` в `.env`
+3. Заполнить енв
+4. `aerich upgrade`
+5. Запустить командой `python3 -m src`
 
 
 Бот написан на [vkbottle 4.2](https://github.com/vkbottle/vkbottle/tree/v4.x), Python 3.10
@@ -24,4 +23,3 @@
 
 Для склонения кастомных имён используется библиотека [PyMorphy2 0.9.1](https://github.com/kmike/pymorphy2/releases/tag/0.9.1)
 
-Для миграций используется [alembic](https://github.com/sqlalchemy/alembic)

@@ -1,9 +1,9 @@
 import asyncio
+from loguru import logger
 
 from pydantic import BaseModel
 
-from db.new_models import Chat, Setting
-from db.tortoise_init import db_init, db_shutdown
+from src.db.models import Chat, Setting
 
 
 class JSONSettings(BaseModel):
@@ -31,7 +31,14 @@ async def update_chat_settings(chat_id: int):
             chat_id=chat_id,
             id=setting.id)
 
+        if setting_db[1]:
+            logger.info(
+                f"a chat {chat_id} setting {setting.id} | {setting.title} "
+                "has been added")
+
         if setting_db[0].title != setting.title:
+            logger.info(f"a chat {chat_id} setting {setting.id} "
+                        f"title has been edit to: {setting.title}")
             setting_db[0].title = setting.title
 
         if setting_db[0].max_value != setting.max_value:
@@ -41,10 +48,9 @@ async def update_chat_settings(chat_id: int):
 
 
 async def update_all_settings():
-    await db_init()
     for chat in await Chat.all().order_by("id"):
         await update_chat_settings(chat.id)
-    await db_shutdown()
+        logger.debug(f"settings of {chat.id} chat updated!")
 
 
 if __name__ == "__main__":

@@ -27,6 +27,13 @@
       "title": "Кд на команду: \"го\"",
       "default_value": 10,
       "max_value": 300
+    },
+    {
+      "id": 5,
+      "enabled": 1,
+      "title": "Использование стикеров ботом",
+      "default_value": 1,
+      "max_value": 1
     }
   ]
 }

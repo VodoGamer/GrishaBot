@@ -1,8 +1,10 @@
-aiosqlite == 0.17.0
-alembic >= 1.7.7
+aerich==0.6.3
+asyncpg==0.26.0
 envparse >= 0.2.0
 loguru >= 0.4.4
 pymorphy2 == 0.9.1
-sqlalchemy >= 1.4.36
+pytrovich
+pytz
+tortoise-orm==0.19.2
 vkbottle == 4.3.4
 vkbottle-types==5.131.146.5

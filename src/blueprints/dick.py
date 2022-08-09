@@ -5,8 +5,8 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import Chat, User
-from src.repository.account import (Case, command_not_available, get_mention,
-                                    get_top_list)
+from src.repository.account import (Case, TopType, command_not_available,
+                                    get_mention, get_top_list)
 
 bp = Blueprint("Dick")
 
@@ -51,7 +51,7 @@ async def dick_height(message: Message, user: User):
 async def top_of_dicks(message: Message, match, user: User, chat: Chat):
     dicks_list = await User.filter(chat_id=chat.id).exclude(dick_size=0)\
         .order_by('-dick_size')
-    top = await get_top_list(dicks_list)
+    top = await get_top_list(dicks_list, TopType.dicks)
 
     if top:
         await message.answer(f"топ {match[-1]} в этом чате:\n {top}",

@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from enum import Enum
 
 from pytrovich.enums import Case, Gender, NamePart
 from pytrovich.maker import PetrovichDeclinationMaker
@@ -9,6 +10,11 @@ from src.db.models import User
 
 maker = PetrovichDeclinationMaker()
 bp = Blueprint("user_repository")
+
+
+class TopType(Enum):
+    money = 0
+    dicks = 1
 
 
 async def get_name(user: User,
@@ -50,13 +56,22 @@ def command_not_available(last_use_command: datetime | None,
     return False
 
 
-async def get_top_list(users_list: list[User]) -> str | bool:
+async def get_top_list(users_list: list[User],
+                       top_type: TopType) -> str | bool:
     '''получение топа пользователей по параметру'''
     if users_list:
         users_mentions = []
+
         for user in users_list:
+            if top_type == TopType.money:
+                end_phrase = f"{user.money} 💵"
+            elif top_type == TopType.dicks:
+                end_phrase = f"{user.dick_size}"
+            else:
+                raise ValueError("top_type unbound")
+
             users_mentions.append(
-                f"{await get_mention(user)} | {user.money} 💵")
+                f"{await get_mention(user)} | {end_phrase}")
         return "\n".join(users_mentions)
     else:
         return False

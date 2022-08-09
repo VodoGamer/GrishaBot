@@ -6,8 +6,8 @@ from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
 from src.db.models import Chat, User
-from src.repository.account import (Case, command_not_available, get_mention,
-                                    get_top_list)
+from src.repository.account import (Case, TopType, command_not_available,
+                                    get_mention, get_top_list)
 
 bp = Blueprint("Balance")
 
@@ -72,7 +72,7 @@ async def send_money(message: Message, match, user: User, chat: Chat):
 async def get_forbes_list(message: Message, chat: Chat):
     forbes_list = await User.filter(chat_id=chat.id).exclude(money=0)\
         .order_by('-money')
-    top = await get_top_list(forbes_list)
+    top = await get_top_list(forbes_list, TopType.money)
 
     if top:
         await message.answer(f"Список Forbes этой беседы:\n {top}",

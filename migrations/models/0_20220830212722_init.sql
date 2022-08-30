@@ -2,9 +2,10 @@
 CREATE TABLE IF NOT EXISTS "chat" (
     "id" INT NOT NULL  PRIMARY KEY,
     "owner_id" INT,
-    "messages_count" INT NOT NULL  DEFAULT 1,
+    "messages_count" INT NOT NULL  DEFAULT 0,
     "last_person_of_day_use" TIMESTAMPTZ,
-    "last_casino_use" TIMESTAMPTZ
+    "last_casino_use" TIMESTAMPTZ,
+    "last_shop_message_id" INT
 );
 CREATE TABLE IF NOT EXISTS "casino" (
     "id" SERIAL NOT NULL PRIMARY KEY,
@@ -23,7 +24,7 @@ CREATE TABLE IF NOT EXISTS "user" (
     "id" INT NOT NULL  PRIMARY KEY,
     "is_admin" BOOL NOT NULL  DEFAULT False,
     "custom_name" VARCHAR(255),
-    "messages_count" INT NOT NULL  DEFAULT 1,
+    "messages_count" INT NOT NULL  DEFAULT 0,
     "sex_request" INT,
     "money" INT NOT NULL  DEFAULT 0,
     "last_bonus_use" TIMESTAMPTZ,

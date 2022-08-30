@@ -15,18 +15,21 @@ class CasinoChips(Enum):
 class Chat(Model):
     id: int = fields.IntField(pk=True, generated=False)
     owner_id: int = fields.IntField(null=True)
-    messages_count: int = fields.IntField(default=1)
+    messages_count: int = fields.IntField(default=0)
     last_person_of_day_use: datetime = fields.DatetimeField(null=True)
     last_casino_use: datetime = fields.DatetimeField(null=True)
     last_shop_message_id: int | None = fields.IntField(null=True)
+    users: fields.ReverseRelation["User"]
 
 
 class User(Model):
     id: int = fields.IntField(pk=True, generated=False)
-    chat = fields.ForeignKeyField('models.Chat', related_name='users')
+    chat: fields.ForeignKeyRelation[Chat]\
+        = fields.ForeignKeyField('models.Chat', related_name='users'
+    )
     is_admin: bool = fields.BooleanField(default=False)  # type: ignore
     custom_name: str = fields.CharField(max_length=255, null=True)
-    messages_count: int = fields.IntField(default=1)
+    messages_count: int = fields.IntField(default=0)
     sex_request: int | None = fields.IntField(null=True)
 
     # Money

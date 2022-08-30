@@ -11,6 +11,7 @@ from . import (
     sex,
     stats,
     coin_game,
+    chat_invite
     # shop
 )
 
@@ -28,4 +29,5 @@ modules_list = (
     coin_game.bp,
     # shop.bp,
     rp.bp,
+    chat_invite.bp,
 )

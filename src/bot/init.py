@@ -4,14 +4,13 @@ from vkbottle import Bot
 
 from src.blueprints import modules_list
 from src.db.init import db_init, db_shutdown
-from src.middlewares.registration import RegistrationMiddleware
 from src.repository import account
 
 env.read_envfile(".env")
 
 
 def init_middlewares(bot: Bot) -> None:
-    bot.labeler.message_view.register_middleware(RegistrationMiddleware)
+    ...
 
 
 def init_loop_wrappers(bot: Bot) -> None:

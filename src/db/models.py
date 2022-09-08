@@ -25,8 +25,7 @@ class Chat(Model):
 class User(Model):
     id: int = fields.IntField(pk=True, generated=False)
     chat: fields.ForeignKeyRelation[Chat]\
-        = fields.ForeignKeyField('models.Chat', related_name='users'
-    )
+        = fields.ForeignKeyField('models.Chat', related_name='users')
     is_admin: bool = fields.BooleanField(default=False)  # type: ignore
     custom_name: str = fields.CharField(max_length=255, null=True)
     messages_count: int = fields.IntField(default=0)

@@ -1,12 +1,10 @@
 '''building a bot'''
-from envparse import env
 from vkbottle import Bot
 
 from src.blueprints import modules_list
-from src.db.init import db_init, db_shutdown
+from src.config.db import db_init, db_shutdown
+from src.config.env import VK_TOKEN
 from src.repository import account
-
-env.read_envfile(".env")
 
 
 def init_middlewares(bot: Bot) -> None:
@@ -25,7 +23,7 @@ def init_blueprints(bot: Bot):
 
 
 def init_bot() -> Bot:
-    bot = Bot(env.str("BOT_TOKEN"))
+    bot = Bot(VK_TOKEN)
     init_middlewares(bot)
     init_loop_wrappers(bot)
     init_blueprints(bot)

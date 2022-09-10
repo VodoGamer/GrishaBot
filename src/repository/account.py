@@ -21,7 +21,7 @@ async def get_name(user: User,
                    case: Case | None = None,
                    gender: Gender = Gender.MALE):
     if user.id < 0:
-        name = (await bp.api.groups.get_by_id([user.id]))[0].name
+        name = (await bp.api.groups.get_by_id([abs(user.id)]))[0].name
     elif not user.custom_name:
         name = (await bp.api.users.get(user_id=user.id))[0].first_name
     else:

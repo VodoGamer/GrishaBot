@@ -1,11 +1,7 @@
 -- upgrade --
 CREATE TABLE IF NOT EXISTS "chat" (
     "id" INT NOT NULL  PRIMARY KEY,
-    "owner_id" INT,
-    "messages_count" INT NOT NULL  DEFAULT 0,
-    "last_person_of_day_use" TIMESTAMPTZ,
-    "last_casino_use" TIMESTAMPTZ,
-    "last_shop_message_id" INT
+    "messages_count" INT NOT NULL  DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS "casino" (
     "id" SERIAL NOT NULL PRIMARY KEY,
@@ -13,16 +9,25 @@ CREATE TABLE IF NOT EXISTS "casino" (
     "chat_id" INT NOT NULL REFERENCES "chat" ("id") ON DELETE CASCADE
 );
 COMMENT ON COLUMN "casino"."winner_feature" IS 'RED: 🔴\nBLACK: ⚫️\nGREEN: 🍀';
+CREATE TABLE IF NOT EXISTS "chat_cooldown" (
+    "id" SERIAL NOT NULL PRIMARY KEY,
+    "person_of_day" TIMESTAMPTZ NOT NULL,
+    "casino" TIMESTAMPTZ NOT NULL,
+    "chat_id" INT NOT NULL REFERENCES "chat" ("id") ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS "setting" (
     "id" INT NOT NULL  PRIMARY KEY,
     "title" VARCHAR(255) NOT NULL,
     "value" INT NOT NULL,
     "max_value" INT NOT NULL  DEFAULT 1,
+    "type" SMALLINT NOT NULL,
     "chat_id" INT NOT NULL REFERENCES "chat" ("id") ON DELETE CASCADE
 );
+COMMENT ON COLUMN "setting"."type" IS 'bool: 0\nkey: 1';
 CREATE TABLE IF NOT EXISTS "user" (
     "id" INT NOT NULL  PRIMARY KEY,
     "is_admin" BOOL NOT NULL  DEFAULT False,
+    "is_owner" BOOL NOT NULL  DEFAULT False,
     "custom_name" VARCHAR(255),
     "messages_count" INT NOT NULL  DEFAULT 0,
     "sex_request" INT,

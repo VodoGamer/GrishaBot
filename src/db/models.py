@@ -22,8 +22,8 @@ class Chat(Model):
 
 
 class ChatCooldown(Model):
-    person_of_day: datetime = fields.DatetimeField()
-    casino: datetime = fields.DatetimeField()
+    person_of_day: datetime | None = fields.DatetimeField(null=True)
+    casino: datetime | None = fields.DatetimeField(null=True)
 
     chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
         'models.Chat', related_name='cooldowns')

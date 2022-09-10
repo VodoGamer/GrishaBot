@@ -6,7 +6,7 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import Casino, CasinoChips, Chat, Setting, User
-from src.repository.account import command_not_available, get_mention
+from src.repository.account import is_command_available, get_mention
 
 bp = Blueprint("Casino")
 
@@ -52,7 +52,7 @@ async def twist(message: Message, chat: Chat):
         return
 
     cooldown_setting = await Setting.get(id=4, chat_id=chat.id)
-    cooldown = command_not_available(
+    cooldown = is_command_available(
         chat.last_casino_use, timedelta(seconds=cooldown_setting.value))
 
     if cooldown:

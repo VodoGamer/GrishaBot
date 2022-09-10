@@ -5,7 +5,7 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import Chat, User
-from src.repository.account import (Case, TopType, command_not_available,
+from src.repository.account import (Case, TopType, is_command_available,
                                     get_mention, get_top_list)
 
 bp = Blueprint("Dick")
@@ -22,7 +22,7 @@ async def get_balance(message: Message, user: User):
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(намазать|помазать)\s*"
                            r"(сод(у|ой))?(член|писю)?$"))
 async def dick_height(message: Message, user: User):
-    cooldown = command_not_available(user.last_dick_growth_use, timedelta(1))
+    cooldown = is_command_available(user.last_dick_growth_use, timedelta(1))
     size = randint(-10, 20)
 
     if cooldown:

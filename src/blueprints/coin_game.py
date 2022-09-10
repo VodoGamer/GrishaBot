@@ -6,7 +6,7 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import User, Setting
-from src.repository.account import get_mention, command_not_available
+from src.repository.account import get_mention, is_command_available
 
 bp = Blueprint("coin_game")
 
@@ -37,7 +37,7 @@ async def the_coin_game(
         return
     user.money -= bet_amount
 
-    cooldown = command_not_available(user.last_coin_game,
+    cooldown = is_command_available(user.last_coin_game,
                                      timedelta(minutes=5))
     if cooldown:
         await message.reply("Следущая игра в монетку будет доступна через: "

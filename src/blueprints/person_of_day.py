@@ -6,14 +6,14 @@ from vkbottle.bot import Blueprint, Message
 
 from src.bot.phrases import callingtheuniverse
 from src.db.models import Chat, Setting, User
-from src.repository.account import command_not_available, get_mention
+from src.repository.account import is_command_available, get_mention
 
 bp = Blueprint("Person of day")
 
 
 @bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(.*)\s{1,}дня$")
 async def person_of_day(message: Message, match, chat: Chat):
-    cooldown = command_not_available(chat.last_person_of_day_use, timedelta(1))
+    cooldown = is_command_available(chat.last_person_of_day_use, timedelta(1))
 
     if cooldown:
         await message.reply(f"Команду можно будет вызвать через {cooldown}")

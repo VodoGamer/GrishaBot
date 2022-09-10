@@ -45,8 +45,8 @@ async def get_mention(user: User,
     return f"@{modificator}{user_id} ({await get_name(user, case, gender)})"
 
 
-def command_not_available(last_use_command: datetime | None,
-                          delta: timedelta) -> bool | str:
+def is_command_available(last_use_command: datetime | None,
+                         delta: timedelta) -> bool | str:
     '''Проверяет можно ли использовать команду, на которой есть кд'''
     if last_use_command:
         now = datetime.now(tz=UTC)
@@ -66,7 +66,7 @@ async def get_top_list(users_list: list[User],
             if top_type == TopType.money:
                 end_phrase = f"{user.money} 💵"
             elif top_type == TopType.dicks:
-                end_phrase = f"{user.dick_size}"
+                end_phrase = f"{user.dick_size} см"
             else:
                 raise ValueError("top_type unbound")
 

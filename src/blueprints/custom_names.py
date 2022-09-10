@@ -9,7 +9,7 @@ bp = Blueprint("Custom names")
 morph = MorphAnalyzer()
 
 
-@bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^(!|\.|\/)?\s*ник|имя$"))
+@bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^\.*\s*ник|имя$"))
 async def get_his_name(message: Message, chat: Chat):
     user = await User.get(chat_id=chat.id,
                           id=message.reply_message.from_id)  # type: ignore
@@ -17,8 +17,7 @@ async def get_his_name(message: Message, chat: Chat):
                         f"{await get_name(user)}")
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(моё имя|мой ник"
-                           r"|как меня зовут|ник)$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*(мо(й|ё)\s*(ник|имя))$"))
 async def get_my_name(message: Message, user: User):
     await message.reply(f"Ваше имя на данный момент: "
                         f"{await get_name(user)}")

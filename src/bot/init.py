@@ -4,11 +4,12 @@ from vkbottle import Bot
 from src.blueprints import modules_list
 from src.config.db import db_init, db_shutdown
 from src.config.env import VK_TOKEN
+from src.middleware.statistic import StatisticMiddleware
 from src.repository import account
 
 
 def init_middlewares(bot: Bot) -> None:
-    ...
+    bot.labeler.message_view.register_middleware(StatisticMiddleware)
 
 
 def init_loop_wrappers(bot: Bot) -> None:

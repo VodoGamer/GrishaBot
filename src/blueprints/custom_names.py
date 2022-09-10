@@ -1,6 +1,6 @@
 from pymorphy2 import MorphAnalyzer
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import ReplyMessageRule, RegexRule
+from vkbottle.dispatch.rules.base import ReplyMessageRule
 
 from src.db.models import Chat, User
 from src.repository.account import get_name

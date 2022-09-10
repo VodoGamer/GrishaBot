@@ -20,7 +20,7 @@ async def get_balance(message: Message, user: User):
                         disable_mentions=True)
 
 
-@bp.on.chat_message(regex=(r"(?i)^\.*\s*(бонус)?$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*бонус$"))
 async def get_bonus(message: Message, user: User):
     bonus = randint(100, 200)
     cooldown = command_not_available(user.last_bonus_use, timedelta(hours=6))

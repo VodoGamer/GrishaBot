@@ -12,7 +12,7 @@ from src.repository.account import (Case, TopType, command_not_available,
 bp = Blueprint("Balance")
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(баланс|б)$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*б(аланс)?$"))
 async def get_balance(message: Message, user: User):
     await message.reply(f"Баланс "
                         f"{await get_mention(user, Case.GENITIVE)} "
@@ -20,7 +20,7 @@ async def get_balance(message: Message, user: User):
                         disable_mentions=True)
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(бонус)$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*(бонус)?$"))
 async def get_bonus(message: Message, user: User):
     bonus = randint(100, 200)
     cooldown = command_not_available(user.last_bonus_use, timedelta(hours=6))
@@ -40,8 +40,7 @@ async def get_bonus(message: Message, user: User):
 
 @bp.on.chat_message(
     ReplyMessageRule(),
-    regex=(r"(?i)^(!|\.|\/)?\s*(дать|передать|подарить)\s*(денег|баб(ки|ок))"
-           r"?\s*(\d*)$"))
+    regex=(r"(?i)^\.*\s*((пере)?дать|подарить)\s*(\d+)$"))
 async def send_money(message: Message, match, user: User, chat: Chat):
     reply_user = await User.get(
         id=message.reply_message.from_id,  # type: ignore
@@ -67,8 +66,8 @@ async def send_money(message: Message, match, user: User, chat: Chat):
     )
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(список|лист|топ)\s*"
-                           r"(форбс|forbes|богачей|денег)?\s*(\d*)$"))
+@bp.on.chat_message(
+    regex=(r"(?i)^\.*\s*(список|лист|топ)\s*(форбс|forbes|богачей|денег)$"))
 async def get_forbes_list(message: Message, chat: Chat):
     forbes_list = await User.filter(chat_id=chat.id).exclude(money=0)\
         .order_by('-money')

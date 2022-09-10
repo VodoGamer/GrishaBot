@@ -16,7 +16,7 @@ class CoinSides(Enum):
     TAILS = "решка"
 
 
-@bp.on.chat_message(regex=r"(?i)^монетка\s*(орёл|решка)\s*(\d*)$")
+@bp.on.chat_message(regex=r"(?i)^\.*монетка\s*(орёл|решка)\s*(\d*)$")
 async def coin_game_with_set_side(message: Message, user: User, match):
     await the_coin_game(message, user, CoinSides(match[0]), int(match[1]))
 

@@ -11,7 +11,7 @@ from src.repository.account import command_not_available, get_mention
 bp = Blueprint("Casino")
 
 
-@bp.on.chat_message(regex=(r"(?i)^(\d*)\s*?(к|ч|з)$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*(\d*)\s*(к|ч|з)$"))
 async def new_bet(message: Message, match, user: User):
     bet = int(match[0])
 
@@ -43,7 +43,7 @@ async def new_bet(message: Message, match, user: User):
     await message.reply("Ставка защитана!")
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*го$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*го$"))
 async def twist(message: Message, chat: Chat):
     setting = await Setting.get(id=3, chat_id=chat.id)
     if not setting.value:
@@ -121,7 +121,7 @@ async def twist(message: Message, chat: Chat):
     await Casino.create(chat_id=chat.id, winner_feature=winner_feature)
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*лог|история$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*лог|история$"))
 async def get_log(message: Message, chat: Chat):
     casinos = await Casino.filter(chat_id=chat.id).order_by('id').limit(15)
     if casinos == []:

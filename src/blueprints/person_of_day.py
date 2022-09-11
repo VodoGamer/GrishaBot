@@ -23,9 +23,9 @@ async def person_of_day(message: Message, match, chat: Chat):
         message.peer_id)
     if not chat_members.profiles:
         return
-    users_id = [member.id for member in chat_members.profiles]
 
-    user = await User.get_or_create(chat=chat, id=choice(users_id))
+    user = await User.get_or_create(chat=chat, id=choice(
+        chat_members.profiles).id)
     message_pin = await message.reply(
         f"{choice(callingtheuniverse)} {match[-1]} дня это "
         f"{await get_mention(user[0])}")

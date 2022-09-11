@@ -16,20 +16,11 @@ class Chat(Model):
     id: int = fields.IntField(pk=True, generated=False)
     messages_count: int = fields.IntField(default=0)
 
-    cooldowns: fields.ReverseRelation["ChatCooldown"]
+    last_person_of_day: datetime | None = fields.DatetimeField(null=True)
+    last_casino: datetime | None = fields.DatetimeField(null=True)
+
     settings: fields.ReverseRelation["Setting"]
     users: fields.ReverseRelation["User"]
-
-
-class ChatCooldown(Model):
-    person_of_day: datetime | None = fields.DatetimeField(null=True)
-    casino: datetime | None = fields.DatetimeField(null=True)
-
-    chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
-        'models.Chat', related_name='cooldowns')
-
-    class Meta:
-        table = "chat_cooldown"
 
 
 class User(Model):

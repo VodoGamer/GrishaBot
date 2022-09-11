@@ -1,6 +1,6 @@
 from vkbottle.bot import Blueprint, Message
 
-from src.db.models import Chat, User, ChatCooldown
+from src.db.models import Chat, User
 
 bp = Blueprint("chat_invite")
 
@@ -11,7 +11,6 @@ async def update_chat(chat_id: int):
     if not chat_info:
         return
     chat = await Chat.get_or_create(id=chat_id)
-    await ChatCooldown.get_or_create(chat=chat[0])
 
     chat_members = (await bp.api.messages.get_conversation_members(
         chat[0].id)).items

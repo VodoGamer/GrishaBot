@@ -19,10 +19,11 @@ class TopType(Enum):
 
 async def get_name(user: User,
                    case: Case | None = None,
-                   gender: Gender = Gender.MALE):
+                   gender: Gender = Gender.MALE,
+                   custom_name: bool = True):
     if user.id < 0:
         name = (await bp.api.groups.get_by_id([abs(user.id)]))[0].name
-    elif not user.custom_name:
+    elif not custom_name or not user.custom_name:
         name = (await bp.api.users.get(user_id=user.id))[0].first_name
     else:
         name = user.custom_name
@@ -39,10 +40,12 @@ async def get_name(user: User,
 
 async def get_mention(user: User,
                       case: Case | None = None,
-                      gender: Gender = Gender.MALE):
+                      gender: Gender = Gender.MALE,
+                      custom_name: bool = True):
     modificator = "id" if user.id > 0 else "club"
     user_id = abs(user.id)
-    return f"@{modificator}{user_id} ({await get_name(user, case, gender)})"
+    return (f"@{modificator}{user_id} "
+            f"({await get_name(user, case, gender, custom_name)})")
 
 
 def is_command_available(last_use_command: datetime | None,

@@ -1,7 +1,7 @@
 from . import (
     balance,
     casino,
-    custom_names,
+    custom_name,
     dick,
     how_long,
     insults,
@@ -18,7 +18,7 @@ from . import (
 modules_list = (
     balance.bp,
     casino.bp,
-    custom_names.bp,
+    custom_name.bp,
     dick.bp,
     how_long.bp,
     insults.bp,

@@ -1,26 +1,29 @@
-from pymorphy2 import MorphAnalyzer
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
 from src.db.models import Chat, User
-from src.repository.account import get_name
+from src.repository.account import get_mention, get_name, Case
 
-bp = Blueprint("Custom names")
-morph = MorphAnalyzer()
+bp = Blueprint("Custom name")
 
 
 @bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^\.*\s*ник|имя$"))
 async def get_his_name(message: Message, chat: Chat):
-    user = await User.get(chat_id=chat.id,
+    user = await User.get(chat=chat,
                           id=message.reply_message.from_id)  # type: ignore
-    await message.reply("Имя этого человека на данный момент: "
-                        f"{await get_name(user)}")
+
+    await message.reply(
+        f"Ник {await get_mention(user, Case.GENITIVE, custom_name=False)}:\n"
+        f"{await get_name(user)}",
+        disable_mentions=True)
 
 
 @bp.on.chat_message(regex=(r"(?i)^\.*\s*(мо(й|ё)\s*(ник|имя))$"))
 async def get_my_name(message: Message, user: User):
-    await message.reply(f"Ваше имя на данный момент: "
-                        f"{await get_name(user)}")
+    await message.answer(
+        f"Ник {await get_mention(user, Case.GENITIVE, custom_name=False)}:\n"
+        f"{await get_name(user)}",
+        disable_mentions=True)
 
 
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(поменять|изменить|сменить)?"

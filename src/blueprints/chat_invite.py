@@ -1,30 +1,36 @@
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import Chat, User
+from src.settings.update_settings import update_chat_settings
 
 bp = Blueprint("chat_invite")
 
 
-async def update_chat(chat_id: int):
+async def update_chat(chat_id: int) -> tuple[Chat, bool]:
     chat_info = (await bp.api.messages.get_conversations_by_id(
         [chat_id])).items[0].chat_settings
     if not chat_info:
-        return
+        raise AttributeError(f"{chat_id} dont have any information on VK API")
     chat = await Chat.get_or_create(id=chat_id)
+    return chat
 
+
+async def update_chat_members(chat: Chat):
     chat_members = (await bp.api.messages.get_conversation_members(
-        chat[0].id)).items
+        chat.id)).items
     for user in chat_members:
         await User.update_or_create(
             {"is_admin": user.is_admin or False,
              "is_owner": user.is_owner or False},
-            id=user.member_id, chat=chat[0])
+            id=user.member_id, chat=chat)
 
 
 @bp.on.chat_message(text=".init")
 async def register_new_chat(message: Message):
     await message.reply("Идёт иницилизация бота")
-    await update_chat(message.peer_id)
+    chat = await update_chat(message.peer_id)
+    await update_chat_settings(chat[0].id)
+    await update_chat_members(chat[0])
     await message.reply("Иницилизация завершена!")
 
 

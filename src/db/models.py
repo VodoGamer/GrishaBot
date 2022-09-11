@@ -1,6 +1,6 @@
 '''all bot's models'''
 from datetime import datetime
-from enum import Enum, IntEnum
+from enum import Enum
 
 from tortoise import fields
 from tortoise.models import Model
@@ -53,17 +53,11 @@ class User(Model):
         'models.Chat', related_name='users')
 
 
-class SettingType(IntEnum):
-    bool = 0
-    key = 1
-
-
 class Setting(Model):
     id: int = fields.IntField(pk=True, generated=False)
     title: str = fields.CharField(max_length=255)
     value: int = fields.IntField()
     max_value: int = fields.IntField(default=1)
-    type: SettingType = fields.IntEnumField(SettingType)
 
     chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
         'models.Chat', related_name='settings')

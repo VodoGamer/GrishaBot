@@ -217,13 +217,9 @@ class Rp():
     Класс для лёгкого создания РП хендлеров
     '''
 
-    def __init__(self,
-                 message: Message,
-                 word: str,
-                 item: str,
-                 from_user: User,
-                 image=None,
-                 case: Case | None = Case.ACCUSATIVE) -> None:
+    def __init__(
+            self, message: Message, word: str, item: str, from_user: User,
+            image=None, case: Case | None = Case.ACCUSATIVE) -> None:
         self.message = message
 
         self.word = " ".join((word, item))

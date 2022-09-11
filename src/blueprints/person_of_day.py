@@ -8,32 +8,31 @@ from src.bot.phrases import callingtheuniverse
 from src.db.models import Chat, Setting, User
 from src.repository.account import is_command_available, get_mention
 
-bp = Blueprint("Person of day")
+bp = Blueprint("person of day")
 
 
 @bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(.*)\s{1,}дня$")
 async def person_of_day(message: Message, match, chat: Chat):
-    cooldown = is_command_available(chat.last_person_of_day_use, timedelta(1))
+    cooldown = is_command_available(chat.last_person_of_day, timedelta(1))
 
     if cooldown:
         await message.reply(f"Команду можно будет вызвать через {cooldown}")
         return
 
     chat_members = await bp.api.messages.get_conversation_members(
-        peer_id=message.peer_id)
-    users_id = []
-    for member in chat_members.profiles:
-        users_id.append(member.id)
+        message.peer_id)
+    if not chat_members.profiles:
+        return
+    users_id = [member.id for member in chat_members.profiles]
 
-    user = await User.get(chat_id=chat.id, id=choice(users_id))
-
-    message_pin = await message.reply(f"{choice(callingtheuniverse)} "
-                                      f"{match[-1]} дня это "
-                                      f"{await get_mention(user)}")
-    chat.last_person_of_day_use = datetime.now(tz=UTC)
+    user = await User.get_or_create(chat=chat, id=choice(users_id))
+    message_pin = await message.reply(
+        f"{choice(callingtheuniverse)} {match[-1]} дня это "
+        f"{await get_mention(user[0])}")
+    chat.last_person_of_day = datetime.now(tz=UTC)
     await chat.save()
 
-    if (await Setting.get(chat_id=chat.id, id=1)).value:
+    if (await Setting.get(chat=chat, id=1)).value:
         await bp.api.messages.pin(
             chat.id,
             conversation_message_id=message_pin.conversation_message_id)

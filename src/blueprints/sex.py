@@ -1,20 +1,21 @@
-import json
 import asyncio
+import json
 from random import choice, randint
 
 from vkbottle import Keyboard, Text
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import RegexRule, ReplyMessageRule
+from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from src.db.models import User, Chat
-from src.repository.account import get_mention, Case
+from src.db.models import Chat, User
+from src.repository.account import Case, get_mention
 
-bp = Blueprint("Sex")
+bp = Blueprint("sex")
+bp.labeler.vbml_ignore_case = True
 
 
-@bp.on.chat_message(RegexRule("(?i)секс|посексим"), ReplyMessageRule())
+@bp.on.chat_message(ReplyMessageRule(), text=("секс", "посексим"))
 async def new_sex_request(message: Message, chat: Chat, user: User):
-    reply_id = message.reply_message.from_id
+    reply_id = message.reply_message.from_id  # type: ignore
 
     KEYBOARD = Keyboard(inline=True)
 

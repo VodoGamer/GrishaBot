@@ -53,7 +53,7 @@ async def twist(message: Message, chat: Chat):
 
     cooldown_setting = await Setting.get(id=4, chat_id=chat.id)
     cooldown = is_command_available(
-        chat.last_casino_use, timedelta(seconds=cooldown_setting.value))
+        chat.last_casino, timedelta(seconds=cooldown_setting.value))
 
     if cooldown:
         await message.reply("❌ | Следующую крутку можно будет начать через "
@@ -61,7 +61,7 @@ async def twist(message: Message, chat: Chat):
                             )
         return
 
-    chat.last_casino_use = datetime.now(tz=UTC)
+    chat.last_casino = datetime.now(tz=UTC)
     await chat.save()
 
     casino_users = await User.filter(chat_id=chat.id)\

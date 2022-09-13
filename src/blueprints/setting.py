@@ -15,7 +15,7 @@ def convert_to_emoji(setting_value: int):
         return setting_value
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*настройки"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*настройки$"))
 async def get_settings(message: Message, chat: Chat):
     settings = await Setting.filter(chat=chat).order_by("id")
     settings_list = [

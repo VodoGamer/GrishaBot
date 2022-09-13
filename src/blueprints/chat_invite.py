@@ -25,7 +25,7 @@ async def update_chat_members(chat: Chat):
             id=user.member_id, chat=chat)
 
 
-@bp.on.chat_message(text=".init")
+@bp.on.chat_message(regex=r"(?i)^\.\s*init$")
 async def register_new_chat(message: Message):
     await message.reply("Идёт иницилизация бота")
     chat = await update_chat(message.peer_id)

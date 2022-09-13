@@ -39,12 +39,12 @@ async def get_bonus(message: Message, user: User):
 
 @bp.on.chat_message(
     ReplyMessageRule(),
-    regex=(r"(?i)^\.*\s*((пере)?дать|подарить)\s*(\d+)$"))
+    regex=(r"(?i)^\.*\s*(?:(?:пере)?дать|подарить)\s*(\d+)$"))
 async def send_money(message: Message, match, user: User, chat: Chat):
     reply_user = await User.get(
         id=message.reply_message.from_id,  # type: ignore
         chat=chat)
-    transferred_money = int(match[-1])
+    transferred_money = int(match[0])
 
     if user.money < transferred_money:
         await message.reply("❌ | Недостаточно денег!")

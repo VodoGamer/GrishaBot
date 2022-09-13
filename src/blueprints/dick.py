@@ -45,15 +45,14 @@ async def dick_height(message: Message, user: User):
         disable_mentions=True)
 
 
-@bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(топ|список)\s*"
-                    r"(писюнов|членов)$")
+@bp.on.chat_message(regex=r"(?i)^\.*\s*(?:топ|список)\s*(писюнов|членов)$")
 async def top_of_dicks(message: Message, match, chat: Chat):
     dicks_list = await User.filter(chat_id=chat.id).exclude(dick_size=0)\
         .order_by('-dick_size')
     top = await get_top_list(dicks_list, TopType.dicks)
 
     if top:
-        await message.answer(f"Топ {match[-1]} в этом чате:\n {top}",
+        await message.answer(f"Топ {match[0]} в этом чате:\n {top}",
                              disable_mentions=True)
     else:
         await message.reply("Никто не мерится писюнами в этом чате 😔")

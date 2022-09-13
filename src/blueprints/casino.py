@@ -11,7 +11,7 @@ from src.repository.account import is_command_available, get_mention
 bp = Blueprint("Casino")
 
 
-@bp.on.chat_message(regex=(r"(?i)^\.*(\d*)\s*(к|ч|з)$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*(\d*)\s*(к|ч|з)$"))
 async def new_bet(message: Message, match, user: User):
     bet = int(match[0])
 

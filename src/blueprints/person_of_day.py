@@ -11,7 +11,7 @@ from src.repository.account import is_command_available, get_mention
 bp = Blueprint("person of day")
 
 
-@bp.on.chat_message(regex=r"(?i)^(!|\.|\/)?\s*(.*)\s{1,}дня$")
+@bp.on.chat_message(regex=r"(?i)^\.*\s*(.+)\s+дня$")
 async def person_of_day(message: Message, match, chat: Chat):
     cooldown = is_command_available(chat.last_person_of_day, timedelta(1))
 
@@ -27,7 +27,7 @@ async def person_of_day(message: Message, match, chat: Chat):
     user = await User.get_or_create(chat=chat, id=choice(
         chat_members.profiles).id)
     message_pin = await message.reply(
-        f"{choice(callingtheuniverse)} {match[-1]} дня это "
+        f"{choice(callingtheuniverse)} {match[0]} дня это "
         f"{await get_mention(user[0])}")
     chat.last_person_of_day = datetime.now(tz=UTC)
     await chat.save()

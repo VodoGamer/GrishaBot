@@ -10,25 +10,25 @@ from src.repository.account import get_mention
 bp = Blueprint("how Long")
 
 
-@bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)\s*я\s*(.*)"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*я\s*(.+)"))
 async def how_long_i(message: Message, match, user: User):
     await message.answer(
         f"{await get_mention(user)} {choice(notnotified)} "
-        f"{match[-1]} на {randint(0, 100)}%", disable_mentions=True)
+        f"{match[0]} на {randint(0, 100)}%", disable_mentions=True)
 
 
 @bp.on.chat_message(ReplyMessageRule(),
-                    regex=(r"(?i)^(!|\.|\/)\s*(он|она|оно)\s*(.*)"))
+                    regex=(r"(?i)^\.*\s*(?:он|она|оно)\s*(.+)"))
 async def how_long_he(message: Message, match, chat: Chat):
     user = await User.get(chat=chat,
                           id=message.reply_message.from_id)  # type: ignore
 
     await message.answer(
         f"{await get_mention(user)} {choice(notnotified)} "
-        f"{match[-1]} на {randint(0, 100)}%", disable_mentions=True)
+        f"{match[0]} на {randint(0, 100)}%", disable_mentions=True)
 
 
-@bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^(!|\.|\/)\s*мы\s*(.*)"))
+@bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^\.*\s*мы\s*(.+)"))
 async def how_long_we(message: Message, match, user: User, chat: Chat):
     user_2 = await User.get(
         chat=chat,
@@ -36,5 +36,5 @@ async def how_long_we(message: Message, match, user: User, chat: Chat):
 
     await message.answer(
         f"{await get_mention(user)} и {await get_mention(user_2)} "
-        f"{choice(notnotified_multi)} {match[-1]} на {randint(0, 100)}%",
+        f"{choice(notnotified_multi)} {match[0]} на {randint(0, 100)}%",
         disable_mentions=True)

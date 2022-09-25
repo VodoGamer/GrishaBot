@@ -25,17 +25,21 @@ async def update_chat_members(chat: Chat):
             uid=user.member_id, chat=chat)
 
 
+async def init_chat(id: int):
+    chat = await update_chat(id)
+    await update_chat_settings(chat[0])
+    await update_chat_members(chat[0])
+
+
 @bp.on.chat_message(regex=r"(?i)^\.\s*init$")
 async def register_new_chat(message: Message):
     await message.reply("Идёт иницилизация бота")
-    chat = await update_chat(message.peer_id)
-    await update_chat_settings(chat[0])
-    await update_chat_members(chat[0])
+    await init_chat(message.peer_id)
     await message.reply("Иницилизация завершена!")
 
 
 @bp.on.chat_message(action="chat_invite_user")
-async def init_new_chat(message: Message):
+async def register_new_user(message: Message):
     if not message.action:
         return
     if not message.action.member_id:

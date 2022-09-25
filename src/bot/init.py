@@ -5,7 +5,7 @@ from src.blueprints import modules_list
 from src.config.db import db_init, db_shutdown
 from src.config.env import VK_TOKEN
 from src.middleware.statistic import StatisticMiddleware
-from src.settings.update_settings import update_all_settings
+from src.settings.update import update_all_settings
 from src.repository import account
 
 

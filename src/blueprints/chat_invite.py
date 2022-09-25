@@ -1,7 +1,7 @@
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import Chat, User
-from src.settings.update_settings import update_chat_settings
+from src.settings.update import update_chat_settings
 
 bp = Blueprint("chat_invite")
 

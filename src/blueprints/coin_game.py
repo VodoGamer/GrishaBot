@@ -5,6 +5,7 @@ from random import choice
 from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
+from src.bot.phrases import not_enough_money
 from src.db.models import Setting, User
 from src.repository.account import get_mention, is_command_available
 
@@ -35,7 +36,7 @@ async def the_coin_game(
     if user.money < bet_amount:
         if (await Setting.get(chat_id=message.peer_id, cid=4)).value:
             await message.answer(sticker_id=35)
-        await message.reply("Недостаточно денег!")
+        await message.reply(not_enough_money)
         return
     user.money -= bet_amount
 

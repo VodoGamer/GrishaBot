@@ -5,9 +5,10 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
+from src.bot.phrases import command_not_availabale_now, not_enough_money
 from src.db.models import Chat, User
-from src.repository.account import (Case, TopType, is_command_available,
-                                    get_mention, get_top_list)
+from src.repository.account import (Case, TopType, get_mention, get_top_list,
+                                    is_command_available)
 
 bp = Blueprint("Balance")
 
@@ -26,8 +27,7 @@ async def get_bonus(message: Message, user: User):
     cooldown = is_command_available(user.last_bonus_use, timedelta(hours=6))
 
     if cooldown:
-        await message.reply(
-            f"❌ | Следующий бонус можно получить через {cooldown}")
+        await message.reply(command_not_availabale_now.format(time=cooldown))
         return
     user.money += bonus
     user.last_bonus_use = datetime.now(tz=UTC)
@@ -42,12 +42,12 @@ async def get_bonus(message: Message, user: User):
     regex=(r"(?i)^\.*\s*(?:(?:пере)?дать|подарить)\s*(\d+)$"))
 async def send_money(message: Message, match, user: User, chat: Chat):
     reply_user = await User.get(
-        id=message.reply_message.from_id,  # type: ignore
+        uid=message.reply_message.from_id,  # type: ignore
         chat=chat)
     transferred_money = int(match[0])
 
     if user.money < transferred_money:
-        await message.reply("❌ | Недостаточно денег!")
+        await message.reply(not_enough_money)
         return
     if user.uid != reply_user.uid:
         user.money -= transferred_money

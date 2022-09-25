@@ -21,12 +21,12 @@ async def new_sex_request(message: Message, chat: Chat, user: User):
 
     KEYBOARD.add(Text(
         "Согласиться",
-        payload={"sex_agree": f"{user.id}_{reply_id}"}))
+        payload={"sex_agree": f"{user.uid}_{reply_id}"}))
     KEYBOARD.add(Text(
         "Отказаться",
-        payload={"sex_disagree": f"{user.id}_{reply_id}"}))
+        payload={"sex_disagree": f"{user.uid}_{reply_id}"}))
 
-    to_user = await User.get(chat_id=chat.id, id=reply_id)
+    to_user = await User.get(chat_id=chat.id, uid=reply_id)
     await message.answer(
         f"{await get_mention(user)} предложил "
         f"поняшиться {await get_mention(to_user, Case.DATIVE)}",
@@ -45,8 +45,8 @@ async def sex_agree(message: Message, chat: Chat):
         return
 
     # Inits
-    sex_sender = await User.get(chat_id=chat.id, id=from_id)
-    sex_recipient = await User.get(chat_id=chat.id, id=to_id)
+    sex_sender = await User.get(chat_id=chat.id, uid=from_id)
+    sex_recipient = await User.get(chat_id=chat.id, uid=to_id)
 
     words = ("поняшиться😊", "в кровать🛏", "в постель🛏", "потрахаться🔞",
              "порвать попку😖", "порвать пизду😖")
@@ -134,7 +134,7 @@ async def sex_disagree(message: Message, user: User, chat: Chat):
         return
 
     to_user = user
-    from_user = await User.get(chat_id=chat.id, id=from_id)
+    from_user = await User.get(chat_id=chat.id, uid=from_id)
 
     await message.answer(
         f"{await get_mention(to_user)} отказал в сексе который ему "

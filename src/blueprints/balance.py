@@ -49,7 +49,7 @@ async def send_money(message: Message, match, user: User, chat: Chat):
     if user.money < transferred_money:
         await message.reply("❌ | Недостаточно денег!")
         return
-    if user.id != reply_user.id:
+    if user.uid != reply_user.uid:
         user.money -= transferred_money
         await user.save()
 

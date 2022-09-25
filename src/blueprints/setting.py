@@ -1,7 +1,9 @@
 from vkbottle.bot import Blueprint, Message
 
-from src.db.models import Chat, Setting, User
 from src.blueprints.chat_invite import update_chat_members
+from src.db.models import Chat, Setting, User
+from src.settings.settings import SettingType
+from src.settings.settings import settings as default_settings
 
 bp = Blueprint("Settings")
 
@@ -17,9 +19,10 @@ def convert_to_emoji(setting_value: int):
 
 @bp.on.chat_message(regex=(r"(?i)^\.*\s*настройки$"))
 async def get_settings(message: Message, chat: Chat):
-    settings = await Setting.filter(chat=chat).order_by("id")
+    settings = await Setting.filter(chat=chat).order_by("cid")
     settings_list = [
-        f"{setting.id}. {convert_to_emoji(setting.value)} | {setting.title}"
+        f"{setting.cid}. {convert_to_emoji(setting.value)} | "
+        f"{default_settings[setting.cid - 1].title}"
         for setting in settings]
 
     await message.reply(
@@ -37,19 +40,20 @@ async def change_setting(message: Message, match, user: User, chat: Chat):
                             "чата!")
         return
 
-    setting = await Setting.get_or_none(id=match[0], chat=chat)
+    setting = await Setting.get_or_none(cid=match[0], chat=chat)
     if setting is None:
         await message.reply("❌| Неправильно указано правило!")
         return
-    if setting.max_value <= 1:
+    setting_config = default_settings[setting.cid - 1]
+    if setting_config.type == SettingType.bool:
         setting.value = not setting.value
-    elif match[1] is None:
-        await message.reply("не передано аргумента")
-        return
-    elif setting.max_value < int(match[1]):
-        await message.reply("макс значение!")
-        return
     else:
+        if match[1] is None:
+            await message.reply("нет аргумента!")
+            return
+        if setting_config.max_value < int(match[1]):  # type: ignore
+            await message.reply("Макс значение")
+            return
         setting.value = match[1]
 
     await setting.save()

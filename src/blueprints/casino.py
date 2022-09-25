@@ -12,10 +12,10 @@ bp = Blueprint("Casino")
 
 
 @bp.on.chat_message(regex=(r"(?i)^\.*\s*(\d*)\s*(к|ч|з)$"))
-async def new_bet(message: Message, match, user: User):
+async def new_bet(message: Message, match, user: User, chat: Chat):
     bet = int(match[0])
 
-    setting = await Setting.get(id=3, chat_id=message.peer_id)
+    setting = await Setting.get(cid=2, chat=chat)
     if not setting.value:
         await message.reply("❌| Казино выключено в настройках этого чата!\n"
                             "Попроси администраторов его включить")
@@ -45,13 +45,13 @@ async def new_bet(message: Message, match, user: User):
 
 @bp.on.chat_message(regex=(r"(?i)^\.*\s*го$"))
 async def twist(message: Message, chat: Chat):
-    setting = await Setting.get(id=3, chat_id=chat.id)
+    setting = await Setting.get(cid=2, chat=chat)
     if not setting.value:
         await message.reply("❌| Казино выключено в настройках этого чата!\n"
                             "Попроси администраторов его включить")
         return
 
-    cooldown_setting = await Setting.get(id=4, chat_id=chat.id)
+    cooldown_setting = await Setting.get(cid=3, chat=chat)
     cooldown = is_command_available(
         chat.last_casino, timedelta(seconds=cooldown_setting.value))
 

@@ -33,7 +33,7 @@ async def the_coin_game(
         bet_side: CoinSides,
         bet_amount: int):
     if user.money < bet_amount:
-        if (await Setting.get(chat_id=message.peer_id, id=5)).value:
+        if (await Setting.get(chat_id=message.peer_id, cid=4)).value:
             await message.answer(sticker_id=35)
         await message.reply("Недостаточно денег!")
         return

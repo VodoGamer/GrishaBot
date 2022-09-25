@@ -21,10 +21,10 @@ async def get_name(user: User,
                    case: Case | None = None,
                    gender: Gender = Gender.MALE,
                    custom_name: bool = True):
-    if user.id < 0:
-        name = (await bp.api.groups.get_by_id([abs(user.id)]))[0].name
+    if user.uid < 0:
+        name = (await bp.api.groups.get_by_id([abs(user.uid)]))[0].name
     elif not custom_name or not user.custom_name:
-        name = (await bp.api.users.get(user_id=user.id))[0].first_name
+        name = (await bp.api.users.get(user_id=user.uid))[0].first_name
     else:
         name = user.custom_name
 
@@ -42,8 +42,8 @@ async def get_mention(user: User,
                       case: Case | None = None,
                       gender: Gender = Gender.MALE,
                       custom_name: bool = True):
-    modificator = "id" if user.id > 0 else "club"
-    user_id = abs(user.id)
+    modificator = "id" if user.uid > 0 else "club"
+    user_id = abs(user.uid)
     return (f"@{modificator}{user_id} "
             f"({await get_name(user, case, gender, custom_name)})")
 

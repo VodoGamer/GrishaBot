@@ -1,7 +1,7 @@
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from src.db.models import Setting, User
+from src.db.models import User
 from src.repository.account import Case, get_mention
 
 bp = Blueprint("Rp commands")
@@ -229,17 +229,13 @@ class Rp():
 
     async def get_text(self) -> str:
         self.to_user = await User.get(
-            id=self.message.reply_message.from_id,  # type: ignore
+            uid=self.message.reply_message.from_id,  # type: ignore
             chat_id=self.message.peer_id)
 
         return (f"{await get_mention(self.from_user)} {self.word} "
                 f"{await get_mention(self.to_user, self.case)}")
 
     async def send_message(self) -> None:
-        setting = await Setting.get(chat_id=self.message.peer_id,
-                                    id=2)
-        if not setting.value:
-            self.image = None
         await self.message.answer(await self.get_text(),
                                   attachment=self.image,
                                   disable_mentions=True)

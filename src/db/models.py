@@ -24,7 +24,7 @@ class Chat(Model):
 
 
 class User(Model):
-    id: int = fields.IntField(pk=True, generated=False)
+    uid: int = fields.IntField()
     is_admin = fields.BooleanField(default=False)
     is_owner = fields.BooleanField(default=False)
     custom_name: str | None = fields.CharField(max_length=255, null=True)
@@ -54,11 +54,8 @@ class User(Model):
 
 
 class Setting(Model):
-    id: int = fields.IntField(pk=True, generated=False)
-    title: str = fields.CharField(max_length=255)
+    cid: int = fields.IntField()
     value: int = fields.IntField()
-    max_value: int = fields.IntField(default=1)
-
     chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
         'models.Chat', related_name='settings')
 

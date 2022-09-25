@@ -13,7 +13,7 @@ class StatisticMiddleware(BaseMiddleware[Message]):
             self.register = True
             self.chat = await Chat.get(id=self.event.peer_id)
             self.user = await User.get(chat=self.chat,
-                                       id=self.event.from_id)
+                                       uid=self.event.from_id)
             self.send({"chat": self.chat, "user": self.user})
         except DoesNotExist:
             self.register = False

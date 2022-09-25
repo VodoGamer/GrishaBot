@@ -24,7 +24,7 @@ async def person_of_day(message: Message, match, chat: Chat):
     if not chat_members.profiles:
         return
 
-    user = await User.get_or_create(chat=chat, id=choice(
+    user = await User.get_or_create(chat=chat, uid=choice(
         chat_members.profiles).id)
     message_pin = await message.reply(
         f"{choice(callingtheuniverse)} {match[0]} дня это "
@@ -32,7 +32,7 @@ async def person_of_day(message: Message, match, chat: Chat):
     chat.last_person_of_day = datetime.now(tz=UTC)
     await chat.save()
 
-    if (await Setting.get(chat=chat, id=1)).value:
+    if (await Setting.get(chat=chat, cid=1)).value:
         await bp.api.messages.pin(
             chat.id,
             conversation_message_id=message_pin.conversation_message_id)

@@ -5,9 +5,10 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
+from src.bot.phrases import command_not_availabale_now, not_enough_money
 from src.db.models import Chat, User
-from src.repository.account import (Case, TopType, command_not_available,
-                                    get_mention, get_top_list)
+from src.repository.account import (Case, TopType, get_mention, get_top_list,
+                                    is_command_available)
 
 bp = Blueprint("Balance")
 
@@ -20,15 +21,13 @@ async def get_balance(message: Message, user: User):
                         disable_mentions=True)
 
 
-@bp.on.chat_message(regex=(r"(?i)^\.*\s*(бонус)?$"))
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*бонус$"))
 async def get_bonus(message: Message, user: User):
     bonus = randint(100, 200)
-    cooldown = command_not_available(user.last_bonus_use, timedelta(hours=6))
+    cooldown = is_command_available(user.last_bonus_use, timedelta(hours=6))
 
     if cooldown:
-        await message.reply("❌ | Следующий бонус можно получить через "
-                            f"{cooldown}"
-                            )
+        await message.reply(command_not_availabale_now.format(time=cooldown))
         return
     user.money += bonus
     user.last_bonus_use = datetime.now(tz=UTC)
@@ -40,18 +39,17 @@ async def get_bonus(message: Message, user: User):
 
 @bp.on.chat_message(
     ReplyMessageRule(),
-    regex=(r"(?i)^\.*\s*((пере)?дать|подарить)\s*(\d+)$"))
+    regex=(r"(?i)^\.*\s*(?:(?:пере)?дать|подарить)\s*(\d+)$"))
 async def send_money(message: Message, match, user: User, chat: Chat):
     reply_user = await User.get(
-        id=message.reply_message.from_id,  # type: ignore
-        chat_id=chat.id)
-    # reply_message.from_id будет передан всегда из-за `ReplyMessageRule()`
-    transferred_money = int(match[-1])
+        uid=message.reply_message.from_id,  # type: ignore
+        chat=chat)
+    transferred_money = int(match[0])
 
     if user.money < transferred_money:
-        await message.reply("❌ | Недостаточно денег!")
+        await message.reply(not_enough_money)
         return
-    if not user.id == reply_user.id:
+    if user.uid != reply_user.uid:
         user.money -= transferred_money
         await user.save()
 
@@ -69,7 +67,7 @@ async def send_money(message: Message, match, user: User, chat: Chat):
 @bp.on.chat_message(
     regex=(r"(?i)^\.*\s*(список|лист|топ)\s*(форбс|forbes|богачей|денег)$"))
 async def get_forbes_list(message: Message, chat: Chat):
-    forbes_list = await User.filter(chat_id=chat.id).exclude(money=0)\
+    forbes_list = await User.filter(chat=chat).exclude(money=0)\
         .order_by('-money')
     top = await get_top_list(forbes_list, TopType.money)
 

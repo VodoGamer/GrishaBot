@@ -1,24 +1,25 @@
 import asyncio
 from datetime import datetime, timedelta
 from random import choice, randint
-from pytz import UTC
 
+from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
+from src.bot.phrases import setting_has_disabled, not_enough_money
 from src.db.models import Casino, CasinoChips, Chat, Setting, User
-from src.repository.account import command_not_available, get_mention
+from src.repository.account import get_mention, is_command_available
 
 bp = Blueprint("Casino")
 
 
-@bp.on.chat_message(regex=(r"(?i)^\.*(\d*)\s*(к|ч|з)$"))
-async def new_bet(message: Message, match, user: User):
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*(\d*)\s*(к|ч|з)$"))
+async def new_bet(message: Message, match, user: User, chat: Chat):
     bet = int(match[0])
 
-    setting = await Setting.get(id=3, chat_id=message.peer_id)
+    setting = await Setting.get(cid=2, chat=chat)
     if not setting.value:
-        await message.reply("❌| Казино выключено в настройках этого чата!\n"
-                            "Попроси администраторов его включить")
+        await message.reply(setting_has_disabled.format(
+            thing="Казино выключено", who="его"))
         return
 
     if bet <= 0:
@@ -26,7 +27,7 @@ async def new_bet(message: Message, match, user: User):
         return
 
     if user.money < bet:  # Проверка баланса
-        await message.reply("У вас недостаточно денег!")
+        await message.reply(not_enough_money)
         return
 
     if user.casino_bet_color is not None:
@@ -45,23 +46,22 @@ async def new_bet(message: Message, match, user: User):
 
 @bp.on.chat_message(regex=(r"(?i)^\.*\s*го$"))
 async def twist(message: Message, chat: Chat):
-    setting = await Setting.get(id=3, chat_id=chat.id)
+    setting = await Setting.get(cid=2, chat=chat)
     if not setting.value:
-        await message.reply("❌| Казино выключено в настройках этого чата!\n"
-                            "Попроси администраторов его включить")
+        await message.reply(setting_has_disabled.format(
+            thing="Казино выключено", who="его"))
         return
 
-    cooldown_setting = await Setting.get(id=4, chat_id=chat.id)
-    cooldown = command_not_available(
-        chat.last_casino_use, timedelta(seconds=cooldown_setting.value))
+    cooldown_setting = await Setting.get(cid=3, chat=chat)
+    cooldown = is_command_available(
+        chat.last_casino, timedelta(seconds=cooldown_setting.value))
 
     if cooldown:
         await message.reply("❌ | Следующую крутку можно будет начать через "
-                            f"{cooldown}"
-                            )
+                            f"{cooldown}")
         return
 
-    chat.last_casino_use = datetime.now(tz=UTC)
+    chat.last_casino = datetime.now(tz=UTC)
     await chat.save()
 
     casino_users = await User.filter(chat_id=chat.id)\

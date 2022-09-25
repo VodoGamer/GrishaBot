@@ -19,11 +19,12 @@ class TopType(Enum):
 
 async def get_name(user: User,
                    case: Case | None = None,
-                   gender: Gender = Gender.MALE):
-    if user.id < 0:
-        name = (await bp.api.groups.get_by_id([user.id]))[0].name
-    elif not user.custom_name:
-        name = (await bp.api.users.get(user_id=user.id))[0].first_name
+                   gender: Gender = Gender.MALE,
+                   custom_name: bool = True):
+    if user.uid < 0:
+        name = (await bp.api.groups.get_by_id([abs(user.uid)]))[0].name
+    elif not custom_name or not user.custom_name:
+        name = (await bp.api.users.get(user_id=user.uid))[0].first_name
     else:
         name = user.custom_name
 
@@ -39,14 +40,16 @@ async def get_name(user: User,
 
 async def get_mention(user: User,
                       case: Case | None = None,
-                      gender: Gender = Gender.MALE):
-    modificator = "id" if user.id > 0 else "club"
-    user_id = abs(user.id)
-    return f"@{modificator}{user_id} ({await get_name(user, case, gender)})"
+                      gender: Gender = Gender.MALE,
+                      custom_name: bool = True):
+    modificator = "id" if user.uid > 0 else "club"
+    user_id = abs(user.uid)
+    return (f"@{modificator}{user_id} "
+            f"({await get_name(user, case, gender, custom_name)})")
 
 
-def command_not_available(last_use_command: datetime | None,
-                          delta: timedelta) -> bool | str:
+def is_command_available(last_use_command: datetime | None,
+                         delta: timedelta) -> bool | str:
     '''Проверяет можно ли использовать команду, на которой есть кд'''
     if last_use_command:
         now = datetime.now(tz=UTC)
@@ -66,7 +69,7 @@ async def get_top_list(users_list: list[User],
             if top_type == TopType.money:
                 end_phrase = f"{user.money} 💵"
             elif top_type == TopType.dicks:
-                end_phrase = f"{user.dick_size}"
+                end_phrase = f"{user.dick_size} см"
             else:
                 raise ValueError("top_type unbound")
 

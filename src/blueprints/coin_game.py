@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta
 from enum import Enum
 from random import choice
-from pytz import UTC
 
+from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
-from src.db.models import User, Setting
-from src.repository.account import get_mention, command_not_available
+from src.bot.phrases import not_enough_money
+from src.db.models import Setting, User
+from src.repository.account import get_mention, is_command_available
 
 bp = Blueprint("coin_game")
+bp.labeler.vbml_ignore_case = True
 
 
 class CoinSides(Enum):
@@ -16,13 +18,14 @@ class CoinSides(Enum):
     TAILS = "решка"
 
 
-@bp.on.chat_message(regex=r"(?i)^\.*монетка\s*(орёл|решка)\s*(\d*)$")
-async def coin_game_with_set_side(message: Message, user: User, match):
-    await the_coin_game(message, user, CoinSides(match[0]), int(match[1]))
+def choice_coin_side() -> CoinSides:
+    return choice(list(CoinSides))
 
 
-def choice_coin_side():
-    return CoinSides(choice(("орёл", "решка")))
+@bp.on.chat_message(text="монетка <(орёл|решка)*bet_side> <bet:int>")
+async def coin_game_with_set_side(message: Message, user: User,
+                                  bet_side: list[str], bet: int):
+    await the_coin_game(message, user, CoinSides(bet_side[0]), int(bet))
 
 
 async def the_coin_game(
@@ -31,17 +34,17 @@ async def the_coin_game(
         bet_side: CoinSides,
         bet_amount: int):
     if user.money < bet_amount:
-        if (await Setting.get(chat_id=message.peer_id, id=5)).value:
+        if (await Setting.get(chat_id=message.peer_id, cid=4)).value:
             await message.answer(sticker_id=35)
-        await message.reply("Недостаточно денег!")
+        await message.reply(not_enough_money)
         return
     user.money -= bet_amount
 
-    cooldown = command_not_available(user.last_coin_game,
-                                     timedelta(minutes=5))
+    cooldown = is_command_available(user.last_coin_game,
+                                    timedelta(minutes=5))
     if cooldown:
-        await message.reply("Следущая игра в монетку будет доступна через: "
-                            f"{cooldown}")
+        await message.reply(
+            f"Следущая игра в монетку будет доступна через: {cooldown}")
         return
 
     win_side = choice_coin_side()

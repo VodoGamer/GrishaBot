@@ -173,3 +173,16 @@ monikers = (
 
 # person_of_day
 callingtheuniverse = ("Ящитаю что", "Мне кажется", "Вселенная подсказала что")
+
+
+# Info phrases
+command_not_availabale_now = (
+    "❌ | В следуюший раз команду можно будет использовать через: {time}")
+
+not_enough_money = (
+    "❌ | Недостаточно денег!")
+
+setting_has_disabled = (
+    "❌| {thing} в настройках этого чата!\n"
+    "Попроси администраторов {who} включить"
+)

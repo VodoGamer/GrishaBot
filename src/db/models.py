@@ -14,20 +14,20 @@ class CasinoChips(Enum):
 
 class Chat(Model):
     id: int = fields.IntField(pk=True, generated=False)
-    owner_id: int = fields.IntField(null=True)
     messages_count: int = fields.IntField(default=0)
-    last_person_of_day_use: datetime = fields.DatetimeField(null=True)
-    last_casino_use: datetime = fields.DatetimeField(null=True)
-    last_shop_message_id: int | None = fields.IntField(null=True)
+
+    last_person_of_day: datetime | None = fields.DatetimeField(null=True)
+    last_casino: datetime | None = fields.DatetimeField(null=True)
+
+    settings: fields.ReverseRelation["Setting"]
     users: fields.ReverseRelation["User"]
 
 
 class User(Model):
-    id: int = fields.IntField(pk=True, generated=False)
-    chat: fields.ForeignKeyRelation[Chat]\
-        = fields.ForeignKeyField('models.Chat', related_name='users')
-    is_admin: bool = fields.BooleanField(default=False)  # type: ignore
-    custom_name: str = fields.CharField(max_length=255, null=True)
+    uid: int = fields.IntField()
+    is_admin = fields.BooleanField(default=False)
+    is_owner = fields.BooleanField(default=False)
+    custom_name: str | None = fields.CharField(max_length=255, null=True)
     messages_count: int = fields.IntField(default=0)
     sex_request: int | None = fields.IntField(null=True)
 
@@ -49,13 +49,15 @@ class User(Model):
     # The Coin Game
     last_coin_game: datetime | None = fields.DatetimeField(null=True)
 
+    chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
+        'models.Chat', related_name='users')
+
 
 class Setting(Model):
-    id: int = fields.IntField(pk=True, generated=False)
-    chat = fields.ForeignKeyField('models.Chat', related_name='settings')
-    title: str = fields.CharField(max_length=255)
+    cid: int = fields.IntField()
     value: int = fields.IntField()
-    max_value: int = fields.IntField(default=1)
+    chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
+        'models.Chat', related_name='settings')
 
 
 class Casino(Model):

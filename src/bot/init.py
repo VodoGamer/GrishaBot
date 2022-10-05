@@ -1,4 +1,4 @@
-'''building a bot'''
+"""building a bot"""
 from vkbottle import Bot
 
 from src.blueprints import modules_list

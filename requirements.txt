@@ -3,7 +3,8 @@ asyncpg==0.26.0
 envparse >= 0.2.0
 loguru >= 0.4.4
 numpy
-pillow==9.2.0
+orjson
+pillow
 pytrovich
 pytz
 tortoise-orm==0.19.2

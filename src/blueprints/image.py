@@ -1,7 +1,7 @@
 import io
 
-import requests
 from vkbottle.bot import Blueprint, Message
+from vkbottle.http.aiohttp import AiohttpClient
 from vkbottle.tools import PhotoMessageUploader
 
 from src.images.black_white import BlackWhite
@@ -63,25 +63,27 @@ async def zhmyx(message: Message):
 
 
 async def make_meme(
-        message: Message,
-        mem_class: (Kek | BlackWhite | LowBits | Djpeg
-                    | Demotivator | Edvais | Zmhyx)):
-    requst = requests.get(get_max_size_image(message))
+    message: Message,
+    mem_class: (
+        Kek | BlackWhite | LowBits | Djpeg | Demotivator | Edvais | Zmhyx
+    ),
+):
+    requst = await AiohttpClient().request_content(get_max_size_image(message))
     bytes_image = io.BytesIO()
-    bytes_image.write(requst.content)
+    bytes_image.write(requst)
 
     result_image = await PhotoMessageUploader(bp.api).upload(
-        mem_class.make(bytes_image),
-        peer_id=message.peer_id)
+        mem_class.make(bytes_image), peer_id=message.peer_id
+    )
     if isinstance(result_image, str):
         await message.answer(attachment=result_image)
 
 
 def get_max_size_image(message: Message) -> image_link:
     if message.attachments:
-        photo = (message.attachments[0].photo)
+        photo = message.attachments[0].photo
     else:
-        photo = (message.reply_message.attachments[0].photo)  # type: ignore
+        photo = message.reply_message.attachments[0].photo  # type: ignore
     if not photo or not photo.sizes:
         raise ValueError()
     image_pixels = photo.sizes[0].width * photo.sizes[0].height

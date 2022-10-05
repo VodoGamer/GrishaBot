@@ -23,21 +23,23 @@ async def get_settings(message: Message, chat: Chat):
     settings_list = [
         f"{setting.cid}. {convert_to_emoji(setting.value)} | "
         f"{default_settings[setting.cid - 1].title}"
-        for setting in settings]
+        for setting in settings
+    ]
 
     await message.reply(
         "{}\n\nЧтобы изменить настройку напишите:"
         "\n.изменить <номер настройки> <новое значение>\nНапример:\n\n"
-        ".изменить 1\n.изменить 4 20".format("\n".join(settings_list)))
+        ".изменить 1\n.изменить 4 20".format("\n".join(settings_list))
+    )
 
 
 @bp.on.chat_message(
-    regex=(r"(?i)^\.*\s*(?:изменить|поменять)\s*(\d+)\s*(\d+)?$"))
+    regex=(r"(?i)^\.*\s*(?:изменить|поменять)\s*(\d+)\s*(\d+)?$")
+)
 async def change_setting(message: Message, match, user: User, chat: Chat):
     await update_chat_members(chat)
     if not any((user.is_admin, user.is_owner)):
-        await message.reply("❌| Эта команда доступна только админам "
-                            "чата!")
+        await message.reply("❌| Эта команда доступна только админам " "чата!")
         return
 
     setting = await Setting.get_or_none(cid=match[0], chat=chat)
@@ -58,4 +60,5 @@ async def change_setting(message: Message, match, user: User, chat: Chat):
 
     await setting.save()
     await message.reply(
-        f"Настройка успешно применена: {convert_to_emoji(setting.value)}")
+        f"Настройка успешно применена: {convert_to_emoji(setting.value)}"
+    )

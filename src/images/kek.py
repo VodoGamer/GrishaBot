@@ -3,7 +3,7 @@ import io
 from PIL import Image, ImageOps
 
 
-class Kek():
+class Kek:
     def __init__(self, black_white: bool = False, lol: bool = False) -> None:
         self.bit = "1" if black_white else "RGB"
         self._lol = lol
@@ -20,5 +20,5 @@ class Kek():
         empty.paste(ImageOps.mirror(crop))
         empty.paste(crop, (crop.width, 0))
         img_byte_arr = io.BytesIO()
-        empty.save(img_byte_arr, format='PNG')
+        empty.save(img_byte_arr, format="PNG")
         return img_byte_arr.getvalue()

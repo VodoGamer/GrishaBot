@@ -7,8 +7,11 @@ bp = Blueprint("chat_invite")
 
 
 async def update_chat(chat_id: int) -> tuple[Chat, bool]:
-    chat_info = (await bp.api.messages.get_conversations_by_id(
-        [chat_id])).items[0].chat_settings
+    chat_info = (
+        (await bp.api.messages.get_conversations_by_id([chat_id]))
+        .items[0]
+        .chat_settings
+    )
     if not chat_info:
         raise AttributeError(f"{chat_id} dont have any information on VK API")
     chat = await Chat.get_or_create(id=chat_id)
@@ -16,13 +19,18 @@ async def update_chat(chat_id: int) -> tuple[Chat, bool]:
 
 
 async def update_chat_members(chat: Chat):
-    chat_members = (await bp.api.messages.get_conversation_members(
-        chat.id)).items
+    chat_members = (
+        await bp.api.messages.get_conversation_members(chat.id)
+    ).items
     for user in chat_members:
         await User.update_or_create(
-            {"is_admin": user.is_admin or False,
-             "is_owner": user.is_owner or False},
-            uid=user.member_id, chat=chat)
+            {
+                "is_admin": user.is_admin or False,
+                "is_owner": user.is_owner or False,
+            },
+            uid=user.member_id,
+            chat=chat,
+        )
 
 
 async def init_chat(id: int):
@@ -55,4 +63,5 @@ async def register_new_user(message: Message):
     return (
         "Спасибо за приглашение! Для начала работы мне "
         "нужны права администратора\nПосле того как вы "
-        "их предоставите напишите команду: \".init\"")
+        'их предоставите напишите команду: ".init"'
+    )

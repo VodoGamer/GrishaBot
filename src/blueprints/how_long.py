@@ -14,27 +14,34 @@ bp = Blueprint("how Long")
 async def how_long_i(message: Message, match, user: User):
     await message.answer(
         f"{await get_mention(user)} {choice(notnotified)} "
-        f"{match[0]} на {randint(0, 100)}%", disable_mentions=True)
+        f"{match[0]} на {randint(0, 100)}%",
+        disable_mentions=True,
+    )
 
 
-@bp.on.chat_message(ReplyMessageRule(),
-                    regex=(r"(?i)^\.*\s*(?:он|она|оно)\s*(.+)"))
+@bp.on.chat_message(
+    ReplyMessageRule(), regex=(r"(?i)^\.*\s*(?:он|она|оно)\s*(.+)")
+)
 async def how_long_he(message: Message, match, chat: Chat):
-    user = await User.get(chat=chat,
-                          uid=message.reply_message.from_id)  # type: ignore
+    user = await User.get(
+        chat=chat, uid=message.reply_message.from_id
+    )  # type: ignore
 
     await message.answer(
         f"{await get_mention(user)} {choice(notnotified)} "
-        f"{match[0]} на {randint(0, 100)}%", disable_mentions=True)
+        f"{match[0]} на {randint(0, 100)}%",
+        disable_mentions=True,
+    )
 
 
 @bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^\.*\s*мы\s*(.+)"))
 async def how_long_we(message: Message, match, user: User, chat: Chat):
     user_2 = await User.get(
-        chat=chat,
-        uid=message.reply_message.from_id)  # type: ignore
+        chat=chat, uid=message.reply_message.from_id
+    )  # type: ignore
 
     await message.answer(
         f"{await get_mention(user)} и {await get_mention(user_2)} "
         f"{choice(notnotified_multi)} {match[0]} на {randint(0, 100)}%",
-        disable_mentions=True)
+        disable_mentions=True,
+    )

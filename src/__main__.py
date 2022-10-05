@@ -1,4 +1,4 @@
-'''entry point'''
+"""entry point"""
 from src.bot.init import init_bot
 
 if __name__ == "__main__":

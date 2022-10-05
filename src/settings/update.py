@@ -7,8 +7,8 @@ from src.config.setting import settings
 async def update_chat_settings(chat: Chat):
     for setting in settings:
         await Setting.get_or_create(
-            {"value": setting.default_value},
-            chat=chat, cid=setting.id)
+            {"value": setting.default_value}, chat=chat, cid=setting.id
+        )
 
 
 async def update_all_settings():

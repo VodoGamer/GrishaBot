@@ -19,8 +19,7 @@ class StatisticMiddleware(BaseMiddleware[Message]):
     async def _init(self):
         try:
             self.chat = await Chat.get(id=self.event.peer_id)
-            self.user = await User.get(chat=self.chat,
-                                       uid=self.event.from_id)
+            self.user = await User.get(chat=self.chat, uid=self.event.from_id)
             return True
         except DoesNotExist:
             return False

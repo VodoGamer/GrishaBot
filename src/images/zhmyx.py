@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 
 
-class Zmhyx():
+class Zmhyx:
     def quad_as_rect(self, quad):
         if quad[0] != quad[2]:
             return False
@@ -17,17 +17,25 @@ class Zmhyx():
         return True
 
     def quad_to_rect(self, quad):
-        assert (len(quad) == 8)
-        assert (self.quad_as_rect(quad))
+        assert len(quad) == 8
+        assert self.quad_as_rect(quad)
         return (quad[0], quad[1], quad[4], quad[3])
 
     def rect_to_quad(self, rect):
-        assert (len(rect) == 4)
-        return (rect[0], rect[1], rect[0], rect[3], rect[2], rect[3], rect[2],
-                rect[1])
+        assert len(rect) == 4
+        return (
+            rect[0],
+            rect[1],
+            rect[0],
+            rect[3],
+            rect[2],
+            rect[3],
+            rect[2],
+            rect[1],
+        )
 
     def shape_to_rect(self, shape):
-        assert (len(shape) == 2)
+        assert len(shape) == 2
         return (0, 0, shape[0], shape[1])
 
     def griddify(self, rect, w_div, h_div):
@@ -53,8 +61,9 @@ class Zmhyx():
         y_min = np.min(new_grid[:, :, 1])
         x_max = np.max(new_grid[:, :, 0])
         y_max = np.max(new_grid[:, :, 1])
-        new_grid += np.random.randint(- max_shift, max_shift + 1,
-                                      new_grid.shape)
+        new_grid += np.random.randint(
+            -max_shift, max_shift + 1, new_grid.shape
+        )
         new_grid[:, :, 0] = np.maximum(x_min, new_grid[:, :, 0])
         new_grid[:, :, 1] = np.maximum(y_min, new_grid[:, :, 1])
         new_grid[:, :, 0] = np.minimum(x_max, new_grid[:, :, 0])
@@ -62,20 +71,30 @@ class Zmhyx():
         return new_grid
 
     def grid_to_mesh(self, src_grid, dst_grid):
-        assert (src_grid.shape == dst_grid.shape)
+        assert src_grid.shape == dst_grid.shape
         mesh = []
         for i in range(src_grid.shape[0] - 1):
             for j in range(src_grid.shape[1] - 1):
-                src_quad = [src_grid[i, j, 0], src_grid[i, j, 1],
-                            src_grid[i + 1, j, 0], src_grid[i + 1, j, 1],
-                            src_grid[i + 1, j + 1, 0], src_grid[i + 1, j + 1,
-                                                                1],
-                            src_grid[i, j + 1, 0], src_grid[i, j + 1, 1]]
-                dst_quad = [dst_grid[i, j, 0], dst_grid[i, j, 1],
-                            dst_grid[i + 1, j, 0], dst_grid[i + 1, j, 1],
-                            dst_grid[i + 1, j + 1, 0], dst_grid[i + 1, j + 1,
-                                                                1],
-                            dst_grid[i, j + 1, 0], dst_grid[i, j + 1, 1]]
+                src_quad = [
+                    src_grid[i, j, 0],
+                    src_grid[i, j, 1],
+                    src_grid[i + 1, j, 0],
+                    src_grid[i + 1, j, 1],
+                    src_grid[i + 1, j + 1, 0],
+                    src_grid[i + 1, j + 1, 1],
+                    src_grid[i, j + 1, 0],
+                    src_grid[i, j + 1, 1],
+                ]
+                dst_quad = [
+                    dst_grid[i, j, 0],
+                    dst_grid[i, j, 1],
+                    dst_grid[i + 1, j, 0],
+                    dst_grid[i + 1, j, 1],
+                    dst_grid[i + 1, j + 1, 0],
+                    dst_grid[i + 1, j + 1, 1],
+                    dst_grid[i, j + 1, 0],
+                    dst_grid[i, j + 1, 1],
+                ]
                 dst_rect = self.quad_to_rect(dst_quad)
                 mesh.append([dst_rect, src_quad])
         return mesh
@@ -89,5 +108,5 @@ class Zmhyx():
         image = image.transform(image.size, Image.Transform.MESH, mesh)
 
         img_byte_arr = io.BytesIO()
-        image.save(img_byte_arr, format='PNG')
+        image.save(img_byte_arr, format="PNG")
         return img_byte_arr.getvalue()

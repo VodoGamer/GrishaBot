@@ -1,4 +1,4 @@
-'''all bot's models'''
+"""all bot's models"""
 from datetime import datetime
 from enum import Enum
 
@@ -42,27 +42,28 @@ class User(Model):
     # Casino
     casino_bet_amount: int = fields.IntField(null=True)
     casino_bet_color: CasinoChips | None = fields.CharEnumField(
-        CasinoChips,
-        max_length=5,
-        null=True)
+        CasinoChips, max_length=5, null=True
+    )
 
     # The Coin Game
     last_coin_game: datetime | None = fields.DatetimeField(null=True)
 
     chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
-        'models.Chat', related_name='users')
+        "models.Chat", related_name="users"
+    )
 
 
 class Setting(Model):
     cid: int = fields.IntField()
     value: int = fields.IntField()
     chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
-        'models.Chat', related_name='settings')
+        "models.Chat", related_name="settings"
+    )
 
 
 class Casino(Model):
     id: int = fields.IntField(pk=True)
-    chat = fields.ForeignKeyField('models.Chat', related_name='casino')
+    chat = fields.ForeignKeyField("models.Chat", related_name="casino")
     winner_feature: CasinoChips = fields.CharEnumField(
-        CasinoChips,
-        max_length=5)
+        CasinoChips, max_length=5
+    )

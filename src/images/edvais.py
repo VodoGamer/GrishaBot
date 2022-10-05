@@ -3,9 +3,14 @@ import io
 from PIL import Image, ImageDraw, ImageFont
 
 
-class Edvais():
-    def __init__(self, top_text: str = "", bottom_text: str = "",
-                 font_size: int = 40, font: str = "impact.ttf") -> None:
+class Edvais:
+    def __init__(
+        self,
+        top_text: str = "",
+        bottom_text: str = "",
+        font_size: int = 40,
+        font: str = "impact.ttf",
+    ) -> None:
         self.top_text = top_text
         self.bottom_text = bottom_text
         self.font_size = font_size
@@ -15,10 +20,11 @@ class Edvais():
         image = Image.open(file).convert("RGB")
         self._add_text(self.top_text, image, image.height / 90)
         if self.bottom_text:
-            self._add_text(self.bottom_text, image,
-                           image.height - image.height / 13)
+            self._add_text(
+                self.bottom_text, image, image.height - image.height / 13
+            )
         img_byte_arr = io.BytesIO()
-        image.save(img_byte_arr, format='PNG')
+        image.save(img_byte_arr, format="PNG")
         return img_byte_arr.getvalue()
 
     def _add_text(self, text: str, image: Image.Image, height: int | float):
@@ -35,4 +41,5 @@ class Edvais():
             text,
             font=font,
             stroke_width=3,
-            stroke_fill="black")
+            stroke_fill="black",
+        )

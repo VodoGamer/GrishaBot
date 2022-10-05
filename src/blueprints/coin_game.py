@@ -23,16 +23,15 @@ def choice_coin_side() -> CoinSides:
 
 
 @bp.on.chat_message(text="монетка <(орёл|решка)*bet_side> <bet:int>")
-async def coin_game_with_set_side(message: Message, user: User,
-                                  bet_side: list[str], bet: int):
+async def coin_game_with_set_side(
+    message: Message, user: User, bet_side: list[str], bet: int
+):
     await the_coin_game(message, user, CoinSides(bet_side[0]), int(bet))
 
 
 async def the_coin_game(
-        message: Message,
-        user: User,
-        bet_side: CoinSides,
-        bet_amount: int):
+    message: Message, user: User, bet_side: CoinSides, bet_amount: int
+):
     if user.money < bet_amount:
         if (await Setting.get(chat_id=message.peer_id, cid=4)).value:
             await message.answer(sticker_id=35)
@@ -40,11 +39,11 @@ async def the_coin_game(
         return
     user.money -= bet_amount
 
-    cooldown = is_command_available(user.last_coin_game,
-                                    timedelta(minutes=5))
+    cooldown = is_command_available(user.last_coin_game, timedelta(minutes=5))
     if cooldown:
         await message.reply(
-            f"Следущая игра в монетку будет доступна через: {cooldown}")
+            f"Следущая игра в монетку будет доступна через: {cooldown}"
+        )
         return
 
     win_side = choice_coin_side()
@@ -58,6 +57,7 @@ async def the_coin_game(
 
     user.last_coin_game = datetime.now(tz=UTC)
     await user.save()
-    await message.answer(f"{await get_mention(user)} {word} {bet_amount} "
-                         "в монетке",
-                         disable_mentions=True)
+    await message.answer(
+        f"{await get_mention(user)} {word} {bet_amount} " "в монетке",
+        disable_mentions=True,
+    )

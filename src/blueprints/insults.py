@@ -14,4 +14,5 @@ bp = Blueprint("Insults")
 async def insult(message: Message, user: User):
     await message.answer(
         f"{await get_mention(user)} {choice(notnotified)} {choice(monikers)}",
-        disable_mentions=True)
+        disable_mentions=True,
+    )

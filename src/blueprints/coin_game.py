@@ -40,9 +40,9 @@ async def the_coin_game(
     user.money -= bet_amount
 
     cooldown = is_command_available(user.last_coin_game, timedelta(minutes=5))
-    if cooldown:
+    if not cooldown[0]:
         await message.reply(
-            f"Следущая игра в монетку будет доступна через: {cooldown}"
+            f"Следущая игра в монетку будет доступна через: {cooldown[1]}"
         )
         return
 

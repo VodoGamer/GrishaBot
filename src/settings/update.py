@@ -1,7 +1,7 @@
 from loguru import logger
 
 from src.db.models import Chat, Setting
-from src.config.setting import settings
+from src.bot.setting import settings
 
 
 async def update_chat_settings(chat: Chat):

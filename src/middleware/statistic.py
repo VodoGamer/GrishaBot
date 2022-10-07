@@ -10,7 +10,7 @@ from src.db.models import Chat, User
 class StatisticMiddleware(BaseMiddleware[Message]):
     @logger.catch()
     async def pre(self):
-        if await self._init() is False:
+        if not await self._init():
             await init_chat(self.event.peer_id)
         await self._init()
         self.send({"chat": self.chat, "user": self.user})

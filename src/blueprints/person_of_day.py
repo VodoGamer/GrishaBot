@@ -15,8 +15,8 @@ bp = Blueprint("person of day")
 async def person_of_day(message: Message, match, chat: Chat):
     cooldown = is_command_available(chat.last_person_of_day, timedelta(1))
 
-    if cooldown:
-        await message.reply(f"Команду можно будет вызвать через {cooldown}")
+    if not cooldown[0]:
+        await message.reply(f"Команду можно будет вызвать через {cooldown[1]}")
         return
 
     chat_members = await bp.api.messages.get_conversation_members(

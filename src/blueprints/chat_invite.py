@@ -54,11 +54,11 @@ async def register_new_user(message: Message):
         return
 
     if message.action.member_id > 0:
-        await update_chat(message.peer_id)
+        await init_chat(message.peer_id)
         return "Привет мешок с костями!"
     group = (await bp.api.groups.get_by_id())[0]
     if message.action.member_id != -group.id:
-        await update_chat(message.peer_id)
+        await init_chat(message.peer_id)
         return "Привет брат робот!"
     return (
         "Спасибо за приглашение! Для начала работы мне "

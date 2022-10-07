@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from enum import Enum
+from typing import Literal
 
 from pytrovich.enums import Case, Gender, NamePart
 from pytrovich.maker import PetrovichDeclinationMaker
@@ -34,8 +35,8 @@ async def get_name(
         return name
     else:
         return maker.make(
-            NamePart.FIRSTNAME, gender, case, name
-        )  # type: ignore
+            NamePart.FIRSTNAME, gender, case, name  # type: ignore
+        )
 
 
 async def get_mention(
@@ -54,32 +55,32 @@ async def get_mention(
 
 def is_command_available(
     last_use_command: datetime | None, delta: timedelta
-) -> bool | str:
-    """Проверяет можно ли использовать команду, на которой есть кд"""
-    if last_use_command:
-        now = datetime.now(tz=UTC)
-        db_date_delta = last_use_command + delta
-        if db_date_delta > now:
-            return str(db_date_delta - now).split(".")[0]
-    return False
+) -> tuple[bool, str]:
+    """Проверяет можно ли использовать КД на команду"""
+    if not last_use_command:
+        return (True, "")
+    now = datetime.now(tz=UTC)
+    db_date_delta = last_use_command + delta
+    next_command_use = str(db_date_delta - now).split(".")[0]
+    if db_date_delta > now:
+        return (False, next_command_use)
+    return (True, "")
 
 
 async def get_top_list(
     users_list: list[User], top_type: TopType
-) -> str | bool:
+) -> str | Literal[False]:
     """получение топа пользователей по параметру"""
-    if users_list:
-        users_mentions = []
-
-        for user in users_list:
-            if top_type == TopType.money:
-                end_phrase = f"{user.money} 💵"
-            elif top_type == TopType.dicks:
-                end_phrase = f"{user.dick_size} см"
-            else:
-                raise ValueError("top_type unbound")
-
-            users_mentions.append(f"{await get_mention(user)} | {end_phrase}")
-        return "\n".join(users_mentions)
-    else:
+    if not users_list:
         return False
+    users_mentions = []
+
+    for user in users_list:
+        if top_type == TopType.money:
+            end_phrase = f"{user.money} 💵"
+        elif top_type == TopType.dicks:
+            end_phrase = f"{user.dick_size} см"
+        else:
+            raise ValueError("top_type unbound")
+        users_mentions.append(f"{await get_mention(user)} | {end_phrase}")
+    return "\n".join(users_mentions)

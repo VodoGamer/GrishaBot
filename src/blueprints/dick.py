@@ -35,8 +35,8 @@ async def dick_height(message: Message, user: User):
     cooldown = is_command_available(user.last_dick_growth_use, timedelta(1))
     resize = randint(-10, 20)
 
-    if cooldown:
-        await message.reply(f"Писюн можно будет помазать через {cooldown}")
+    if not cooldown[0]:
+        await message.reply(f"Писюн можно будет помазать через {cooldown[1]}")
         return
 
     user.dick_size += resize

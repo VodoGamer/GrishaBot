@@ -16,10 +16,9 @@ bp = Blueprint("Casino")
 async def new_bet(message: Message, match, user: User, chat: Chat):
     bet = int(match[0])
 
-    setting = await Setting.get(cid=2, chat=chat)
-    if not setting.value:
+    if not (await Setting.get(cid=2, chat=chat)).value:
         await message.reply(
-            setting_has_disabled.format(thing="Казино выключено", who="его")
+            setting_has_disabled.format(thing="Казино выключено")
         )
         return
 
@@ -34,7 +33,7 @@ async def new_bet(message: Message, match, user: User, chat: Chat):
     if user.casino_bet_color is not None:
         # Не учавствует ли уже юзер
         await message.reply(
-            f"Вы уже поставили {user.casino_bet_amount} "
+            f"У тебя уже есть ставка:\n {user.casino_bet_amount} "
             f"на {user.casino_bet_color.value}"
         )
         return
@@ -44,7 +43,7 @@ async def new_bet(message: Message, match, user: User, chat: Chat):
     user.casino_bet_color = convert_text_to_emoji(match[1])
     await user.save()
 
-    await message.reply("Ставка защитана!")
+    await message.reply("Ставка сделана!🎲")
 
 
 @bp.on.chat_message(regex=(r"(?i)^\.*\s*го$"))
@@ -52,7 +51,7 @@ async def twist(message: Message, chat: Chat):
     setting = await Setting.get(cid=2, chat=chat)
     if not setting.value:
         await message.reply(
-            setting_has_disabled.format(thing="Казино выключено", who="его")
+            setting_has_disabled.format(thing="Казино выключено")
         )
         return
 
@@ -61,53 +60,47 @@ async def twist(message: Message, chat: Chat):
         chat.last_casino, timedelta(seconds=cooldown_setting.value)
     )
 
-    if cooldown:
+    if not cooldown[0]:
         await message.reply(
-            "❌ | Следующую крутку можно будет начать через " f"{cooldown}"
+            f"❌ | Следующую крутку можно будет сделать через {cooldown[1]}"
         )
         return
 
     chat.last_casino = datetime.now(tz=UTC)
     await chat.save()
 
-    casino_users = await User.filter(chat_id=chat.id).exclude(
-        casino_bet_color=None
-    )
+    casino_users = await User.filter(chat=chat).exclude(casino_bet_color=None)
     if casino_users == []:
         await message.reply("❌| Никто не учавствует в казино!")
         return
 
-    casino_users_mentions = []
-    for casino_user in casino_users:
-        casino_users_mentions.append(await get_mention(casino_user))
+    casino_users_mentions = [
+        await get_mention(casino_user) for casino_user in casino_users
+    ]
 
     await message.answer(
-        "В казино учавствуют:\n" "{}".format("\n".join(casino_users_mentions)),
+        "В казино учавствуют:\n{}".format("\n".join(casino_users_mentions)),
         disable_mentions=True,
     )
 
     if randint(1, 26) == 1:
         winner_feature = CasinoChips.GREEN
+        winner_ratio = 8
     else:
         winner_feature = choice((CasinoChips.RED, CasinoChips.BLACK))
+        winner_ratio = 2
     winner_users = await User.filter(
-        chat_id=chat.id, casino_bet_color=winner_feature
+        chat=chat, casino_bet_color=winner_feature
     )
 
     winner_users_mention = []
-
-    if winner_feature != CasinoChips.GREEN:
-        winner_ratio = 2
-    else:
-        winner_ratio = 8
-
     for winner_user in winner_users:
         winner_cash = winner_user.casino_bet_amount * winner_ratio
         winner_user.money += winner_cash + winner_user.casino_bet_amount
         await winner_user.save()
 
         winner_users_mention.append(
-            f"{await get_mention(winner_user)} " f"выиграл {winner_cash} 💵"
+            f"{await get_mention(winner_user)} выиграл {winner_cash} 💵"
         )
 
     await message.answer("🎲| Бросаем кубики", "video-194020282_456239019")
@@ -130,19 +123,16 @@ async def twist(message: Message, chat: Chat):
             "{}".format("\n".join(winner_users_mention)),
             disable_mentions=True,
         )
-    await Casino.create(chat_id=chat.id, winner_feature=winner_feature)
+    await Casino.create(chat=chat, winner_feature=winner_feature)
 
 
 @bp.on.chat_message(regex=(r"(?i)^\.*\s*лог|история$"))
 async def get_log(message: Message, chat: Chat):
-    casinos = await Casino.filter(chat_id=chat.id).order_by("id").limit(15)
+    casinos = await Casino.filter(chat=chat).order_by("id").limit(10)
     if casinos == []:
         await message.reply("За сегодня ещё никто не играл!")
         return
-    history = []
-    for casino in casinos:
-        history.append(casino.winner_feature.value)
-    history = "\n".join(history)
+    history = "\n".join(casino.winner_feature.value for casino in casinos)
     await message.reply(
         f"🕓| Предыдущие крутки за сегодня:\n {history}", disable_mentions=True
     )

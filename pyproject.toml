@@ -10,3 +10,4 @@ target-version = ['py310']
 [tool.mypy]
 ignore_missing_imports = true
 follow_imports_for_stubs = false
+ignore_missing_imports_per_module = true

@@ -49,14 +49,14 @@ async def sex_agree(message: Message, chat: Chat):
     sex_sender = await User.get(chat_id=chat.id, uid=from_id)
     sex_recipient = await User.get(chat_id=chat.id, uid=to_id)
 
-    words = (
+    words = [
         "поняшиться😊",
         "в кровать🛏",
         "в постель🛏",
         "потрахаться🔞",
         "порвать попку😖",
         "порвать пизду😖",
-    )
+    ]
     await message.answer(
         f"{await get_mention(sex_sender)} соблазнил "
         f"{await get_mention(sex_recipient, Case.ACCUSATIVE)} "
@@ -72,7 +72,7 @@ async def sex_agree(message: Message, chat: Chat):
             disable_mentions=True,
         )
     else:
-        words = ("начал снимать одежду👙 с", "начал разрывать одежду👙")
+        words = ["начал снимать одежду👙 с", "начал разрывать одежду👙"]
         await message.answer(
             f"{await get_mention(sex_sender)} "
             f"{choice(words)} "
@@ -89,7 +89,7 @@ async def sex_agree(message: Message, chat: Chat):
         disable_mentions=True,
     )
     await asyncio.sleep(3)
-    words = (
+    words = [
         "ноги🦵",
         "ножки🦵",
         "ухо👂",
@@ -102,7 +102,7 @@ async def sex_agree(message: Message, chat: Chat):
         "член🔞",
         "анальную дырочку🔞",
         "ладошку🖐",
-    )
+    ]
     await message.answer(
         f"{await get_mention(sex_sender)} облизал "
         f"{choice(words)} "
@@ -133,7 +133,7 @@ async def sex_agree(message: Message, chat: Chat):
     )
     await asyncio.sleep(3)
     if randint(1, 5) != 1:
-        words = ("попку", "писечку", "пизду")
+        words = ["попку", "писечку", "пизду"]
         await message.answer(
             f"{await get_mention(sex_sender)} "
             f"порвал {choice(words)} "

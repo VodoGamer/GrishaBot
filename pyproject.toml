@@ -3,7 +3,10 @@ tortoise_orm = "src.config.db.TORTOISE_ORM"
 location = "./migrations"
 src_folder = "./."
 
-
 [tool.black]
 line-length = 79
 target-version = ['py310']
+
+[tool.mypy]
+ignore_missing_imports = true
+follow_imports_for_stubs = false

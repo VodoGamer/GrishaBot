@@ -84,12 +84,12 @@ def get_max_size_image(message: Message) -> image_link:
         photo = message.attachments[0].photo
     else:
         photo = message.reply_message.attachments[0].photo  # type: ignore
-    if not photo or not photo.sizes:
-        raise ValueError()
-    image_pixels = photo.sizes[0].width * photo.sizes[0].height
-    image_url = photo.sizes[0].url
-    for image in photo.sizes:
-        if image.width * image.height > image_pixels:
-            image_pixels = image.width * image.height
-            image_url = image.url
-    return image_url
+    if photo and photo.sizes:
+        image_pixels = photo.sizes[0].width * photo.sizes[0].height
+        image_url = photo.sizes[0].url
+        for image in photo.sizes:
+            if image.width * image.height > image_pixels:
+                image_pixels = image.width * image.height
+                image_url = image.url
+        return image_url
+    raise ValueError()

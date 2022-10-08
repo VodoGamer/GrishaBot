@@ -6,7 +6,7 @@ from vkbottle.bot import Blueprint, Message
 
 from src.bot.phrases import callingtheuniverse
 from src.db.models import Chat, Setting, User
-from src.repository.account import is_command_available, get_mention
+from src.repository.account import get_mention, is_command_available
 
 bp = Blueprint("person of day")
 

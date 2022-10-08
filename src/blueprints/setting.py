@@ -1,9 +1,9 @@
 from vkbottle.bot import Blueprint, Message
 
 from src.blueprints.chat_invite import update_chat_members
-from src.db.models import Chat, Setting, User
 from src.bot.setting import SettingType
 from src.bot.setting import settings as default_settings
+from src.db.models import Chat, Setting, User
 
 bp = Blueprint("Settings")
 

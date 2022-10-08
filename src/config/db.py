@@ -2,7 +2,6 @@ from tortoise import Tortoise
 
 from src.config.env import DB_CONNECT
 
-
 TORTOISE_ORM = {
     "connections": {"default": DB_CONNECT},
     "apps": {

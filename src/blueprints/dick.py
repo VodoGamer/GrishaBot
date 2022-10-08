@@ -8,9 +8,9 @@ from src.db.models import Chat, User
 from src.repository.account import (
     Case,
     TopType,
-    is_command_available,
     get_mention,
     get_top_list,
+    is_command_available,
 )
 
 bp = Blueprint("dick")

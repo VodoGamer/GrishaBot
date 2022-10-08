@@ -1,21 +1,25 @@
+from src.repository import account
+
 from . import (
     balance,
     casino,
+    chat_invite,
+    coin_game,
     custom_name,
     dick,
     how_long,
+    image,
     insults,
     person_of_day,
     rp,
+    russian_roulette,
     setting,
     sex,
     stats,
-    coin_game,
-    chat_invite,
-    image,
 )
 
 modules_list = (
+    account.bp,
     balance.bp,
     casino.bp,
     custom_name.bp,
@@ -30,4 +34,5 @@ modules_list = (
     rp.bp,
     chat_invite.bp,
     image.bp,
+    russian_roulette.bp,
 )

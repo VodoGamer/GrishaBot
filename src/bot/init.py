@@ -6,7 +6,6 @@ from src.config.db import db_init, db_shutdown
 from src.config.env import VK_TOKEN
 from src.middleware.statistic import StatisticMiddleware
 from src.settings.update import update_all_settings
-from src.repository import account
 
 
 def init_middlewares(bot: Bot) -> None:
@@ -20,7 +19,6 @@ def init_loop_wrappers(bot: Bot) -> None:
 
 
 def init_blueprints(bot: Bot):
-    account.bp.load(bot)
     for bp in modules_list:
         bp.load(bot)
 

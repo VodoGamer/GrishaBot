@@ -2,7 +2,7 @@ from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
 from src.db.models import Chat, User
-from src.repository.account import get_mention, get_name, Case
+from src.repository.account import Case, get_mention, get_name
 
 bp = Blueprint("Custom name")
 

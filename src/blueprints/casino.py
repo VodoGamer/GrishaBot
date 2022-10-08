@@ -5,7 +5,7 @@ from random import choice, randint
 from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
-from src.bot.phrases import setting_has_disabled, not_enough_money
+from src.bot.phrases import not_enough_money, setting_has_disabled
 from src.db.models import Casino, CasinoChips, Chat, Setting, User
 from src.repository.account import get_mention, is_command_available
 

@@ -2,8 +2,8 @@ from loguru import logger
 from tortoise.exceptions import DoesNotExist
 from vkbottle import BaseMiddleware
 from vkbottle.bot import Message
-from src.blueprints.chat_invite import init_chat
 
+from src.blueprints.chat_invite import init_chat
 from src.db.models import Chat, User
 
 

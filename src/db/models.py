@@ -31,9 +31,7 @@ class User(Model):
     messages_count: int = fields.IntField(default=0)
     sex_request: int | None = fields.IntField(null=True)
 
-    # Money
     money: int = fields.IntField(default=0)
-    last_bonus_use: datetime = fields.DatetimeField(null=True)
 
     # Dick
     dick_size: int = fields.IntField(default=0)
@@ -51,6 +49,19 @@ class User(Model):
     chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
         "models.Chat", related_name="users"
     )
+    bonuses: fields.ReverseRelation["UserBonus"]
+
+
+class UserBonus(Model):
+    date: datetime = fields.DatetimeField(auto_now=True)
+    bonus_value: int = fields.IntField()
+
+    user: fields.ForeignKeyRelation[User] = fields.ForeignKeyField(
+        "models.User", related_name="bonuses"
+    )
+
+    class Meta:
+        table = "user_bonus"
 
 
 class Setting(Model):

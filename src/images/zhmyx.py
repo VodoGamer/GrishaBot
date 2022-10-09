@@ -61,9 +61,7 @@ class Zmhyx:
         y_min = np.min(new_grid[:, :, 1])
         x_max = np.max(new_grid[:, :, 0])
         y_max = np.max(new_grid[:, :, 1])
-        new_grid += np.random.randint(
-            -max_shift, max_shift + 1, new_grid.shape
-        )
+        new_grid += np.random.randint(-max_shift, max_shift + 1, new_grid.shape)
         new_grid[:, :, 0] = np.maximum(x_min, new_grid[:, :, 0])
         new_grid[:, :, 1] = np.maximum(y_min, new_grid[:, :, 1])
         new_grid[:, :, 0] = np.minimum(x_max, new_grid[:, :, 0])

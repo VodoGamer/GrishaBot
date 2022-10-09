@@ -33,9 +33,7 @@ async def get_settings(message: Message, chat: Chat):
     )
 
 
-@bp.on.chat_message(
-    regex=(r"(?i)^\.*\s*(?:изменить|поменять)\s*(\d+)\s*(\d+)?$")
-)
+@bp.on.chat_message(regex=(r"(?i)^\.*\s*(?:изменить|поменять)\s*(\d+)\s*(\d+)?$"))
 async def change_setting(message: Message, match, user: User, chat: Chat):
     await update_chat_members(chat)
     if not any((user.is_admin, user.is_owner)):
@@ -59,6 +57,4 @@ async def change_setting(message: Message, match, user: User, chat: Chat):
         setting.value = match[1]
 
     await setting.save()
-    await message.reply(
-        f"Настройка успешно применена: {convert_to_emoji(setting.value)}"
-    )
+    await message.reply(f"Настройка успешно применена: {convert_to_emoji(setting.value)}")

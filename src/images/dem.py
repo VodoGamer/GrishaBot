@@ -59,15 +59,11 @@ class Demotivator:
         return img_byte_arr.getvalue()
 
     def _test_font(self, size, width, text):
-        font = ImageFont.truetype(
-            font=self.font_name, size=size, encoding="UTF-8"
-        )
+        font = ImageFont.truetype(font=self.font_name, size=size, encoding="UTF-8")
         text_width = font.getlength(text)
 
         while text_width >= (width + 250) - 20:
-            font = ImageFont.truetype(
-                font=self.font_name, size=size, encoding="UTF-8"
-            )
+            font = ImageFont.truetype(font=self.font_name, size=size, encoding="UTF-8")
             text_width = font.getlength(text)
             size -= 1
         return font

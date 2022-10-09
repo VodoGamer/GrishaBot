@@ -5,13 +5,7 @@ from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import Chat, User
-from src.repository.account import (
-    Case,
-    TopType,
-    get_mention,
-    get_top_list,
-    is_command_available,
-)
+from src.repository.account import Case, TopType, get_mention, get_top_list, is_command_available
 
 bp = Blueprint("dick")
 
@@ -19,17 +13,13 @@ bp = Blueprint("dick")
 @bp.on.chat_message(regex=(r"(?i)^(!|\.|\/)?\s*(писюн|моя пися|пися|член)$"))
 async def get_balance(message: Message, user: User):
     await message.reply(
-        f"Писюн {await get_mention(user, Case.GENITIVE)}:\n"
-        f"{user.dick_size} см",
+        f"Писюн {await get_mention(user, Case.GENITIVE)}:\n" f"{user.dick_size} см",
         disable_mentions=True,
     )
 
 
 @bp.on.chat_message(
-    regex=(
-        r"(?i)^(!|\.|\/)?\s*(намазать|помазать)\s*"
-        r"(сод(у|ой))?(член|писю)?$"
-    )
+    regex=(r"(?i)^(!|\.|\/)?\s*(намазать|помазать)\s*" r"(сод(у|ой))?(член|писю)?$")
 )
 async def dick_height(message: Message, user: User):
     cooldown = is_command_available(user.last_dick_growth_use, timedelta(1))
@@ -59,16 +49,10 @@ async def dick_height(message: Message, user: User):
 
 @bp.on.chat_message(regex=r"(?i)^\.*\s*(?:топ|список)\s*(писюнов|членов)$")
 async def top_of_dicks(message: Message, match, chat: Chat):
-    dicks_list = (
-        await User.filter(chat_id=chat.id)
-        .exclude(dick_size=0)
-        .order_by("-dick_size")
-    )
+    dicks_list = await User.filter(chat_id=chat.id).exclude(dick_size=0).order_by("-dick_size")
     top = await get_top_list(dicks_list, TopType.dicks)
 
     if top:
-        await message.answer(
-            f"Топ {match[0]} в этом чате:\n {top}", disable_mentions=True
-        )
+        await message.answer(f"Топ {match[0]} в этом чате:\n {top}", disable_mentions=True)
     else:
         await message.reply("Никто не мерится писюнами в этом чате 😔")

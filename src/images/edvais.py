@@ -20,9 +20,7 @@ class Edvais:
         image = Image.open(file).convert("RGB")
         self._add_text(self.top_text, image, image.height / 90)
         if self.bottom_text:
-            self._add_text(
-                self.bottom_text, image, image.height - image.height / 13
-            )
+            self._add_text(self.bottom_text, image, image.height - image.height / 13)
         img_byte_arr = io.BytesIO()
         image.save(img_byte_arr, format="PNG")
         return img_byte_arr.getvalue()

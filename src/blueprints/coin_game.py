@@ -23,15 +23,11 @@ def choice_coin_side() -> CoinSides:
 
 
 @bp.on.chat_message(text="монетка <(орёл|решка)*bet_side> <bet:int>")
-async def coin_game_with_set_side(
-    message: Message, user: User, bet_side: list[str], bet: int
-):
+async def coin_game_with_set_side(message: Message, user: User, bet_side: list[str], bet: int):
     await the_coin_game(message, user, CoinSides(bet_side[0]), int(bet))
 
 
-async def the_coin_game(
-    message: Message, user: User, bet_side: CoinSides, bet_amount: int
-):
+async def the_coin_game(message: Message, user: User, bet_side: CoinSides, bet_amount: int):
     if user.money < bet_amount:
         if (await Setting.get(chat_id=message.peer_id, cid=4)).value:
             await message.answer(sticker_id=35)
@@ -41,9 +37,7 @@ async def the_coin_game(
 
     cooldown = is_command_available(user.last_coin_game, timedelta(minutes=5))
     if not cooldown[0]:
-        await message.reply(
-            f"Следущая игра в монетку будет доступна через: {cooldown[1]}"
-        )
+        await message.reply(f"Следущая игра в монетку будет доступна через: {cooldown[1]}")
         return
 
     win_side = choice_coin_side()

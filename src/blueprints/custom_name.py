@@ -9,9 +9,7 @@ bp = Blueprint("Custom name")
 
 @bp.on.chat_message(ReplyMessageRule(), regex=(r"(?i)^\.*\s*ник|имя$"))
 async def get_his_name(message: Message, chat: Chat):
-    user = await User.get(
-        chat=chat, uid=message.reply_message.from_id  # type: ignore
-    )
+    user = await User.get(chat=chat, uid=message.reply_message.from_id)  # type: ignore
 
     await message.reply(
         f"Ник {await get_mention(user, Case.GENITIVE, custom_name=False)}:\n"
@@ -30,10 +28,7 @@ async def get_my_name(message: Message, user: User):
 
 
 @bp.on.chat_message(
-    regex=(
-        r"(?i)^(!|\.|\/)?\s*(поменять|изменить|сменить)?"
-        r"\s*(ник|имя)\s*(.*)"
-    )
+    regex=(r"(?i)^(!|\.|\/)?\s*(поменять|изменить|сменить)?" r"\s*(ник|имя)\s*(.*)")
 )
 async def change_name(message: Message, match, user: User):
     new_name = match[-1]

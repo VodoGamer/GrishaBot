@@ -64,9 +64,7 @@ async def zhmyx(message: Message):
 
 async def make_meme(
     message: Message,
-    mem_class: (
-        Kek | BlackWhite | LowBits | Djpeg | Demotivator | Edvais | Zmhyx
-    ),
+    mem_class: (Kek | BlackWhite | LowBits | Djpeg | Demotivator | Edvais | Zmhyx),
 ):
     requst = await AiohttpClient().request_content(get_max_size_image(message))
     bytes_image = io.BytesIO()

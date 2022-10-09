@@ -77,6 +77,4 @@ class Casino(Model):
     chat: fields.ForeignKeyRelation[Chat] = fields.ForeignKeyField(
         "models.Chat", related_name="casino"
     )
-    winner_feature: CasinoChips = fields.CharEnumField(
-        CasinoChips, max_length=5
-    )
+    winner_feature: CasinoChips = fields.CharEnumField(CasinoChips, max_length=5)

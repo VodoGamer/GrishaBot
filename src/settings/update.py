@@ -6,9 +6,7 @@ from src.db.models import Chat, Setting
 
 async def update_chat_settings(chat: Chat):
     for setting in settings:
-        await Setting.get_or_create(
-            {"value": setting.default_value}, chat=chat, cid=setting.id
-        )
+        await Setting.get_or_create({"value": setting.default_value}, chat=chat, cid=setting.id)
 
 
 async def update_all_settings():

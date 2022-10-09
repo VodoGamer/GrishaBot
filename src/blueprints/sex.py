@@ -19,12 +19,8 @@ async def new_sex_request(message: Message, chat: Chat, user: User):
 
     KEYBOARD = Keyboard(inline=True)
 
-    KEYBOARD.add(
-        Text("Согласиться", payload={"sex_agree": f"{user.uid}_{reply_id}"})
-    )
-    KEYBOARD.add(
-        Text("Отказаться", payload={"sex_disagree": f"{user.uid}_{reply_id}"})
-    )
+    KEYBOARD.add(Text("Согласиться", payload={"sex_agree": f"{user.uid}_{reply_id}"}))
+    KEYBOARD.add(Text("Отказаться", payload={"sex_disagree": f"{user.uid}_{reply_id}"}))
 
     to_user = await User.get(chat_id=chat.id, uid=reply_id)
     await message.answer(

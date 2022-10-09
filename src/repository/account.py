@@ -34,9 +34,7 @@ async def get_name(
     if case is None:
         return name
     else:
-        return maker.make(
-            NamePart.FIRSTNAME, gender, case, name  # type: ignore
-        )
+        return maker.make(NamePart.FIRSTNAME, gender, case, name)  # type: ignore
 
 
 async def get_mention(
@@ -47,15 +45,10 @@ async def get_mention(
 ):
     modificator = "id" if user.uid > 0 else "club"
     user_id = abs(user.uid)
-    return (
-        f"@{modificator}{user_id} "
-        f"({await get_name(user, case, gender, custom_name)})"
-    )
+    return f"@{modificator}{user_id} " f"({await get_name(user, case, gender, custom_name)})"
 
 
-def is_command_available(
-    last_use_command: datetime | None, delta: timedelta
-) -> tuple[bool, str]:
+def is_command_available(last_use_command: datetime | None, delta: timedelta) -> tuple[bool, str]:
     """Проверяет можно ли использовать КД на команду"""
     if not last_use_command:
         return (True, "")
@@ -67,9 +60,7 @@ def is_command_available(
     return (True, "")
 
 
-async def get_top_list(
-    users_list: list[User], top_type: TopType
-) -> str | Literal[False]:
+async def get_top_list(users_list: list[User], top_type: TopType) -> str | Literal[False]:
     """получение топа пользователей по параметру"""
     if not users_list:
         return False

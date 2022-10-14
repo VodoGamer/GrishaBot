@@ -4,32 +4,29 @@ from typing import Iterable
 from vkbottle.bot import Message
 from vkbottle.dispatch.rules import ABCRule
 
+MENTION_PATTERN = (
+    r"(?i)^{word}\s+(?P<action>.*)\[(?P<type>club|public|id)(?P<id>\d*)\|(?P<text>.+)\]"
+)
+
 
 class HasUserMention(ABCRule[Message]):
-    def __init__(
-        self, commands: Iterable[str] | str, args_count: int = -1, can_reply: bool = True
-    ) -> None:
+    def __init__(self, commands: Iterable[str] | str, can_reply: bool = True) -> None:
         self.commands = [commands] if isinstance(commands, str) else commands
-        self.args_count = f"{args_count}" if args_count >= 0 else "{0,}"
         self.can_reply = can_reply
 
     async def check(self, event: Message):
         for command in self.commands:
             if self.can_reply and event.reply_message:
-                regex = r"^{word}\s+((?:\w+\s*){args})$"
-                match = self._match(regex, command, event.reply_message.text)
-                if match:
-                    groups = match.groups()
-                    return {"args": groups[0], "user_id": event.reply_message.from_id}
-            regex = r"^{word}\s+((?:\w+\s){args})\[(club|id)(\d+)\|(.+)\]$"
-            match = self._match(regex, command, event.text)
+                if event.text.lower().startswith(command):
+                    return {
+                        "user_id": event.reply_message.from_id,
+                        "action": event.text[len(command) + 1:],
+                    }
+            pattern = re.compile(MENTION_PATTERN.format(word=command))
+            match = pattern.search(event.text.lower())
             if match:
-                groups = match.groups()
+                match_id = int(match.groupdict()["id"])
                 return {
-                    "args": groups[0],
-                    "user_id": int(groups[2]) if groups[1] == "id" else -int(groups[2]),
+                    "user_id": match_id if match.groupdict()["type"] == "id" else -match_id,
+                    "action": match.groupdict()["action"],
                 }
-        return False
-
-    def _match(self, regex: str, command: str, text: str):
-        return re.match(regex.format(word=command, args=self.args_count), text)

@@ -1,194 +1,180 @@
 from vkbottle.bot import Blueprint, Message
 
-from src.db.models import Chat, User
+from src.db.models import User
 from src.repository.account import Case, get_mention
 from src.rules.mention import HasUserMention
 
 bp = Blueprint("Rp commands")
 
 
-@bp.on.chat_message(HasUserMention(["ударить", "ёбнуть"]))
-async def to_kick(message: Message, user_id: int, args: str, user: User):
-    await Rp(message, "ударил", args, user, user_id).send_message()
+@bp.on.chat_message(HasUserMention(("ударить", "уебать")))
+async def to_kick(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "ударил", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(обдристать)\s*(.*)?"))
-async def poooooo(message: Message, match, user: User):
-    await Rp(message, "обдристал", match[-1], user, "photo-194020282_457239089").send_message()
+@bp.on.chat_message(HasUserMention("обдристать"))
+async def poooooo(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "обдристал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(выебать|трахнуть)\s*(.*)?"))
-async def fuck(message: Message, match, user: User):
-    await Rp(message, "выебал", match[-1], user, "photo-194020282_457239085").send_message()
+@bp.on.chat_message(HasUserMention(("выебать", "трахнуть")))
+async def fuck(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "выебал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(уебать)\s*(.*)?"))
-async def to_fuck_off(message: Message, match, user: User):
-    await Rp(message, "уебал", match[-1], user, "photo-194020282_457239112").send_message()
+@bp.on.chat_message(HasUserMention("уебать"))
+async def to_fuck_off(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "уебал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(кончить)\s*(.*)?"))
-async def cum(message: Message, match, user: User):
-    await Rp(message, "обкончал", match[-1], user, "photo-194020282_457239090").send_message()
+@bp.on.chat_message(HasUserMention("кончить"))
+async def cum(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "обкончал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(отсосать)\s*(.*)?"))
-async def suck_it(message: Message, match, user: User):
-    await Rp(message, "отсосал у", match[-1], user, "photo-194020282_457239097").send_message()
+@bp.on.chat_message(HasUserMention("отсосать"))
+async def suck_it(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "отсосал у", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(обнять|прижать)\s*(.*)?"))
-async def hug(message: Message, match, user: User):
-    await Rp(message, "обнял", match[-1], user, "photo-194020282_457239092").send_message()
+@bp.on.chat_message(HasUserMention(("обнять", "прижать")))
+async def hug(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "обнял", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(засосать)\s*(.*)?"))
-async def suck(message: Message, match, user: User):
-    await Rp(message, "засосал", match[-1], user, "photo-194020282_457239086").send_message()
+@bp.on.chat_message(HasUserMention("засосать"))
+async def suck(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "засосал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(п.рнуть)\s*(.*)?"))
-async def fart(message: Message, match, user: User):
-    await Rp(message, "пёрнул на", match[-1], user, "photo-194020282_457239098").send_message()
+@bp.on.chat_message(HasUserMention("пёрнуть"))
+async def fart(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "пёрнул на", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(о(т|тт)рахать)\s*(.*)?"))
-async def fuck_strong(message: Message, match, user: User):
-    await Rp(message, "обтрахал", match[-1], user, "photo-194020282_457239094").send_message()
+@bp.on.chat_message(HasUserMention("оттрахать"))
+async def fuck_strong(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "обтрахал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(убить)\s*(.*)?"))
-async def kill(message: Message, match, user: User):
-    await Rp(message, "убил", match[-1], user, "photo-194020282_457239110").send_message()
+@bp.on.chat_message(HasUserMention("убить"))
+async def kill(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "убил", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(послать)\s*(.*)?"))
-async def fuck_off(message: Message, match, user: User):
-    await Rp(message, "послал", match[-1], user, "photo-194020282_457239104").send_message()
+@bp.on.chat_message(HasUserMention("послать"))
+async def fuck_off(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "послал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(шлёпнуть)\s*(.*)?"))
-async def slap(message: Message, match, user: User):
-    await Rp(message, "шлёпнул", match[-1], user, "photo-194020282_457239113").send_message()
+@bp.on.chat_message(HasUserMention("шлёпнуть"))
+async def slap(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "шлёпнул", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(пнуть)\s*(.*)?"))
-async def kick(message: Message, match, user: User):
-    await Rp(message, "пнул", match[-1], user, "photo-194020282_457239100").send_message()
+@bp.on.chat_message(HasUserMention("пнуть"))
+async def kick(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "пнул", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(сжечь)\s*(.*)?"))
-async def burn(message: Message, match, user: User):
-    await Rp(message, "сжёг", match[-1], user, "photo-194020282_457239107").send_message()
+@bp.on.chat_message(HasUserMention("сжечь"))
+async def burn(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "сжёг", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(понюхать)\s*(.*)?"))
-async def smell_it(message: Message, match, user: User):
-    await Rp(message, "понюхал", match[-1], user, "photo-194020282_457239103").send_message()
+@bp.on.chat_message(HasUserMention("понюхать"))
+async def smell_it(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "понюхал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(лизнуть|облизать|полизать)\s*(.*)?"))
-async def lick(message: Message, match, user: User):
-    await Rp(message, "облизал", match[-1], user, "photo-194020282_457239091").send_message()
+@bp.on.chat_message(HasUserMention(("лизнуть", "полизать", "облизать")))
+async def lick(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "облизал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(отлизать)\s*(.*)?"))
-async def lick_it_off(message: Message, match, user: User):
-    await Rp(
-        message,
-        "отлизал",
-        match[-1],
-        user,
-        "photo-194020282_457239096",
-        Case.GENITIVE,
-    ).send_message()
+@bp.on.chat_message(HasUserMention("отлизать"))
+async def lick_it_off(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "отлизал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(погладить)\s*(.*)?"))
-async def stroke(message: Message, match, user: User):
-    await Rp(message, "погладил", match[-1], user, "photo-194020282_457239101").send_message()
+@bp.on.chat_message(HasUserMention("погладить"))
+async def stroke(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "погладил", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(обо(с|сс)ать)\s*(.*)?"))
-async def piss_on(message: Message, match, user: User):
-    await Rp(message, "обоссал", match[-1], user, "photo-194020282_457239093").send_message()
+@bp.on.chat_message(HasUserMention(("обоссать", "обосать")))
+async def piss_on(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "обоссал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(плюнуть)\s*(.*)?"))
-async def spit(message: Message, match, user: User):
-    await Rp(message, "плюнул в", match[-1], user, "photo-194020282_457239099").send_message()
+@bp.on.chat_message(HasUserMention("плюнуть"))
+async def spit(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "плюнул в", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)((по)?трогать)\s*(.*)?"))
-async def touch(message: Message, match, user: User):
-    await Rp(message, "потрогал", match[-1], user, "photo-194020282_457239105").send_message()
+@bp.on.chat_message(HasUserMention(("потрогать", "трогать")))
+async def touch(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "потрогал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(насрать|обо(сс|с)рать)\s*(.*)?"))
-async def give_a_shit(message: Message, match, user: User):
-    await Rp(message, "насрал", match[-1], user, "photo-194020282_457239088").send_message()
+@bp.on.chat_message(HasUserMention("насрать"))
+async def give_a_shit(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "насрал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(навонять)\s*(.*)?"))
-async def stink(message: Message, match, user: User):
-    await Rp(
-        message,
-        "навонял",
-        match[-1],
-        user,
-        "photo-194020282_457239087",
-        Case.DATIVE,
-    ).send_message()
+@bp.on.chat_message(HasUserMention("навонять"))
+async def stink(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "навонял", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)((по)?лапать)\s*(.*)?"))
-async def paw(message: Message, match, user: User):
-    await Rp(message, "полапал", match[-1], user, "photo-194020282_457239102").send_message()
+@bp.on.chat_message(HasUserMention("полапать"))
+async def paw(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "полапал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(съесть)\s*(.*)?"))
-async def eat(message: Message, match, user: User):
-    await Rp(message, "съел", match[-1], user, "photo-194020282_457239108").send_message()
+@bp.on.chat_message(HasUserMention("съесть"))
+async def eat(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "съел", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(откусить)\s*(.*)?"))
-async def take_a_bite(message: Message, match, user: User):
-    await Rp(message, "откусил", match[-1], user, "photo-194020282_457239095").send_message()
+@bp.on.chat_message(HasUserMention("откусить"))
+async def take_a_bite(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "откусил", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(укусить)\s*(.*)?"))
-async def bite(message: Message, match, user: User):
-    await Rp(message, "укусил", match[-1], user, "photo-194020282_457239115").send_message()
+@bp.on.chat_message(HasUserMention("укусить"))
+async def bite(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "укусил", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(поцеловать)\s*(.*)?"))
-async def kiss(message: Message, match, user: User):
-    await Rp(message, "поцеловал", match[-1], user, "photo-194020282_457239106").send_message()
+@bp.on.chat_message(HasUserMention("поцеловать"))
+async def kiss(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "поцеловал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(напасть)\s*(.*)?"))
-async def attack(message: Message, match, user: User):
-    await Rp(message, "напал на", match[-1], user, "photo-194020282_457239116").send_message()
+@bp.on.chat_message(HasUserMention("напасть"))
+async def attack(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "напал на", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(разрезать)\s*(.*)?"))
-async def cut(message: Message, match, user: User):
-    await Rp(message, "разрезал", match[-1], user, "photo-194020282_457239119").send_message()
+@bp.on.chat_message(HasUserMention("разрезать"))
+async def cut(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "разрезал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(ра(с|сс)трелять)\s*(.*)?"))
-async def shoot(message: Message, match, user: User):
-    await Rp(message, "расстрелял", match[-1], user, "photo-194020282_457239120").send_message()
+@bp.on.chat_message(HasUserMention("расстрелять"))
+async def shoot(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "расстрелял", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(помацать)\s*(.*)?"))
-async def pomat(message: Message, match, user: User):
-    await Rp(message, "помацал", match[-1], user, "photo-194020282_457239118").send_message()
+@bp.on.chat_message(HasUserMention("помацать"))
+async def pomat(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "помацал", action, user, user_id).send_message()
 
 
-@bp.on.chat_message(regex=(r"(?i)(захуярить)\s*(.*)?"))
-async def fuck_up(message: Message, match, user: User):
-    await Rp(message, "захуярил", match[-1], user, "photo-194020282_457239117").send_message()
+@bp.on.chat_message(HasUserMention("захуярить"))
+async def fuck_up(message: Message, action: str, user_id: int, user: User):
+    await Rp(message, "захуярил", action, user, user_id).send_message()
 
 
 class Rp:
@@ -199,8 +185,8 @@ class Rp:
     def __init__(
         self,
         message: Message,
-        word: str,
-        item: str,
+        command: str,
+        action: str,
         from_user: User,
         to_id: int,
         image=None,
@@ -208,7 +194,7 @@ class Rp:
     ) -> None:
         self.message = message
 
-        self.word = " ".join((word, item))
+        self.command = " ".join((command, action))
         self.from_user = from_user
         self.to_id = to_id
         self.image = image
@@ -218,7 +204,7 @@ class Rp:
         self.to_user = await User.get(uid=self.to_id, chat_id=self.message.peer_id)
 
         return (
-            f"{await get_mention(self.from_user)} {self.word} "
+            f"{await get_mention(self.from_user)} {self.command} "
             f"{await get_mention(self.to_user, self.case)}"
         )
 

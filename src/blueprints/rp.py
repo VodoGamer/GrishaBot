@@ -1,16 +1,15 @@
 from vkbottle.bot import Blueprint, Message
-from vkbottle.dispatch.rules.base import ReplyMessageRule
 
-from src.db.models import User
+from src.db.models import Chat, User
 from src.repository.account import Case, get_mention
+from src.rules.mention import HasUserMention
 
 bp = Blueprint("Rp commands")
-bp.labeler.auto_rules = [ReplyMessageRule()]
 
 
-@bp.on.chat_message(regex=(r"(?i)(ударить|ёбнуть)\s*(.*)?"))
-async def to_kick(message: Message, match, user: User):
-    await Rp(message, "ударил", match[-1], user, "photo-194020282_457239111").send_message()
+@bp.on.chat_message(HasUserMention(["ударить", "ёбнуть"]))
+async def to_kick(message: Message, user_id: int, args: str, user: User):
+    await Rp(message, "ударил", args, user, user_id).send_message()
 
 
 @bp.on.chat_message(regex=(r"(?i)(обдристать)\s*(.*)?"))
@@ -203,6 +202,7 @@ class Rp:
         word: str,
         item: str,
         from_user: User,
+        to_id: int,
         image=None,
         case: Case | None = Case.ACCUSATIVE,
     ) -> None:
@@ -210,14 +210,12 @@ class Rp:
 
         self.word = " ".join((word, item))
         self.from_user = from_user
+        self.to_id = to_id
         self.image = image
         self.case = case
 
     async def get_text(self) -> str:
-        self.to_user = await User.get(
-            uid=self.message.reply_message.from_id,  # type: ignore
-            chat_id=self.message.peer_id,
-        )
+        self.to_user = await User.get(uid=self.to_id, chat_id=self.message.peer_id)
 
         return (
             f"{await get_mention(self.from_user)} {self.word} "

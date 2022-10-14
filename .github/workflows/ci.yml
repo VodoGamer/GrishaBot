@@ -35,11 +35,8 @@ jobs:
         if: steps.python-setup.outputs.cache-hit != 'true'
         run: poetry install --with dev
 
-      - name: Run flakeheaven
-        run: poetry run flakeheaven lint
+      - name: Run flake8
+        run: poetry run flake8
 
       - name: Run mypy
-        run: poetry run mypy vkbottle
-
-      - name: Run tests
-        run: poetry run pytest
+        run: poetry run mypy src

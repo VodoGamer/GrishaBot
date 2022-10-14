@@ -15,3 +15,37 @@ line_length = 99
 ignore_missing_imports = true
 follow_imports_for_stubs = false
 ignore_missing_imports_per_module = true
+
+[tool.poetry]
+name = "grisha-bot"
+version = "1.4.4"
+description = ""
+authors = ["VodoGamer"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "grisha_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+vkbottle = "^4.3.10"
+tortoise-orm = "^0.19.2"
+aerich = "^0.7.1"
+asyncpg = "^0.26.0"
+envparse = "^0.2.0"
+numpy = "^1.23.4"
+pillow = "^9.2.0"
+pytrovich = "^0.0.2"
+pytz = "^2022.4"
+loguru = "^0.6.0"
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.982"
+flake8 = "^5.0.4"
+autopep8 = "^1.7.0"
+black = "^22.10.0"
+isort = "^5.10.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

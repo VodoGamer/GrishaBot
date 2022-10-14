@@ -20,7 +20,7 @@ class HasUserMention(ABCRule[Message]):
                 if event.text.lower().startswith(command):
                     return {
                         "user_id": event.reply_message.from_id,
-                        "action": event.text[len(command) + 1:],
+                        "action": event.text[len(command) + 1 :],
                     }
             pattern = re.compile(MENTION_PATTERN.format(word=command))
             match = pattern.search(event.text.lower())

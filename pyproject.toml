@@ -23,7 +23,6 @@ description = ""
 authors = ["VodoGamer"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "grisha_bot"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"

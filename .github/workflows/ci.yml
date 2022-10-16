@@ -13,7 +13,6 @@ jobs:
         id: python-setup
         with:
           python-version: "3.10"
-          cache: poetry
 
       - name: Install poetry
         run: pipx install --python python3.10 poetry==1.2.0

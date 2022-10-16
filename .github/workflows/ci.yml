@@ -4,31 +4,19 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-        python-version:
-          - "3.10"
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
       - name: Install poetry
-        run: pipx install poetry==1.2.0 --python python${{ matrix.python-version }}
+        run: pipx install --python python3.10 poetry==1.2.0
+        run: poetry env use 3.10
 
-      - name: Cache .mypy_cache
-        id: cache-mypy
-        uses: actions/cache@v3
-        with:
-          key: ${{ matrix.python-version }}-${{ runner.os }}
-          path: .mypy_cache
-
-      - uses: actions/setup-python@v4.1.0
+      - uses: actions/setup-python@v4.0
         id: python-setup
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.10"
           cache: poetry
 
       - name: Install dependencies

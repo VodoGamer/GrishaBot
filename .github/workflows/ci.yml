@@ -12,18 +12,18 @@ jobs:
       - name: Install poetry
         run: pipx install poetry==1.2.0
 
-      - uses: actions/setup-python@v4.1.0
-        id: python-setup
-        with:
-          python-version: "3.10"
-          cache: poetry
-
       - name: Set python version for poetry
         run: poetry env use 3.10
 
       - name: Install dependencies
         if: steps.python-setup.outputs.cache-hit != 'true'
         run: poetry install --with dev
+
+      - uses: actions/setup-python@v4.1.0
+        id: python-setup
+        with:
+          python-version: "3.10"
+          cache: poetry
 
       - name: Run flake8
         run: poetry run flake8

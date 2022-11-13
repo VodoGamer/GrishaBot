@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from random import randint
 
+from pytrovich.enums import Case
 from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
@@ -8,7 +9,7 @@ from vkbottle.dispatch.rules.base import ReplyMessageRule
 from src.bot.phrases import command_not_availabale_now, not_enough_money
 from src.bot.stickers import rich_stickers, send_sticker
 from src.db.models import Chat, User, UserBonus
-from src.repository.account import Case, TopType, get_mention, get_top_list, is_command_available
+from src.repository.account import TopType, get_mention, get_top_list, is_command_available
 
 bp = Blueprint("Balance")
 

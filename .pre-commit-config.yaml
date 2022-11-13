@@ -35,3 +35,10 @@ repos:
         language: system
         types: [ python ]
         stages: [ push ]
+
+      - id: pyright
+        name: pyright
+        entry: poetry run pyright src
+        language: system
+        pass_filenames: false
+        stages: [ push ]

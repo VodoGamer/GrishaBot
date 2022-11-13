@@ -2,12 +2,13 @@ import asyncio
 import json
 from random import choice, randint
 
+from pytrovich.enums import Case
 from vkbottle import Keyboard, Text
 from vkbottle.bot import Blueprint, Message
 from vkbottle.dispatch.rules.base import ReplyMessageRule
 
 from src.db.models import Chat, User
-from src.repository.account import Case, get_mention
+from src.repository.account import get_mention
 
 bp = Blueprint("sex")
 bp.labeler.vbml_ignore_case = True

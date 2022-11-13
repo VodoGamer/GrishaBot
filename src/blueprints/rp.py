@@ -1,7 +1,8 @@
+from pytrovich.enums import Case
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import User
-from src.repository.account import Case, get_mention
+from src.repository.account import get_mention
 from src.rules.mention import HasUserMention
 
 bp = Blueprint("Rp commands")

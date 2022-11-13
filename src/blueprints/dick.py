@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta
 from random import randint
 
+from pytrovich.enums import Case
 from pytz import UTC
 from vkbottle.bot import Blueprint, Message
 
 from src.db.models import Chat, User
-from src.repository.account import Case, TopType, get_mention, get_top_list, is_command_available
+from src.repository.account import TopType, get_mention, get_top_list, is_command_available
 
 bp = Blueprint("dick")
 
